@@ -1,0 +1,28 @@
+model Professional {
+  id                 String @id @default(auto()) @map("_id") @db.ObjectId
+  user_id            String @unique @db.ObjectId
+  professional_title String
+
+  professional_designation String
+  experience_years         Int
+  skills                   String[]
+
+  address_street  String
+  address_city    String
+  address_state   String
+  address_country String
+  address_zip     String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([professional_title])
+  @@index([professional_designation])
+  @@index([experience_years])
+  @@index([skills])
+  @@index([address_city])
+  @@index([address_state])
+  @@map("professionals")
+}

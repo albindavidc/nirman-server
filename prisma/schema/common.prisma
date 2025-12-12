@@ -1,0 +1,13 @@
+enum UserRole {
+  admin
+  professional
+  vendor
+  worker
+}
+
+enum VendorStatus {
+  pending
+  approved
+  rejected
+  blacklisted
+}

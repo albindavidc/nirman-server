@@ -1,0 +1,35 @@
+model Vendor {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  user_id String @unique @db.ObjectId
+
+  company_name        String
+  registration_number String @unique
+  tax_number          String @unique
+
+  business_type     String
+  years_in_business Int
+
+  address_street  String
+  address_city    String
+  address_state   String
+  address_country String
+  address_zip     String
+
+  products_services String[]
+  website           String?
+  contact_email     String?
+  contact_phone     String?
+
+  vendor_status VendorStatus
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([company_name])
+  @@index([address_city])
+  @@index([address_state])
+  @@index([vendor_status])
+  @@map("vendors")
+}
