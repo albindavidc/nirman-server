@@ -19,7 +19,6 @@ model Vendor {
   website           String?
   contact_email     String?
   contact_phone     String?
-
   vendor_status VendorStatus
 
   created_at DateTime @default(now())
