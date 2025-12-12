@@ -6,11 +6,11 @@
 
 generator client {
   provider     = "prisma-client"
-  output       = "../src/generated/client"
+  output       = "../../src/generated/client"
   moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "mongodb" 
-  url      = env("DATABASE_URL")
+  // url      = env("DATABASE_URL")
 }

@@ -4,22 +4,19 @@ model Vendor {
 
   company_name        String
   registration_number String @unique
-  tax_number          String @unique
+  tax_number          String?
+  years_in_business Int?
 
-  business_type     String
-  years_in_business Int
-
-  address_street  String
-  address_city    String
-  address_state   String
-  address_country String
-  address_zip     String
+  address_street  String?
+  address_city    String?
+  address_state   String?
+  address_zip     String?
 
   products_services String[]
   website           String?
   contact_email     String?
   contact_phone     String?
-  vendor_status VendorStatus
+  vendor_status VendorStatus @default(pending)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

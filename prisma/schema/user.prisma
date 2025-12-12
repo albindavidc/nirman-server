@@ -6,13 +6,13 @@ model User {
   phone             String   @unique
   is_phone_verified Boolean  @default(false)
   is_email_verified Boolean  @default(true)
-  date_of_birth     DateTime
+  date_of_birth     DateTime?
 
   password_hash     String
   profile_photo_url String?
 
   role        UserRole
-  user_status String
+  user_status String @default("active")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
