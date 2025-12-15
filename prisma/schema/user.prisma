@@ -3,7 +3,7 @@ model User {
   first_name        String
   last_name         String
   email             String   @unique
-  phone             String   @unique
+  phone_number      String?   @unique
   is_phone_verified Boolean  @default(false)
   is_email_verified Boolean  @default(true)
   date_of_birth     DateTime?

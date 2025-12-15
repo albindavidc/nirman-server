@@ -10,7 +10,7 @@ model Vendor {
   address_street  String?
   address_city    String?
   address_state   String?
-  address_zip     String?
+  address_zip_code     String?
 
   products_services String[]
   website           String?

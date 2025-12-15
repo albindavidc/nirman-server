@@ -6,6 +6,7 @@ import {
   IsOptional,
   Min,
 } from 'class-validator';
+import { VendorStatus } from 'src/generated/client/enums';
 
 export class CreateVendorCompanyDto {
   @IsNotEmpty()
@@ -14,23 +15,24 @@ export class CreateVendorCompanyDto {
   @IsNotEmpty()
   registrationNumber: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   taxNumber: string;
 
+  @IsOptional()
   @IsInt()
   @Min(0)
   yearsInBusiness: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   addressStreet: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   addressCity: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   addressState: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   addressZipCode: string;
 
   @IsArray()
@@ -46,4 +48,7 @@ export class CreateVendorCompanyDto {
 
   @IsOptional()
   contactPhone: string;
+
+  @IsOptional()
+  vendorStatus: VendorStatus;
 }

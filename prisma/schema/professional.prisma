@@ -9,7 +9,7 @@ model Professional {
   address_street  String
   address_city    String
   address_state   String
-  address_zip     String
+  address_zip_code     String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
