@@ -23,11 +23,9 @@ export class UserRepository {
     });
   }
 
-  async findByEmail(
-    data: Partial<UserPersistence>,
-  ): Promise<UserPersistence | null> {
+  async findByEmail(email: string): Promise<UserPersistence | null> {
     return this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email },
       include: { vendor: true },
     });
   }

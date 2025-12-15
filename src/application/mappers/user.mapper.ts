@@ -1,4 +1,5 @@
 import { User } from 'src/domain/entities/user.entity';
+import { Vendor } from 'src/domain/entities/vendor.entity';
 import { CreateVendorUserDto } from '../dto/create-vendor-user.dto';
 import { Role } from 'src/domain/enums/role.enum';
 import { UserPersistence } from 'src/infrastructure/persistence/user.persistence';
@@ -6,7 +7,12 @@ import { UserStatus } from 'src/domain/enums/user-status.enum';
 import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
 
 export class UserMapper {
-  static dtoToEntity(dto: CreateVendorUserDto): Partial<User> {
+  static dtoToEntity(
+    dto: Pick<
+      CreateVendorUserDto,
+      'firstName' | 'lastName' | 'email' | 'phoneNumber' | 'password'
+    >,
+  ): Partial<User> {
     return {
       firstName: dto.firstName,
       lastName: dto.lastName,
@@ -22,7 +28,7 @@ export class UserMapper {
     return dto;
   }
 
-  static entityToPersistence(entity: User): UserPersistence {
+  static entityToPersistence(entity: Partial<User>): Partial<UserPersistence> {
     return {
       id: entity.id,
 
@@ -30,16 +36,16 @@ export class UserMapper {
       last_name: entity.lastName,
       email: entity.email,
       phone_number: entity.phoneNumber ?? null,
-      is_email_verified: entity.isEmailVerified,
-      is_phone_verified: entity.isPhoneVerified,
+      is_email_verified: entity.isEmailVerified ?? false,
+      is_phone_verified: entity.isPhoneVerified ?? false,
       date_of_birth: entity.dateOfBirth ?? null,
       password_hash: entity.passwordHash,
       profile_photo_url: entity.profilePhotoUrl ?? null,
       user_status: entity.userStatus,
       role: entity.role,
 
-      created_at: entity.createdAt,
-      updated_at: entity.updatedAt,
+      created_at: entity.createdAt ?? new Date(),
+      updated_at: entity.updatedAt ?? new Date(),
 
       vendor: entity.vendor
         ? {
@@ -82,7 +88,7 @@ export class UserMapper {
       createdAt: persistence.created_at,
       updatedAt: persistence.updated_at,
       vendor: persistence.vendor
-        ? {
+        ? new Vendor({
             id: persistence.vendor.id,
             createdAt: persistence.vendor.created_at,
             updatedAt: persistence.vendor.updated_at,
@@ -100,7 +106,7 @@ export class UserMapper {
             contactEmail: persistence.vendor.contact_email ?? undefined,
             contactPhone: persistence.vendor.contact_phone ?? undefined,
             vendorStatus: persistence.vendor.vendor_status as VendorStatus,
-          }
+          })
         : undefined,
     });
   }

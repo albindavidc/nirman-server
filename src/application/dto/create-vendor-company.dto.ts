@@ -10,6 +10,9 @@ import { VendorStatus } from 'src/generated/client/enums';
 
 export class CreateVendorCompanyDto {
   @IsNotEmpty()
+  userId: string;
+
+  @IsNotEmpty()
   companyName: string;
 
   @IsNotEmpty()

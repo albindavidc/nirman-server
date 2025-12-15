@@ -1,10 +1,12 @@
 import { Vendor } from 'src/domain/entities/vendor.entity';
 import { CreateVendorCompanyDto } from '../dto/create-vendor-company.dto';
 import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
+import { VendorPersistence } from 'src/infrastructure/persistence/vendor.persistence';
 
 export class VendorMapper {
-  static dtoToEntity(dto: CreateVendorCompanyDto): Partial<Vendor> {
-    return {
+  static dtoToEntity(dto: CreateVendorCompanyDto): Vendor {
+    return new Vendor({
+      userId: dto.userId,
       companyName: dto.companyName,
       registrationNumber: dto.registrationNumber,
       taxNumber: dto.taxNumber,
@@ -18,11 +20,12 @@ export class VendorMapper {
       contactEmail: dto.contactEmail,
       contactPhone: dto.contactPhone,
       vendorStatus: dto.vendorStatus as VendorStatus,
-    };
+    });
   }
 
   static entityToDto(entity: Vendor): CreateVendorCompanyDto {
     return {
+      userId: entity.userId,
       companyName: entity.companyName,
       registrationNumber: entity.registrationNumber,
       taxNumber: entity.taxNumber ?? '',
@@ -37,5 +40,49 @@ export class VendorMapper {
       contactPhone: entity.contactPhone ?? '',
       vendorStatus: entity.vendorStatus,
     };
+  }
+
+  static entityToPersistence(
+    entity: Partial<Vendor>,
+  ): Partial<VendorPersistence> {
+    return {
+      id: entity.id,
+      created_at: entity.createdAt,
+      updated_at: entity.updatedAt,
+      company_name: entity.companyName,
+      registration_number: entity.registrationNumber,
+      tax_number: entity.taxNumber,
+      years_in_business: entity.yearsInBusiness,
+      address_street: entity.addressStreet,
+      address_city: entity.addressCity,
+      address_state: entity.addressState,
+      address_zip_code: entity.addressZipCode,
+      products_services: entity.productsService,
+      website: entity.websiteUrl,
+      contact_email: entity.contactEmail,
+      contact_phone: entity.contactPhone,
+      vendor_status: entity.vendorStatus,
+    };
+  }
+
+  static persistenceToEntity(persistence: VendorPersistence): Vendor {
+    return new Vendor({
+      id: persistence.id,
+      createdAt: persistence.created_at,
+      updatedAt: persistence.updated_at,
+      companyName: persistence.company_name,
+      registrationNumber: persistence.registration_number,
+      taxNumber: persistence.tax_number ?? undefined,
+      yearsInBusiness: persistence.years_in_business ?? 0,
+      addressStreet: persistence.address_street ?? '',
+      addressCity: persistence.address_city ?? '',
+      addressState: persistence.address_state ?? '',
+      addressZipCode: persistence.address_zip_code ?? '',
+      productsService: persistence.products_services ?? [],
+      websiteUrl: persistence.website ?? '',
+      contactEmail: persistence.contact_email ?? '',
+      contactPhone: persistence.contact_phone ?? '',
+      vendorStatus: persistence.vendor_status as VendorStatus,
+    });
   }
 }

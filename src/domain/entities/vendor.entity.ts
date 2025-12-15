@@ -1,7 +1,10 @@
-import { BaseEntity } from '../base.entity';
+import { AggregateRoot } from '@nestjs/cqrs';
 import { VendorStatus } from '../enums/vendor-status.enum';
 
-export class Vendor extends BaseEntity {
+export class Vendor extends AggregateRoot {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
   userId: string;
   companyName: string;
   registrationNumber: string;
@@ -19,6 +22,9 @@ export class Vendor extends BaseEntity {
 
   constructor(props: Partial<Vendor>) {
     super();
+    this.id = props.id ?? '';
+    this.createdAt = props.createdAt ?? new Date();
+    this.updatedAt = props.updatedAt ?? new Date();
     this.userId = props.userId!;
     this.companyName = props.companyName!;
     this.registrationNumber = props.registrationNumber!;
