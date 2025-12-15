@@ -12,7 +12,7 @@ export class Vendor extends BaseEntity {
   addressState?: string;
   addressZipCode?: string;
   productsService: string[];
-  website?: string;
+  websiteUrl?: string;
   contactEmail?: string;
   contactPhone?: string;
   vendorStatus: VendorStatus;
@@ -29,7 +29,7 @@ export class Vendor extends BaseEntity {
     this.addressState = props.addressState;
     this.addressZipCode = props.addressZipCode;
     this.productsService = props.productsService ?? [];
-    this.website = props.website;
+    this.websiteUrl = props.websiteUrl;
     this.contactEmail = props.contactEmail;
     this.contactPhone = props.contactPhone;
     this.vendorStatus = props.vendorStatus!;
