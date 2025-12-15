@@ -1,6 +1,6 @@
 import { Prisma } from 'src/generated/client/client';
 
-export type VenderPersistence = Prisma.VendorGetPayload<{
+export type VendorPersistence = Prisma.VendorGetPayload<{
   include: {
     user: true;
   };
