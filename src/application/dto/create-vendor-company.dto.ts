@@ -7,7 +7,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateVendorUserDto {
+export class CreateVendorCompanyDto {
   @IsNotEmpty()
   companyName: string;
 
