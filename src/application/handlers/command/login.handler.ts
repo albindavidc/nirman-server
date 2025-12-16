@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 import { LoginCommand } from '../../command/login.command';
 import { UserRepository } from 'src/infrastructure/repositories/user.repository';
 import { UserMapper } from 'src/application/mappers/user.mapper';
@@ -40,8 +40,8 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     // Convert to entity
     const user = UserMapper.persistenceToEntity(userPersistence);
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    // Verify password using argon2 (matching signup hashing)
+    const isPasswordValid = await argon2.verify(user.passwordHash, password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
