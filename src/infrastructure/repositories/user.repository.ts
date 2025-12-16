@@ -34,6 +34,15 @@ export class UserRepository {
     });
   }
 
+  async findByPhoneNumber(
+    phoneNumber: string,
+  ): Promise<UserPersistence | null> {
+    return this.prisma.user.findUnique({
+      where: { phone_number: phoneNumber },
+      include: { vendor: true },
+    });
+  }
+
   async findAll(): Promise<UserPersistence[]> {
     return this.prisma.user.findMany({
       include: { vendor: true },
@@ -45,6 +54,13 @@ export class UserRepository {
       where: { id: data.id },
       data: data as any,
       include: { vendor: true },
+    });
+  }
+
+  async updatePassword(email: string, passwordHash: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { email: email.toLowerCase() },
+      data: { password_hash: passwordHash },
     });
   }
 }

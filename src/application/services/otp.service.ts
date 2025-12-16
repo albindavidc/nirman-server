@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
 interface OtpRecord {
@@ -11,6 +11,7 @@ interface OtpRecord {
 export class OtpService {
   private otpStore: Map<string, OtpRecord> = new Map();
   private transporter: nodemailer.Transporter;
+  private readonly logger = new Logger(OtpService.name);
 
   constructor() {
     // Configure Brevo SMTP transporter
@@ -41,6 +42,9 @@ export class OtpService {
         expiresAt,
         email: email.toLowerCase(),
       });
+
+      this.logger.log(`OTP sent to ${email}: ${otp}`);
+      console.log(`OTP sent to ${email}: ${otp}`);  
 
       // Send email
       await this.transporter.sendMail({
