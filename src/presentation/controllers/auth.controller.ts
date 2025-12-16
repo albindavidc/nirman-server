@@ -1,16 +1,19 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   HttpCode,
   HttpStatus,
   Res,
   Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
+import { JwtAuthGuard } from 'src/infrastructure/auth/jwt-auth.guard';
 import { LoginDto } from 'src/application/dto/login.dto';
 import { ForgotPasswordDto } from 'src/application/dto/forgot-password.dto';
 import { VerifyResetOtpDto } from 'src/application/dto/verify-reset-otp.dto';
@@ -103,6 +106,19 @@ export class AuthController {
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getMe(@Req() req: Request) {
+    // User is attached by JwtStrategy after token validation
+    const user = (req as any).user;
+    return {
+      id: user.userId,
+      email: user.email,
+      role: user.role,
+    };
   }
 
   @Post('logout')
