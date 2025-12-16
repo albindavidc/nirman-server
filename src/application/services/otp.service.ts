@@ -80,6 +80,7 @@ export class OtpService {
       return { success: false, message: 'Failed to send OTP' };
     }
   }
+  
 
   verifyOtp(email: string, otp: string): { valid: boolean; message: string } {
     const record = this.otpStore.get(email.toLowerCase());
