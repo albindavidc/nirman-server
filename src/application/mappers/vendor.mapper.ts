@@ -47,6 +47,7 @@ export class VendorMapper {
   ): Partial<VendorPersistence> {
     return {
       id: entity.id,
+      user_id: entity.userId,
       created_at: entity.createdAt,
       updated_at: entity.updatedAt,
       company_name: entity.companyName,
@@ -58,7 +59,7 @@ export class VendorMapper {
       address_state: entity.addressState,
       address_zip_code: entity.addressZipCode,
       products_services: entity.productsService,
-      website: entity.websiteUrl,
+      website_url: entity.websiteUrl,
       contact_email: entity.contactEmail,
       contact_phone: entity.contactPhone,
       vendor_status: entity.vendorStatus,
@@ -79,7 +80,7 @@ export class VendorMapper {
       addressState: persistence.address_state ?? '',
       addressZipCode: persistence.address_zip_code ?? '',
       productsService: persistence.products_services ?? [],
-      websiteUrl: persistence.website ?? '',
+      websiteUrl: persistence.website_url ?? '',
       contactEmail: persistence.contact_email ?? '',
       contactPhone: persistence.contact_phone ?? '',
       vendorStatus: persistence.vendor_status as VendorStatus,

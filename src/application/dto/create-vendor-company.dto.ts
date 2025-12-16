@@ -26,6 +26,7 @@ export class CreateVendorCompanyDto {
   @Min(0)
   yearsInBusiness: number;
 
+
   @IsOptional()
   addressStreet: string;
 

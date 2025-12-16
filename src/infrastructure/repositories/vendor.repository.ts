@@ -7,12 +7,22 @@ export class VendorRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Partial<VendorPersistence>): Promise<VendorPersistence> {
-    return this.prisma.vendor.create({
-      data: data as any,
+    // Extract user_id and remove fields that shouldn't be in create data
+    const { id, user, user_id, ...createData } = data as any;
+
+    const created = await this.prisma.vendor.create({
+      data: {
+        ...createData,
+        user: {
+          connect: { id: user_id },
+        },
+      },
       include: {
         user: true,
       },
     });
+
+    return created as VendorPersistence;
   }
 
   async findById(id: string): Promise<VendorPersistence | null> {

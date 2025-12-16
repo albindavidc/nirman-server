@@ -8,12 +8,16 @@ export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
   async createUser(data: Partial<UserPersistence>): Promise<UserPersistence> {
-    return this.prisma.user.create({
-      data: data as any,
-      include: {
-        vendor: true,
-      },
+    // Remove id and vendor from data for creation - Prisma will auto-generate id
+    // and vendor will be created in step 2
+    const { id, vendor, ...createData } = data as any;
+
+    const created = await this.prisma.user.create({
+      data: createData,
     });
+
+    // Return with vendor as null for now (will be created in step 2)
+    return { ...created, vendor: null } as UserPersistence;
   }
 
   async findById(id: string): Promise<UserPersistence | null> {

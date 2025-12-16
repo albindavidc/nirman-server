@@ -13,7 +13,7 @@ model Vendor {
   address_zip_code     String?
 
   products_services String[]
-  website           String?
+  website_url           String?
   contact_email     String?
   contact_phone     String?
   vendor_status VendorStatus @default(pending)
