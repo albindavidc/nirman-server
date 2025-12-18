@@ -1,15 +1,16 @@
 //src/application/handlers/command/create-vendor-company.handler.ts
 
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { CreateVendorCompanyCommand } from 'src/application/command/create-vendor-company.command';
 import { VendorMapper } from 'src/application/mappers/vendor.mapper';
-import { VendorRepository } from 'src/infrastructure/repositories/vendor.repository';
+import { IVendorRepository, VENDOR_REPOSITORY } from 'src/domain/repositories';
 
 @CommandHandler(CreateVendorCompanyCommand)
 export class CreateVendorCompanyHandler implements ICommandHandler<CreateVendorCompanyCommand> {
   constructor(
-    private readonly vendorRepository: VendorRepository,
+    @Inject(VENDOR_REPOSITORY)
+    private readonly vendorRepository: IVendorRepository,
     private readonly eventPublisher: EventPublisher,
   ) {}
 
@@ -29,7 +30,7 @@ export class CreateVendorCompanyHandler implements ICommandHandler<CreateVendorC
     const vendorModel = this.eventPublisher.mergeObjectContext(vendorResult);
     vendorModel.apply('Vendor Created');
     vendorModel.commit();
-    
+
     return vendorResult.id!;
   }
 }

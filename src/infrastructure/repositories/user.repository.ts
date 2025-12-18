@@ -2,9 +2,10 @@ import { Prisma } from 'src/generated/client/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserPersistence } from '../persistence/user.persistence';
 import { Injectable } from '@nestjs/common';
+import { IUserRepository } from 'src/domain/repositories';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaService) {}
 
   async createUser(data: Partial<UserPersistence>): Promise<UserPersistence> {
@@ -45,15 +46,18 @@ export class UserRepository {
 
   async findAll(): Promise<UserPersistence[]> {
     return this.prisma.user.findMany({
-      include: { vendor: true },
+      include: { vendor: true, professional: true },
     });
   }
 
   async updateUser(data: Partial<UserPersistence>): Promise<UserPersistence> {
+    // Exclude id, vendor, and professional from data - these can't be updated directly
+    const { id, vendor, professional, ...updateData } = data as any;
+
     return this.prisma.user.update({
       where: { id: data.id },
-      data: data as any,
-      include: { vendor: true },
+      data: updateData,
+      include: { vendor: true, professional: true },
     });
   }
 

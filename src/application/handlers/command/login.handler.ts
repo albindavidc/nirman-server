@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UnauthorizedException } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import argon2 from 'argon2';
 import { LoginCommand } from '../../command/login.command';
-import { UserRepository } from 'src/infrastructure/repositories/user.repository';
+import { IUserRepository, USER_REPOSITORY } from 'src/domain/repositories';
 import { UserMapper } from 'src/application/mappers/user.mapper';
 
 export interface LoginResult {
@@ -21,7 +21,8 @@ export interface LoginResult {
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
   ) {}
 

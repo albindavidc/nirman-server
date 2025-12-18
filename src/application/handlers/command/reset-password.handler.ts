@@ -1,14 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ResetPasswordCommand } from '../../command/reset-password.command';
-import { UserRepository } from 'src/infrastructure/repositories/user.repository';
+import { IUserRepository, USER_REPOSITORY } from 'src/domain/repositories';
 import { ResetTokenStorageService } from 'src/infrastructure/services/reset-token-storage.service';
 
 @CommandHandler(ResetPasswordCommand)
 export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
     private readonly resetTokenStorageService: ResetTokenStorageService,
   ) {}
 

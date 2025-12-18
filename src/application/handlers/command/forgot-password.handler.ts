@@ -1,14 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { ForgotPasswordCommand } from '../../command/forgot-password.command';
-import { UserRepository } from 'src/infrastructure/repositories/user.repository';
+import { IUserRepository, USER_REPOSITORY } from 'src/domain/repositories';
 import { OtpStorageService } from 'src/infrastructure/services/otp-storage.service';
 import { EmailService } from 'src/infrastructure/services/email.service';
 
 @CommandHandler(ForgotPasswordCommand)
 export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
     private readonly otpStorageService: OtpStorageService,
     private readonly emailService: EmailService,
   ) {}

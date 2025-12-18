@@ -9,6 +9,7 @@ import { ForgotPasswordHandler } from 'src/application/handlers/command/forgot-p
 import { VerifyResetOtpHandler } from 'src/application/handlers/command/verify-reset-otp.handler';
 import { ResetPasswordHandler } from 'src/application/handlers/command/reset-password.handler';
 import { UserRepository } from 'src/infrastructure/repositories/user.repository';
+import { USER_REPOSITORY } from 'src/domain/repositories';
 import { OtpStorageService } from 'src/infrastructure/services/otp-storage.service';
 import { EmailService } from 'src/infrastructure/services/email.service';
 import { ResetTokenStorageService } from 'src/infrastructure/services/reset-token-storage.service';
@@ -36,7 +37,7 @@ const CommandHandlers = [
   controllers: [AuthController],
   providers: [
     ...CommandHandlers,
-    UserRepository,
+    { provide: USER_REPOSITORY, useClass: UserRepository },
     OtpStorageService,
     EmailService,
     ResetTokenStorageService,

@@ -7,6 +7,8 @@ import { VendorSignupModule } from './modules/vendor-signup.module';
 import { OtpModule } from './modules/otp.module';
 import { AuthModule } from './modules/auth.module';
 import { VendorManagementModule } from './modules/vendor-management.module';
+import { MemberManagementModule } from './modules/member-management.module';
+import { ProfileModule } from './modules/profile.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { VendorManagementModule } from './modules/vendor-management.module';
     OtpModule,
     AuthModule,
     VendorManagementModule,
+    MemberManagementModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

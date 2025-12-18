@@ -1,9 +1,13 @@
 import { CommandHandler, ICommandHandler, EventPublisher } from '@nestjs/cqrs';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { CreateVendorByAdminCommand } from '../../command/create-vendor-by-admin.command';
-import { UserRepository } from 'src/infrastructure/repositories/user.repository';
-import { VendorRepository } from 'src/infrastructure/repositories/vendor.repository';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+  IVendorRepository,
+  VENDOR_REPOSITORY,
+} from 'src/domain/repositories';
 import { User } from 'src/domain/entities/user.entity';
 import { Vendor } from 'src/domain/entities/vendor.entity';
 import { Role } from 'src/domain/enums/role.enum';
@@ -12,8 +16,10 @@ import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
 @CommandHandler(CreateVendorByAdminCommand)
 export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorByAdminCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly vendorRepository: VendorRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
+    @Inject(VENDOR_REPOSITORY)
+    private readonly vendorRepository: IVendorRepository,
     private readonly eventPublisher: EventPublisher,
   ) {}
 

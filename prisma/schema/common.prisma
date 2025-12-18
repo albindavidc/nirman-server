@@ -1,6 +1,6 @@
 enum UserRole {
   admin
-  professional
+  supervisor
   vendor
   worker
 }

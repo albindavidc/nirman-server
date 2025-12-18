@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VendorPersistence } from '../persistence/vendor.persistence';
+import { IVendorRepository } from 'src/domain/repositories';
 
 @Injectable()
-export class VendorRepository {
+export class VendorRepository implements IVendorRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Partial<VendorPersistence>): Promise<VendorPersistence> {
