@@ -13,6 +13,9 @@ import { GetMembersQuery } from 'src/modules/member/application/queries/get-memb
 import { AddMemberCommand } from 'src/modules/member/application/commands/add-member.command';
 import { EditMemberCommand } from 'src/modules/member/application/commands/edit-member.command';
 import { BlockMemberCommand } from 'src/modules/member/application/commands/block-member.command';
+import { CreateMemberDto } from '../application/dto/create-member.dto';
+import { UpdateMemberDto } from '../application/dto/update-member.dto';
+import { GetMembersQueryDto } from '../application/dto/get-members-query.dto';
 // import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard'; // Assuming we have this, or similar.
 // check auth module or similar for guards. For now, omit or check later.
 
@@ -24,19 +27,14 @@ export class MemberController {
   ) {}
 
   @Get()
-  async getMembers(
-    @Query('role') role?: string,
-    @Query('search') search?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-  ) {
+  async getMembers(@Query() query: GetMembersQueryDto) {
     return this.queryBus.execute(
-      new GetMembersQuery(role, search, page, limit),
+      new GetMembersQuery(query.role, query.search, query.page, query.limit),
     );
   }
 
   @Post()
-  async addMember(@Body() dto: any) {
+  async addMember(@Body() dto: CreateMemberDto) {
     return this.commandBus.execute(
       new AddMemberCommand(
         dto.firstName,
@@ -54,8 +52,9 @@ export class MemberController {
       ),
     );
   }
+
   @Put(':id')
-  async editMember(@Param('id') id: string, @Body() dto: any) {
+  async editMember(@Param('id') id: string, @Body() dto: UpdateMemberDto) {
     return this.commandBus.execute(
       new EditMemberCommand(
         id,
@@ -74,6 +73,7 @@ export class MemberController {
       ),
     );
   }
+
   @Put(':id/block')
   async blockMember(@Param('id') id: string) {
     return this.commandBus.execute(new BlockMemberCommand(id, true));

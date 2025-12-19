@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VendorPersistence } from './vendor.persistence';
-import { IVendorRepository } from 'src/modules/vendor/domain/repositories/IVendorRepository';
+import { IVendorRepository } from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
 import { BaseRepository } from 'src/shared/infrastructure/persistence/base.repository';
 
 @Injectable()

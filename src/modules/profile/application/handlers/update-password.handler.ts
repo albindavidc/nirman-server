@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject, NotFoundException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UpdatePasswordCommand } from '../commands/update-password.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 
 @CommandHandler(UpdatePasswordCommand)
 export class UpdatePasswordHandler implements ICommandHandler<UpdatePasswordCommand> {

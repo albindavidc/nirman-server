@@ -8,8 +8,8 @@ import { EditMemberHandler } from 'src/modules/member/application/handlers/edit-
 import { BlockMemberHandler } from 'src/modules/member/application/handlers/block-member.handler';
 import { UserRepository } from 'src/modules/user/infrastructure/persistence/user.repository';
 import { ProfessionalRepository } from 'src/modules/member/infrastructure/persistence/professional.repository';
-import { USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/IUserRepository';
-import { PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/IProfessionalRepository';
+import { USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/user-repository.interface';
+import { PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/professional-repository.interface';
 
 const QueryHandlers = [GetMembersHandler];
 const CommandHandlers = [

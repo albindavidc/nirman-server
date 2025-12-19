@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateProfileCommand } from '../commands/update-profile.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {

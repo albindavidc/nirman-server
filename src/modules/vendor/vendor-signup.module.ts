@@ -6,11 +6,11 @@ import { VendorRepository } from 'src/modules/vendor/infrastructure/persistence/
 import {
   IUserRepository,
   USER_REPOSITORY,
-} from 'src/modules/user/domain/repositories/IUserRepository';
+} from 'src/modules/user/domain/repositories/user-repository.interface';
 import {
   IVendorRepository,
   VENDOR_REPOSITORY,
-} from 'src/modules/vendor/domain/repositories/IVendorRepository';
+} from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
 import { VendorSignupController } from 'src/modules/vendor/presentation/vendor-signup.controller';
 import { CreateVendorUserHandler } from 'src/modules/vendor/application/handlers/create-vendor-user.handler';
 import { CreateVendorCompanyHandler } from 'src/modules/vendor/application/handlers/create-vendor-company.handler';

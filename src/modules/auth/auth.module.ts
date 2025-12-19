@@ -9,7 +9,7 @@ import { ForgotPasswordHandler } from 'src/modules/auth/application/handlers/for
 import { VerifyResetOtpHandler } from 'src/modules/auth/application/handlers/verify-reset-otp.handler';
 import { ResetPasswordHandler } from 'src/modules/auth/application/handlers/reset-password.handler';
 import { UserRepository } from 'src/modules/user/infrastructure/persistence/user.repository';
-import { USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 import { OtpStorageService } from 'src/modules/otp/infrastructure/services/otp-storage.service';
 import { EmailService } from 'src/shared/infrastructure/services/email.service';
 import { ResetTokenStorageService } from 'src/modules/auth/infrastructure/services/reset-token-storage.service';

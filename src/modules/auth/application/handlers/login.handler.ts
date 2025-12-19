@@ -3,7 +3,7 @@ import { Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import argon2 from 'argon2';
 import { LoginCommand } from '../commands/login.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 import { UserMapper } from 'src/modules/user/infrastructure/persistence/user.mapper';
 
 export interface LoginResult {

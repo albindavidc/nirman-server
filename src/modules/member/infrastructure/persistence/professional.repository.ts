@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Professional } from 'src/generated/client/client';
-import { IProfessionalRepository } from 'src/modules/member/domain/repositories/IProfessionalRepository';
+import { IProfessionalRepository } from 'src/modules/member/domain/repositories/professional-repository.interface';
 import { BaseRepository } from 'src/shared/infrastructure/persistence/base.repository';
 
 @Injectable()

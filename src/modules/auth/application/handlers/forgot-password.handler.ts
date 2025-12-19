@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { ForgotPasswordCommand } from '../commands/forgot-password.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 import { OtpStorageService } from 'src/modules/otp/infrastructure/services/otp-storage.service';
 import { EmailService } from 'src/shared/infrastructure/services/email.service';
 

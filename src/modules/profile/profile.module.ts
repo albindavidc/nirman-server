@@ -5,7 +5,7 @@ import { GetProfileHandler } from 'src/modules/profile/application/handlers/get-
 import { UpdateProfileHandler } from 'src/modules/profile/application/handlers/update-profile.handler';
 import { UpdatePasswordHandler } from 'src/modules/profile/application/handlers/update-password.handler';
 import { UserRepository } from 'src/modules/user/infrastructure/persistence/user.repository';
-import { USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 const QueryHandlers = [GetProfileHandler];

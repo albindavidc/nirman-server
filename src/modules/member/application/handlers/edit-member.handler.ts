@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { EditMemberCommand } from '../commands/edit-member.command';
-import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/IUserRepository';
-import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/IProfessionalRepository';
+import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/user-repository.interface';
+import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/professional-repository.interface';
 import { Role } from 'src/shared/domain/enums/role.enum';
 
 @CommandHandler(EditMemberCommand)

@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { GetMembersQuery } from '../queries/get-members.query';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
 
 @QueryHandler(GetMembersQuery)
 export class GetMembersHandler implements IQueryHandler<GetMembersQuery> {

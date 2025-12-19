@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { AddMemberCommand } from '../commands/add-member.command';
-import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/IUserRepository';
-import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/IProfessionalRepository';
+import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/user-repository.interface';
+import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/professional-repository.interface';
 import { User } from 'src/modules/user/domain/entities/user.entity'; // Correct entity path
 import { Role } from 'src/shared/domain/enums/role.enum';
 

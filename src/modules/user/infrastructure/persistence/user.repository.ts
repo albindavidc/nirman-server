@@ -2,7 +2,7 @@ import { Prisma } from 'src/generated/client/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserPersistence } from './user.persistence';
 import { Injectable } from '@nestjs/common';
-import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository } from 'src/modules/user/domain/repositories/user-repository.interface';
 import { BaseRepository } from 'src/shared/infrastructure/persistence/base.repository';
 
 @Injectable()
