@@ -1,0 +1,89 @@
+import { Vendor } from 'src/modules/vendor/domain/entities/vendor.entity';
+import { CreateVendorCompanyDto } from 'src/modules/vendor/application/dto/create-vendor-company.dto';
+import { VendorStatus } from 'src/modules/vendor/domain/enums/vendor-status.enum';
+import { VendorPersistence } from 'src/modules/vendor/infrastructure/persistence/vendor.persistence';
+
+export class VendorMapper {
+  static dtoToEntity(dto: CreateVendorCompanyDto): Vendor {
+    return new Vendor({
+      userId: dto.userId,
+      companyName: dto.companyName,
+      registrationNumber: dto.registrationNumber,
+      taxNumber: dto.taxNumber,
+      yearsInBusiness: dto.yearsInBusiness,
+      addressStreet: dto.addressStreet,
+      addressCity: dto.addressCity,
+      addressState: dto.addressState,
+      addressZipCode: dto.addressZipCode,
+      productsService: dto.productsServices,
+      websiteUrl: dto.websiteUrl,
+      contactEmail: dto.contactEmail,
+      contactPhone: dto.contactPhone,
+      vendorStatus: dto.vendorStatus as VendorStatus,
+    });
+  }
+
+  static entityToDto(entity: Vendor): CreateVendorCompanyDto {
+    return {
+      userId: entity.userId,
+      companyName: entity.companyName,
+      registrationNumber: entity.registrationNumber,
+      taxNumber: entity.taxNumber ?? '',
+      yearsInBusiness: entity.yearsInBusiness ?? 0,
+      addressStreet: entity.addressStreet ?? '',
+      addressCity: entity.addressCity ?? '',
+      addressState: entity.addressState ?? '',
+      addressZipCode: entity.addressZipCode ?? '',
+      productsServices: entity.productsService ?? [],
+      websiteUrl: entity.websiteUrl ?? '',
+      contactEmail: entity.contactEmail ?? '',
+      contactPhone: entity.contactPhone ?? '',
+      vendorStatus: entity.vendorStatus,
+    };
+  }
+
+  static entityToPersistence(
+    entity: Partial<Vendor>,
+  ): Partial<VendorPersistence> {
+    return {
+      id: entity.id,
+      user_id: entity.userId,
+      created_at: entity.createdAt,
+      updated_at: entity.updatedAt,
+      company_name: entity.companyName,
+      registration_number: entity.registrationNumber,
+      tax_number: entity.taxNumber,
+      years_in_business: entity.yearsInBusiness,
+      address_street: entity.addressStreet,
+      address_city: entity.addressCity,
+      address_state: entity.addressState,
+      address_zip_code: entity.addressZipCode,
+      products_services: entity.productsService,
+      website_url: entity.websiteUrl,
+      contact_email: entity.contactEmail,
+      contact_phone: entity.contactPhone,
+      vendor_status: entity.vendorStatus,
+    };
+  }
+
+  static persistenceToEntity(persistence: VendorPersistence): Vendor {
+    return new Vendor({
+      id: persistence.id,
+      createdAt: persistence.created_at,
+      updatedAt: persistence.updated_at,
+      companyName: persistence.company_name,
+      registrationNumber: persistence.registration_number,
+      taxNumber: persistence.tax_number ?? undefined,
+      yearsInBusiness: persistence.years_in_business ?? 0,
+      addressStreet: persistence.address_street ?? '',
+      addressCity: persistence.address_city ?? '',
+      addressState: persistence.address_state ?? '',
+      addressZipCode: persistence.address_zip_code ?? '',
+      productsService: persistence.products_services ?? [],
+      websiteUrl: persistence.website_url ?? '',
+      contactEmail: persistence.contact_email ?? '',
+      contactPhone: persistence.contact_phone ?? '',
+      vendorStatus: persistence.vendor_status as VendorStatus,
+    });
+  }
+}
