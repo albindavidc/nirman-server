@@ -2,12 +2,24 @@ import { CommandHandler, ICommandHandler, EventPublisher } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { CreateVendorByAdminCommand } from '../commands/create-vendor-by-admin.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
-import { IVendorRepository, VENDOR_REPOSITORY } from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
-import { User } from 'src/modules/user/domain/entities/user.entity';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IVendorRepository,
+  VENDOR_REPOSITORY,
+} from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
 import { Vendor } from 'src/modules/vendor/domain/entities/vendor.entity';
-import { Role } from 'src/shared/domain/enums/role.enum';
 import { VendorStatus } from 'src/modules/vendor/domain/enums/vendor-status.enum';
+import { UserPersistence } from 'src/modules/user/infrastructure/persistence/user.persistence';
+
+import { VendorPersistence } from 'src/modules/vendor/infrastructure/persistence/vendor.persistence';
+
+interface CreateVendorByAdminResult {
+  user: UserPersistence;
+  vendor: VendorPersistence;
+}
 
 @CommandHandler(CreateVendorByAdminCommand)
 export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorByAdminCommand> {
@@ -19,7 +31,9 @@ export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorB
     private readonly eventPublisher: EventPublisher,
   ) {}
 
-  async execute(command: CreateVendorByAdminCommand): Promise<any> {
+  async execute(
+    command: CreateVendorByAdminCommand,
+  ): Promise<CreateVendorByAdminResult> {
     const { dto } = command;
 
     // 1. Check if user exists
@@ -33,17 +47,7 @@ export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorB
     const defaultPassword = 'Vendor@123';
     const passwordHash = await argon2.hash(defaultPassword);
 
-    const user = new User({
-      email: dto.email,
-      passwordHash: passwordHash,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      role: Role.VENDOR,
-      isEmailVerified: true, // Auto-verify since admin created
-      phoneNumber: dto.phone,
-    });
-
-    // We need to persist the user.
+    // Create and persist the user
     // The repository method create takes Partial<UserPersistence>.
 
     const createdUser = await this.userRepository.create({

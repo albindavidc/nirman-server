@@ -1,16 +1,25 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { GetMembersQuery } from '../queries/get-members.query';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+  UserPersistence,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
+
+import { PaginatedMembersResponseDto } from '../dto/paginated-members-response.dto';
 
 @QueryHandler(GetMembersQuery)
-export class GetMembersHandler implements IQueryHandler<GetMembersQuery> {
+export class GetMembersHandler implements IQueryHandler<
+  GetMembersQuery,
+  PaginatedMembersResponseDto
+> {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(query: GetMembersQuery): Promise<any> {
+  async execute(query: GetMembersQuery): Promise<PaginatedMembersResponseDto> {
     // Fetch all users from repository
     const users = await this.userRepository.findAll();
 
@@ -39,7 +48,7 @@ export class GetMembersHandler implements IQueryHandler<GetMembersQuery> {
     const paginatedUsers = filteredUsers.slice(start, end);
 
     // Map users to include professional fields for frontend
-    const mappedData = paginatedUsers.map((user: any) => ({
+    const mappedData = paginatedUsers.map((user: UserPersistence) => ({
       id: user.id,
       firstName: user.first_name,
       lastName: user.last_name,

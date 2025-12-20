@@ -2,7 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ResetPasswordCommand } from '../commands/reset-password.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
 import { ResetTokenStorageService } from 'src/modules/auth/infrastructure/services/reset-token-storage.service';
 
 @CommandHandler(ResetPasswordCommand)

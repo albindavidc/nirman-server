@@ -19,7 +19,7 @@ export class MemberMapper {
       experienceYears: professional?.experience_years ?? undefined,
       skills: professional?.skills
         ? Array.isArray(professional.skills)
-          ? (professional.skills as string[])
+          ? professional.skills
           : []
         : undefined, // Ensure array
       addressStreet: professional?.address_street ?? undefined,

@@ -5,7 +5,6 @@ import {
   IsPhoneNumber,
   IsStrongPassword,
   MinLength,
-  minLength,
 } from 'class-validator';
 
 export class CreateVendorUserDto {
@@ -34,8 +33,11 @@ export class CreateVendorUserDto {
   @IsNotEmpty()
   confirmPassword: string;
 
-  @Transform(({ value, obj }) => value === obj.password)
+  @Transform(
+    ({ value, obj }: { value: string; obj: CreateVendorUserDto }) =>
+      value === obj.password,
+  )
   get isPasswordMatch(): boolean {
-    return true
+    return true;
   }
 }

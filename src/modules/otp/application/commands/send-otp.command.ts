@@ -1,5 +1,11 @@
+import { Command } from '@nestjs/cqrs';
 import { SendOtpDto } from '../dto/otp.dto';
 
-export class SendOtpCommand {
-  constructor(public readonly dto: SendOtpDto) {}
+export class SendOtpCommand extends Command<{
+  success: boolean;
+  message: string;
+}> {
+  constructor(public readonly dto: SendOtpDto) {
+    super();
+  }
 }

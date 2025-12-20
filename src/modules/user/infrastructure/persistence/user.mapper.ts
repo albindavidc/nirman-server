@@ -23,8 +23,24 @@ export class UserMapper {
     };
   }
 
-  static entityToDto(entity: User): any {
+  static entityToDto(entity: User): {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    isEmailVerified: boolean;
+    isPhoneVerified: boolean;
+    dateOfBirth?: Date;
+    profilePhotoUrl?: string;
+    role: Role;
+    userStatus: UserStatus;
+    vendor?: Vendor;
+  } {
     const { passwordHash, ...dto } = entity;
+    void passwordHash; // Intentionally excluded from response
     return dto;
   }
 

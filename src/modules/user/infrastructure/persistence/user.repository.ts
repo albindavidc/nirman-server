@@ -25,7 +25,7 @@ export class UserRepository
   async findByEmail(email: string): Promise<UserPersistence | null> {
     return this.prisma.user.findUnique({
       where: { email },
-      include: { vendor: true },
+      include: { vendor: true, professional: true },
     });
   }
 
@@ -34,7 +34,7 @@ export class UserRepository
   ): Promise<UserPersistence | null> {
     return this.prisma.user.findUnique({
       where: { phone_number: phoneNumber },
-      include: { vendor: true },
+      include: { vendor: true, professional: true },
     });
   }
 
@@ -55,7 +55,10 @@ export class UserRepository
 
   // Mutation methods
   async create(data: Partial<UserPersistence>): Promise<UserPersistence> {
-    const { id, vendor, professional, ...createData } = data as any;
+    const excludeKeys = ['id', 'vendor'];
+    const createData = Object.fromEntries(
+      Object.entries(data).filter(([key]) => !excludeKeys.includes(key)),
+    ) as unknown as Prisma.UserCreateInput;
 
     const created = await this.prisma.user.create({
       data: createData,
@@ -68,8 +71,10 @@ export class UserRepository
     id: string,
     data: Partial<UserPersistence>,
   ): Promise<UserPersistence> {
-    const { vendor, professional, ...updateData } = data as any;
-    delete updateData.id;
+    const excludeKeys = ['id', 'vendor', 'professional'];
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(([key]) => !excludeKeys.includes(key)),
+    ) as Prisma.UserUpdateInput;
 
     return this.prisma.user.update({
       where: { id },

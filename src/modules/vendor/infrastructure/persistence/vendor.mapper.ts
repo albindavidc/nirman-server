@@ -2,6 +2,7 @@ import { Vendor } from 'src/modules/vendor/domain/entities/vendor.entity';
 import { CreateVendorCompanyDto } from 'src/modules/vendor/application/dto/create-vendor-company.dto';
 import { VendorStatus } from 'src/modules/vendor/domain/enums/vendor-status.enum';
 import { VendorPersistence } from 'src/modules/vendor/infrastructure/persistence/vendor.persistence';
+import { VendorResponseDto } from 'src/modules/vendor/application/dto/vendor-response.dto';
 
 export class VendorMapper {
   static dtoToEntity(dto: CreateVendorCompanyDto): Vendor {
@@ -85,5 +86,34 @@ export class VendorMapper {
       contactPhone: persistence.contact_phone ?? '',
       vendorStatus: persistence.vendor_status as VendorStatus,
     });
+  }
+
+  static toResponse(vendor: VendorPersistence): VendorResponseDto {
+    return {
+      id: vendor.id,
+      userId: vendor.user_id,
+      companyName: vendor.company_name,
+      registrationNumber: vendor.registration_number,
+      taxNumber: vendor.tax_number ?? '',
+      yearsInBusiness: vendor.years_in_business ?? 0,
+      addressStreet: vendor.address_street ?? '',
+      addressCity: vendor.address_city ?? '',
+      addressState: vendor.address_state ?? '',
+      addressZipCode: vendor.address_zip_code ?? '',
+      productsServices: vendor.products_services,
+      websiteUrl: vendor.website_url ?? '',
+      contactEmail: vendor.contact_email ?? '',
+      contactPhone: vendor.contact_phone ?? '',
+      vendorStatus: vendor.vendor_status,
+      createdAt: vendor.created_at,
+      updatedAt: vendor.updated_at,
+      user: vendor.user
+        ? {
+            firstName: vendor.user.first_name,
+            lastName: vendor.user.last_name,
+            email: vendor.user.email,
+          }
+        : null,
+    };
   }
 }

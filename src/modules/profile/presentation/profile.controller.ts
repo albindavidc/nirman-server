@@ -6,6 +6,8 @@ import { UpdateProfileCommand } from 'src/modules/profile/application/commands/u
 import { UpdatePasswordCommand } from 'src/modules/profile/application/commands/update-password.command';
 import { UpdateProfileDto } from '../application/dto/update-profile.dto';
 import { UpdatePasswordDto } from '../application/dto/update-password.dto';
+import { ProfileResponseDto } from '../application/dto/profile.response.dto';
+import { AuthenticatedRequest } from 'src/modules/auth/application/interfaces/authenticated-request.interface';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -16,13 +18,20 @@ export class ProfileController {
   ) {}
 
   @Get()
-  async getProfile(@Request() req: any) {
-    return this.queryBus.execute(new GetProfileQuery(req.user.userId));
+  async getProfile(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<ProfileResponseDto> {
+    return this.queryBus.execute<ProfileResponseDto>(
+      new GetProfileQuery(req.user.userId),
+    );
   }
 
   @Put()
-  async updateProfile(@Request() req: any, @Body() dto: UpdateProfileDto) {
-    return this.commandBus.execute(
+  async updateProfile(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<ProfileResponseDto> {
+    return this.commandBus.execute<ProfileResponseDto>(
       new UpdateProfileCommand(
         req.user.userId,
         dto.firstName,
@@ -34,8 +43,11 @@ export class ProfileController {
   }
 
   @Put('password')
-  async updatePassword(@Request() req: any, @Body() dto: UpdatePasswordDto) {
-    return this.commandBus.execute(
+  async updatePassword(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: UpdatePasswordDto,
+  ): Promise<{ message: string }> {
+    return this.commandBus.execute<{ message: string }>(
       new UpdatePasswordCommand(
         req.user.userId,
         dto.currentPassword,

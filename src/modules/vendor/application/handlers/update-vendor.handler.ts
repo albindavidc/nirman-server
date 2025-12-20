@@ -1,7 +1,24 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
+import { VendorStatus } from 'src/modules/vendor/domain/enums/vendor-status.enum';
 import { UpdateVendorCommand } from '../commands/update-vendor.command';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { VendorMapper } from '../../infrastructure/persistence/vendor.mapper';
+import { VendorPersistence } from '../../infrastructure/persistence/vendor.persistence';
+
+interface VendorUpdateData {
+  company_name?: string;
+  registration_number?: string;
+  tax_number?: string;
+  address_street?: string;
+  address_city?: string;
+  address_state?: string;
+  address_zip_code?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  website_url?: string;
+  vendor_status?: VendorStatus;
+}
 
 @CommandHandler(UpdateVendorCommand)
 export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand> {
@@ -20,7 +37,7 @@ export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand>
     }
 
     // Build update data
-    const updateData: any = {};
+    const updateData: VendorUpdateData = {};
 
     if (data.companyName) updateData.company_name = data.companyName;
     if (data.registrationNumber)
@@ -39,7 +56,8 @@ export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand>
     if (data.contactEmail !== undefined)
       updateData.contact_email = data.contactEmail;
     if (data.websiteUrl !== undefined) updateData.website_url = data.websiteUrl;
-    if (data.vendorStatus) updateData.vendor_status = data.vendorStatus;
+    if (data.vendorStatus)
+      updateData.vendor_status = data.vendorStatus as VendorStatus;
 
     const updated = await this.prisma.vendor.update({
       where: { id: vendorId },
@@ -55,35 +73,6 @@ export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand>
       },
     });
 
-    return this.mapToDto(updated);
-  }
-
-  private mapToDto(vendor: any) {
-    return {
-      id: vendor.id,
-      userId: vendor.user_id,
-      companyName: vendor.company_name,
-      registrationNumber: vendor.registration_number,
-      taxNumber: vendor.tax_number,
-      yearsInBusiness: vendor.years_in_business,
-      addressStreet: vendor.address_street,
-      addressCity: vendor.address_city,
-      addressState: vendor.address_state,
-      addressZipCode: vendor.address_zip_code,
-      productsServices: vendor.products_services,
-      websiteUrl: vendor.website_url,
-      contactEmail: vendor.contact_email,
-      contactPhone: vendor.contact_phone,
-      vendorStatus: vendor.vendor_status,
-      createdAt: vendor.created_at,
-      updatedAt: vendor.updated_at,
-      user: vendor.user
-        ? {
-            firstName: vendor.user.first_name,
-            lastName: vendor.user.last_name,
-            email: vendor.user.email,
-          }
-        : null,
-    };
+    return VendorMapper.toResponse(updated as unknown as VendorPersistence);
   }
 }

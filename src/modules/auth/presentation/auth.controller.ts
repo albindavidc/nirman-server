@@ -14,6 +14,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import { JwtAuthGuard } from 'src/modules/auth/infrastructure/jwt-auth.guard';
+import { JwtPayload } from 'src/modules/auth/infrastructure/jwt.strategy';
 import { LoginDto } from 'src/modules/auth/application/dto/login.dto';
 import { ForgotPasswordDto } from 'src/modules/auth/application/dto/forgot-password.dto';
 import { VerifyResetOtpDto } from 'src/modules/auth/application/dto/verify-reset-otp.dto';
@@ -22,7 +23,6 @@ import { LoginCommand } from 'src/modules/auth/application/commands/login.comman
 import { ForgotPasswordCommand } from 'src/modules/auth/application/commands/forgot-password.command';
 import { VerifyResetOtpCommand } from 'src/modules/auth/application/commands/verify-reset-otp.command';
 import { ResetPasswordCommand } from 'src/modules/auth/application/commands/reset-password.command';
-import { LoginResult } from 'src/modules/auth/application/handlers/login.handler';
 
 @Controller('auth')
 export class AuthController {
@@ -37,9 +37,9 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result: LoginResult = await this.commandBus.execute(
+    const result = (await this.commandBus.execute(
       new LoginCommand(dto.email, dto.password),
-    );
+    )) as { accessToken: string; refreshToken: string; user: unknown };
 
     // Set HTTP-only cookies
     const isProduction = process.env.NODE_ENV === 'production';
@@ -67,18 +67,16 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const refreshToken = req.cookies?.refresh_token;
+  refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const refreshToken = (req.cookies as Record<string, string | undefined>)
+      ?.refresh_token;
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
 
     try {
-      const payload = this.jwtService.verify(refreshToken, {
+      const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
         secret: process.env.REFRESH_TOKEN_SECRET,
       });
 
@@ -103,7 +101,7 @@ export class AuthController {
       });
 
       return { message: 'Token refreshed successfully' };
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -111,9 +109,17 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async getMe(@Req() req: Request) {
+  getMe(@Req() req: Request) {
     // User is attached by JwtStrategy after token validation
-    const user = (req as any).user;
+    const user = (
+      req as Request & {
+        user: {
+          userId: string;
+          email: string;
+          role: string;
+        };
+      }
+    ).user;
     return {
       id: user.userId,
       email: user.email,
@@ -123,7 +129,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Res({ passthrough: true }) res: Response) {
+  logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token', { path: '/auth/refresh' });
     return { message: 'Logged out successfully' };
@@ -131,13 +137,13 @@ export class AuthController {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.commandBus.execute(new ForgotPasswordCommand(dto.email));
   }
 
   @Post('verify-reset-otp')
   @HttpCode(HttpStatus.OK)
-  async verifyResetOtp(@Body() dto: VerifyResetOtpDto) {
+  verifyResetOtp(@Body() dto: VerifyResetOtpDto) {
     return this.commandBus.execute(
       new VerifyResetOtpCommand(dto.email, dto.otp),
     );
@@ -145,7 +151,7 @@ export class AuthController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() dto: ResetPasswordDto) {
+  resetPassword(@Body() dto: ResetPasswordDto) {
     return this.commandBus.execute(
       new ResetPasswordCommand(dto.email, dto.resetToken, dto.newPassword),
     );

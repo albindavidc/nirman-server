@@ -15,7 +15,8 @@ import { CreateVendorCompanyCommand } from 'src/modules/vendor/application/comma
 export class VendorSignupController {
   constructor(private commandBus: CommandBus) {}
 
-  @Post('step1') // User info
+  //User Info
+  @Post('step1')
   @UsePipes(new ValidationPipe({ transform: true }))
   async step1(@Body() dto: CreateVendorUserDto) {
     const userId = await this.commandBus.execute(
@@ -26,16 +27,15 @@ export class VendorSignupController {
       userId,
       nextStep: 'company-details',
     };
-    // Frontend can store userId in session/localStorage for step2
   }
 
-  @Post('step2') // Company details
+  //Company Details
+  @Post('step2')
   @UsePipes(new ValidationPipe({ transform: true }))
   async step2(@Body() dto: CreateVendorCompanyDto) {
     const vendorId = await this.commandBus.execute(
       new CreateVendorCompanyCommand(dto, dto.userId),
     );
     return { message: 'Vendor signup completed', vendorId };
-    // Here, generate JWT or complete flow
   }
 }

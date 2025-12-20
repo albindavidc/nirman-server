@@ -1,7 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateProfileCommand } from '../commands/update-profile.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
+import { ProfileResponseDto } from '../dto/profile.response.dto';
+import { Role } from 'src/shared/domain/enums/role.enum';
+import { UserStatus } from 'src/shared/domain/enums/user-status.enum';
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {
@@ -10,7 +16,7 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(command: UpdateProfileCommand): Promise<any> {
+  async execute(command: UpdateProfileCommand): Promise<ProfileResponseDto> {
     const { userId, firstName, lastName, phoneNumber, profilePhotoUrl } =
       command;
 
@@ -20,7 +26,7 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
     }
 
     // Build update data object with only provided fields
-    const updateData: any = { id: userId };
+    const updateData: Record<string, string> = { id: userId };
     if (firstName !== undefined) updateData.first_name = firstName;
     if (lastName !== undefined) updateData.last_name = lastName;
     if (phoneNumber !== undefined) updateData.phone_number = phoneNumber;
@@ -29,16 +35,15 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
 
     const updatedUser = await this.userRepository.update(userId, updateData);
 
-    // Map to frontend format
     return {
       id: updatedUser.id,
       firstName: updatedUser.first_name,
       lastName: updatedUser.last_name,
       email: updatedUser.email,
-      phoneNumber: updatedUser.phone_number,
-      profilePhotoUrl: updatedUser.profile_photo_url,
-      role: updatedUser.role,
-      userStatus: updatedUser.user_status,
+      phoneNumber: updatedUser.phone_number ?? undefined,
+      profilePhotoUrl: updatedUser.profile_photo_url ?? undefined,
+      role: updatedUser.role as Role,
+      userStatus: updatedUser.user_status as UserStatus,
       isEmailVerified: updatedUser.is_email_verified,
       isPhoneVerified: updatedUser.is_phone_verified,
       createdAt: updatedUser.created_at,

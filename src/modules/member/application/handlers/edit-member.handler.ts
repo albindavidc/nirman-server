@@ -1,9 +1,16 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { EditMemberCommand } from '../commands/edit-member.command';
-import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/user-repository.interface';
-import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/professional-repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IProfessionalRepository,
+  PROFESSIONAL_REPOSITORY,
+} from 'src/modules/member/domain/repositories/professional-repository.interface';
 import { Role } from 'src/shared/domain/enums/role.enum';
+import { UserPersistence } from 'src/modules/user/domain/repositories/user-repository.interface';
 
 @CommandHandler(EditMemberCommand)
 export class EditMemberHandler implements ICommandHandler<EditMemberCommand> {
@@ -14,8 +21,9 @@ export class EditMemberHandler implements ICommandHandler<EditMemberCommand> {
     private readonly professionalRepository: IProfessionalRepository,
   ) {}
 
-  async execute(command: EditMemberCommand): Promise<any> {
-    const { id, email, firstName, lastName, phone, role } = command;
+  async execute(command: EditMemberCommand): Promise<UserPersistence> {
+    const { id } = command;
+    const { email, firstName, lastName, phone, role } = command.dto;
 
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
@@ -29,7 +37,7 @@ export class EditMemberHandler implements ICommandHandler<EditMemberCommand> {
       last_name: lastName,
       phone_number: phone,
       // role updating requires caution, skipping for now as per plan focus
-    } as any);
+    });
 
     // Update Professional Details if role is Supervisor or Worker
     if (role === Role.SUPERVISOR || role === Role.WORKER) {
@@ -37,13 +45,13 @@ export class EditMemberHandler implements ICommandHandler<EditMemberCommand> {
         await this.professionalRepository.findByUserId(id);
 
       const professionalData = {
-        professional_title: command.professionalTitle,
-        experience_years: command.experienceYears,
-        skills: command.skills,
-        address_street: command.addressStreet,
-        address_city: command.addressCity,
-        address_state: command.addressState,
-        address_zip_code: command.addressZipCode,
+        professional_title: command.dto.professionalTitle,
+        experience_years: command.dto.experienceYears,
+        skills: command.dto.skills,
+        address_street: command.dto.addressStreet,
+        address_city: command.dto.addressCity,
+        address_state: command.dto.addressState,
+        address_zip_code: command.dto.addressZipCode,
       };
 
       if (existingProfessional) {
@@ -54,14 +62,14 @@ export class EditMemberHandler implements ICommandHandler<EditMemberCommand> {
           user_id: id,
           ...professionalData,
           professional_title:
-            command.professionalTitle ||
+            command.dto.professionalTitle ||
             (role === Role.WORKER ? 'Worker' : 'Supervisor'),
-          experience_years: command.experienceYears || 0,
-          skills: command.skills || [],
-          address_street: command.addressStreet || '',
-          address_city: command.addressCity || '',
-          address_state: command.addressState || '',
-          address_zip_code: command.addressZipCode || '',
+          experience_years: command.dto.experienceYears || 0,
+          skills: command.dto.skills || [],
+          address_street: command.dto.addressStreet || '',
+          address_city: command.dto.addressCity || '',
+          address_state: command.dto.addressState || '',
+          address_zip_code: command.dto.addressZipCode || '',
         });
       }
     }

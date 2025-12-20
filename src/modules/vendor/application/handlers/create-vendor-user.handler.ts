@@ -2,7 +2,10 @@
 
 import { CreateVendorUserCommand } from 'src/modules/vendor/application/commands/create-vendor-user.command';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
 import { BadRequestException, ConflictException, Inject } from '@nestjs/common';
 import argon2 from 'argon2';
 import { UserMapper } from 'src/modules/user/infrastructure/persistence/user.mapper';
@@ -16,7 +19,7 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
     private readonly eventPublisher: EventPublisher,
   ) {}
 
-  async execute(command: CreateVendorUserCommand): Promise<String> {
+  async execute(command: CreateVendorUserCommand): Promise<string> {
     const { dto } = command;
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException('Passwords do not match');

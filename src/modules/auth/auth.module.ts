@@ -4,9 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './presentation/auth.controller';
-import { LoginHandler } from 'src/modules/auth/application/handlers/login.handler';
 import { ForgotPasswordHandler } from 'src/modules/auth/application/handlers/forgot-password.handler';
-import { VerifyResetOtpHandler } from 'src/modules/auth/application/handlers/verify-reset-otp.handler';
 import { ResetPasswordHandler } from 'src/modules/auth/application/handlers/reset-password.handler';
 import { UserRepository } from 'src/modules/user/infrastructure/persistence/user.repository';
 import { USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
@@ -16,6 +14,8 @@ import { ResetTokenStorageService } from 'src/modules/auth/infrastructure/servic
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtStrategy } from 'src/modules/auth/infrastructure/jwt.strategy';
 import { JwtAuthGuard } from 'src/modules/auth/infrastructure/jwt-auth.guard';
+import { LoginHandler } from './application/handlers/login.handler';
+import { VerifyResetOtpHandler } from './application/handlers/verify-reset-otp.handler';
 
 const CommandHandlers = [
   LoginHandler,

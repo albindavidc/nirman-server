@@ -5,7 +5,9 @@ import { VendorManagementController } from 'src/modules/vendor/presentation/vend
 import { GetVendorsHandler } from 'src/modules/vendor/application/handlers/get-vendors.handler';
 import { UpdateVendorHandler } from 'src/modules/vendor/application/handlers/update-vendor.handler';
 
-const QueryHandlers = [GetVendorsHandler];
+import { GetVendorByIdHandler } from 'src/modules/vendor/application/handlers/get-vendor-by-id.handler';
+
+const QueryHandlers = [GetVendorsHandler, GetVendorByIdHandler];
 const CommandHandlers = [UpdateVendorHandler];
 
 @Module({

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BadRequestException } from '@nestjs/common';
 import { VerifyResetOtpCommand } from '../commands/verify-reset-otp.command';
 import { OtpStorageService } from 'src/modules/otp/infrastructure/services/otp-storage.service';
 import { ResetTokenStorageService } from 'src/modules/auth/infrastructure/services/reset-token-storage.service';
+import { BadRequestException } from '@nestjs/common';
 import { VerifyResetOtpResponseDto } from '../dto/verify-reset-otp.dto';
 
 @CommandHandler(VerifyResetOtpCommand)
@@ -12,28 +12,22 @@ export class VerifyResetOtpHandler implements ICommandHandler<VerifyResetOtpComm
     private readonly resetTokenStorageService: ResetTokenStorageService,
   ) {}
 
-  async execute(
-    command: VerifyResetOtpCommand,
-  ): Promise<VerifyResetOtpResponseDto> {
+  execute(command: VerifyResetOtpCommand): Promise<VerifyResetOtpResponseDto> {
     const { email, otp } = command;
 
-    // Validate OTP
     const validation = this.otpStorageService.validateOtp(email, otp);
 
     if (!validation.valid) {
       throw new BadRequestException(validation.message);
     }
 
-    // Generate reset token for password change
+    // OTP is valid, generate a password reset token
     const resetToken = this.resetTokenStorageService.generateResetToken();
-
-    // Store reset token
     this.resetTokenStorageService.storeResetToken(email, resetToken);
 
-    return {
+    return Promise.resolve({
       resetToken,
-      message:
-        'OTP verified successfully. Use the reset token to set your new password.',
-    };
+      message: 'OTP verified successfully. You can now reset your password.',
+    });
   }
 }

@@ -44,7 +44,7 @@ export class OtpService {
       });
 
       this.logger.log(`OTP sent to ${email}: ${otp}`);
-      console.log(`OTP sent to ${email}: ${otp}`);  
+      console.log(`OTP sent to ${email}: ${otp}`);
 
       // Send email
       await this.transporter.sendMail({
@@ -84,7 +84,6 @@ export class OtpService {
       return { success: false, message: 'Failed to send OTP' };
     }
   }
-  
 
   verifyOtp(email: string, otp: string): { valid: boolean; message: string } {
     const record = this.otpStore.get(email.toLowerCase());

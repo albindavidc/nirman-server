@@ -4,7 +4,10 @@ import { BadRequestException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { CreateVendorCompanyCommand } from 'src/modules/vendor/application/commands/create-vendor-company.command';
 import { VendorMapper } from 'src/modules/vendor/infrastructure/persistence/vendor.mapper';
-import { IVendorRepository, VENDOR_REPOSITORY } from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
+import {
+  IVendorRepository,
+  VENDOR_REPOSITORY,
+} from 'src/modules/vendor/domain/repositories/vendor-repository.interface';
 
 @CommandHandler(CreateVendorCompanyCommand)
 export class CreateVendorCompanyHandler implements ICommandHandler<CreateVendorCompanyCommand> {
@@ -31,6 +34,6 @@ export class CreateVendorCompanyHandler implements ICommandHandler<CreateVendorC
     vendorModel.apply('Vendor Created');
     vendorModel.commit();
 
-    return vendorResult.id!;
+    return vendorResult.id;
   }
 }

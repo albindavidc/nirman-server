@@ -1,4 +1,5 @@
 import { UserPersistence } from 'src/modules/user/infrastructure/persistence/user.persistence';
+export type { UserPersistence };
 
 export interface IUserRepository {
   // Query methods
@@ -19,4 +20,4 @@ export interface IUserRepository {
 /**
  * Injection token for the User repository.
  */
-export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
+export const USER_REPOSITORY: unique symbol = Symbol('USER_REPOSITORY');

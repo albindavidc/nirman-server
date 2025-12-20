@@ -1,10 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import argon2 from 'argon2';
+import * as bcrypt from 'bcrypt';
 import { LoginCommand } from '../commands/login.command';
-import { IUserRepository, USER_REPOSITORY } from 'src/modules/user/domain/repositories/user-repository.interface';
-import { UserMapper } from 'src/modules/user/infrastructure/persistence/user.mapper';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
 
 export interface LoginResult {
   accessToken: string;
@@ -12,8 +14,6 @@ export interface LoginResult {
   user: {
     id: string;
     email: string;
-    firstName: string;
-    lastName: string;
     role: string;
   };
 }
@@ -29,33 +29,18 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   async execute(command: LoginCommand): Promise<LoginResult> {
     const { email, password } = command;
 
-    // Find user by email
-    const userPersistence = await this.userRepository.findByEmail(
-      email.toLowerCase(),
-    );
+    const user = await this.userRepository.findByEmail(email.toLowerCase());
 
-    if (!userPersistence) {
-      throw new UnauthorizedException('Invalid email or password');
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Convert to entity
-    const user = UserMapper.persistenceToEntity(userPersistence);
-
-    // Verify password using argon2 (matching signup hashing)
-    const isPasswordValid = await argon2.verify(user.passwordHash, password);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Check if user is active
-    if (user.userStatus !== 'active') {
-      throw new UnauthorizedException(
-        'Your account is not active. Please contact support.',
-      );
-    }
-
-    // Generate JWT tokens
     const payload = {
       sub: user.id,
       email: user.email,
@@ -63,12 +48,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.ACCESS_TOKEN_SECRET,
+      secret: process.env.ACCESS_TOKEN_SECRET || 'default-access-secret',
       expiresIn: '1h',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.REFRESH_TOKEN_SECRET,
+      secret: process.env.REFRESH_TOKEN_SECRET || 'default-refresh-secret',
       expiresIn: '30d',
     });
 
@@ -78,8 +63,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       user: {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
         role: user.role,
       },
     };

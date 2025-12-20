@@ -1,11 +1,24 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { Professional } from 'src/generated/client/client';
+import {
+  BadRequestException,
+  Inject,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { AddMemberCommand } from '../commands/add-member.command';
-import { IUserRepository, USER_REPOSITORY,  } from 'src/modules/user/domain/repositories/user-repository.interface';
-import { IProfessionalRepository, PROFESSIONAL_REPOSITORY } from 'src/modules/member/domain/repositories/professional-repository.interface';
-import { User } from 'src/modules/user/domain/entities/user.entity'; // Correct entity path
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from 'src/modules/user/domain/repositories/user-repository.interface';
+import {
+  IProfessionalRepository,
+  PROFESSIONAL_REPOSITORY,
+} from 'src/modules/member/domain/repositories/professional-repository.interface';
 import { Role } from 'src/shared/domain/enums/role.enum';
+import { MemberResponseDto } from '../dto/member.response.dto';
+import { UserMapper } from 'src/modules/user/infrastructure/persistence/user.mapper';
+import { MemberMapper } from '../mappers/member.mapper';
 
 @CommandHandler(AddMemberCommand)
 export class AddMemberHandler implements ICommandHandler<AddMemberCommand> {
@@ -16,8 +29,8 @@ export class AddMemberHandler implements ICommandHandler<AddMemberCommand> {
     private readonly professionalRepository: IProfessionalRepository,
   ) {}
 
-  async execute(command: AddMemberCommand): Promise<any> {
-    const { email, firstName, lastName, phone, role } = command;
+  async execute(command: AddMemberCommand): Promise<MemberResponseDto> {
+    const { email, firstName, lastName, phone, role } = command.dto;
 
     // 1. Check if user exists
     const existingUser = await this.userRepository.findByEmail(email);
@@ -29,39 +42,53 @@ export class AddMemberHandler implements ICommandHandler<AddMemberCommand> {
     const defaultPassword = process.env.DEFAULT_MEMBER_PASSWORD || 'Member@123';
     const passwordHash = await argon2.hash(defaultPassword);
 
-    // 3. Persist User
     try {
-      const createdUser = await this.userRepository.create({
+      // 3. Create User record
+      const persistenceData = {
         email,
         password_hash: passwordHash,
         first_name: firstName,
         last_name: lastName,
-        role: role as any, // Cast to any or UserRole if imported
+        role: role,
         phone_number: phone,
         is_email_verified: true,
         user_status: 'active',
-      } as any);
+      };
+
+      const createdPersistence =
+        await this.userRepository.create(persistenceData);
+      const user = UserMapper.persistenceToEntity(createdPersistence);
+
+      let professional: Professional | null = null;
 
       // 4. Create professional profile for all members (worker and supervisor)
-      // This stores skills, experience, and address information
       if (role === Role.SUPERVISOR || role === Role.WORKER) {
-        await this.professionalRepository.create({
-          user_id: createdUser.id,
+        professional = await this.professionalRepository.create({
+          user_id: user.id,
           professional_title:
-            command.professionalTitle ||
+            command.dto.professionalTitle ||
             (role === Role.WORKER ? 'Worker' : 'Supervisor'),
-          experience_years: command.experienceYears || 0,
-          skills: command.skills || [],
-          address_street: command.addressStreet || '',
-          address_city: command.addressCity || '',
-          address_state: command.addressState || '',
-          address_zip_code: command.addressZipCode || '',
+          experience_years: command.dto.experienceYears || 0,
+          skills: command.dto.skills || [],
+          address_street: command.dto.addressStreet || '',
+          address_city: command.dto.addressCity || '',
+          address_state: command.dto.addressState || '',
+          address_zip_code: command.dto.addressZipCode || '',
         });
       }
 
-      return createdUser;
+      // 5. Map to response DTO
+      return MemberMapper.toResponse(user, professional);
     } catch (error) {
-      throw new Error('Failed to create user: ' + error.message);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Internal Server Error';
+      throw new InternalServerErrorException(
+        'Failed to create member',
+        errorMessage,
+      );
     }
   }
 }

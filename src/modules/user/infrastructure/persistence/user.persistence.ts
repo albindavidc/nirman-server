@@ -1,7 +1,8 @@
-import type { UserGetPayload } from 'src/generated/client/models/User';
+import { Prisma } from 'src/generated/client/client';
 
-export type UserPersistence = UserGetPayload<{
+export type UserPersistence = Prisma.UserGetPayload<{
   include: {
     vendor: true;
+    professional: true;
   };
 }> & { id: string };
