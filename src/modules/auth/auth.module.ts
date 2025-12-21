@@ -17,6 +17,10 @@ import { JwtAuthGuard } from 'src/modules/auth/infrastructure/jwt-auth.guard';
 import { LoginHandler } from './application/handlers/login.handler';
 import { VerifyResetOtpHandler } from './application/handlers/verify-reset-otp.handler';
 
+import { RefreshTokenStrategy } from './infrastructure/refresh-token.strategy';
+import { RolesGuard } from './infrastructure/guards/roles.guard';
+import { RefreshTokenGuard } from './infrastructure/guards/refresh-token.guard';
+
 const CommandHandlers = [
   LoginHandler,
   ForgotPasswordHandler,
@@ -43,7 +47,10 @@ const CommandHandlers = [
     ResetTokenStorageService,
     JwtStrategy,
     JwtAuthGuard,
+    RefreshTokenStrategy,
+    RolesGuard,
+    RefreshTokenGuard,
   ],
-  exports: [JwtModule, JwtAuthGuard],
+  exports: [JwtModule, JwtAuthGuard, RolesGuard, RefreshTokenGuard],
 })
 export class AuthModule {}

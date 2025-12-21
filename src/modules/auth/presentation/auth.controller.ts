@@ -7,14 +7,12 @@ import {
   HttpStatus,
   Res,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
-import { JwtAuthGuard } from 'src/modules/auth/infrastructure/jwt-auth.guard';
-import { JwtPayload } from 'src/modules/auth/infrastructure/jwt.strategy';
+import { RefreshTokenGuard } from 'src/modules/auth/infrastructure/guards/refresh-token.guard';
 import { LoginDto } from 'src/modules/auth/application/dto/login.dto';
 import { ForgotPasswordDto } from 'src/modules/auth/application/dto/forgot-password.dto';
 import { VerifyResetOtpDto } from 'src/modules/auth/application/dto/verify-reset-otp.dto';
@@ -23,6 +21,7 @@ import { LoginCommand } from 'src/modules/auth/application/commands/login.comman
 import { ForgotPasswordCommand } from 'src/modules/auth/application/commands/forgot-password.command';
 import { VerifyResetOtpCommand } from 'src/modules/auth/application/commands/verify-reset-otp.command';
 import { ResetPasswordCommand } from 'src/modules/auth/application/commands/reset-password.command';
+import { Public } from 'src/modules/auth/infrastructure/decorators/public.decorator';
 
 import { AUTH_ROUTES } from 'src/app.routes';
 
@@ -33,6 +32,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
+  @Public()
   @Post(AUTH_ROUTES.LOGIN)
   @HttpCode(HttpStatus.OK)
   async login(
@@ -67,49 +67,43 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post(AUTH_ROUTES.REFRESH)
+  @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const refreshToken = (req.cookies as Record<string, string | undefined>)
-      ?.refresh_token;
+    const user = req.user as {
+      sub: string;
+      email: string;
+      role: string;
+      refreshToken: string;
+    };
 
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
-    }
+    const newPayload = {
+      sub: user.sub,
+      email: user.email,
+      role: user.role,
+    };
 
-    try {
-      const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
-        secret: process.env.REFRESH_TOKEN_SECRET,
-      });
+    const accessToken = this.jwtService.sign(newPayload, {
+      secret: process.env.ACCESS_TOKEN_SECRET,
+      expiresIn: '1h',
+    });
 
-      const newPayload = {
-        sub: payload.sub,
-        email: payload.email,
-        role: payload.role,
-      };
+    const isProduction = process.env.NODE_ENV === 'production';
 
-      const accessToken = this.jwtService.sign(newPayload, {
-        secret: process.env.ACCESS_TOKEN_SECRET,
-        expiresIn: '1h',
-      });
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+      maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || '3600000'),
+    });
 
-      const isProduction = process.env.NODE_ENV === 'production';
-
-      res.cookie('access_token', accessToken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'strict',
-        maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || '3600000'),
-      });
-
-      return { message: 'Token refreshed successfully' };
-    } catch {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
+    return { message: 'Token refreshed successfully' };
   }
 
   @Get(AUTH_ROUTES.ME)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard) // Global guard is now active
   @HttpCode(HttpStatus.OK)
   getMe(@Req() req: Request) {
     // User is attached by JwtStrategy after token validation
@@ -139,12 +133,14 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
+  @Public()
   @Post(AUTH_ROUTES.FORGOT_PASSWORD)
   @HttpCode(HttpStatus.OK)
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.commandBus.execute(new ForgotPasswordCommand(dto.email));
   }
 
+  @Public()
   @Post(AUTH_ROUTES.VERIFY_RESET_OTP)
   @HttpCode(HttpStatus.OK)
   verifyResetOtp(@Body() dto: VerifyResetOtpDto) {
@@ -153,6 +149,7 @@ export class AuthController {
     );
   }
 
+  @Public()
   @Post(AUTH_ROUTES.RESET_PASSWORD)
   @HttpCode(HttpStatus.OK)
   resetPassword(@Body() dto: ResetPasswordDto) {
