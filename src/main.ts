@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './common/winston.config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { loggingInterceptor } from './logging.interceptor';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger(winstonConfig),
+  });
 
   // Cookie parser for reading cookies
   app.use(cookieParser());
