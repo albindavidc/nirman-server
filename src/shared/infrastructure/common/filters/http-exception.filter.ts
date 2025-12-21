@@ -9,6 +9,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Prisma } from '../../../../generated/client/client';
+import { ApiErrorResponse } from '../interfaces/api-error-response.interface';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -19,15 +21,62 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal Server Error';
+    let errors: string[] | null = null;
+    let errorCode: string | undefined;
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : (exception as Error).message || 'Internal Server Error';
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const exceptionResponse = exception.getResponse();
+
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null
+      ) {
+        const responseObj = exceptionResponse as {
+          message?: string | string[];
+          errors?: string[];
+        };
+        if (typeof responseObj.message === 'string') {
+          message = responseObj.message || message;
+        }
+        if (Array.isArray(responseObj.errors)) {
+          errors = responseObj.errors;
+        } else if (Array.isArray(responseObj.message)) {
+          errors = responseObj.message;
+          message = 'Validation Error';
+        }
+      }
+    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      errorCode = exception.code;
+
+      switch (exception.code) {
+        case 'P2002': {
+          // Unique constraint violation
+          status = HttpStatus.CONFLICT;
+          const target =
+            (exception.meta?.target as string[])?.join(', ') || 'field';
+          message = `Unique constraint violation on ${target}`;
+          break;
+        }
+        case 'P2025': {
+          // Record not found
+          status = HttpStatus.NOT_FOUND;
+          message = 'Record not found';
+          break;
+        }
+        default: {
+          status = HttpStatus.BAD_REQUEST;
+          message = `Database Error: ${exception.message}`;
+          break;
+        }
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
+    }
 
     // Log the error
     if (status >= 500) {
@@ -39,21 +88,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     } else {
       this.logger.warn(
-        `Warning processing request ${request.method} ${request.url}: ${JSON.stringify(
-          message,
-        )}`,
+        `Warning processing request ${request.method} ${request.url}: ${message}`,
       );
     }
 
-    response.status(status).json({
+    const errorResponse: ApiErrorResponse = {
       statusCode: status,
       message: message,
       timestamp: new Date().toISOString(),
       path: request.url,
-      error:
-        exception instanceof HttpException
-          ? exception.name
-          : 'InternalServerError',
-    });
+      errors: errors,
+      errorCode: errorCode,
+    };
+
+    response.status(status).json(errorResponse);
   }
 }

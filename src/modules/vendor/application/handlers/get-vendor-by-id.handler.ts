@@ -1,5 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetVendorByIdQuery } from '../queries/get-vendor-by-id.query';
+import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VendorMapper } from 'src/modules/vendor/infrastructure/persistence/vendor.mapper';
 import { VendorResponseDto } from '../dto/vendor-response.dto';
@@ -26,7 +27,7 @@ export class GetVendorByIdHandler implements IQueryHandler<GetVendorByIdQuery> {
     });
 
     if (!vendor) {
-      return null;
+      throw new NotFoundException('Vendor not found');
     }
 
     return VendorMapper.toResponse(vendor as unknown as VendorPersistence);
