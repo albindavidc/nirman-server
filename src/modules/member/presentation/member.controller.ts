@@ -12,14 +12,16 @@ import { PaginatedMembersResponseDto } from '../application/dto/paginated-member
 import { MemberResponseDto } from '../application/dto/member.response.dto';
 import { UserPersistence } from 'src/modules/user/domain/repositories/user-repository.interface';
 
-@Controller('members')
+import { MEMBER_ROUTES } from 'src/app.routes';
+
+@Controller(MEMBER_ROUTES.ROOT)
 export class MemberController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Get()
+  @Get(MEMBER_ROUTES.GET_MEMBERS)
   async getMembers(
     @Query() query: GetMembersQueryDto,
   ): Promise<PaginatedMembersResponseDto> {
@@ -28,14 +30,14 @@ export class MemberController {
     );
   }
 
-  @Post()
+  @Post(MEMBER_ROUTES.ADD_MEMBER)
   async addMember(@Body() dto: CreateMemberDto): Promise<MemberResponseDto> {
     return this.commandBus.execute<MemberResponseDto>(
       new AddMemberCommand(dto),
     );
   }
 
-  @Put(':id')
+  @Put(MEMBER_ROUTES.EDIT_MEMBER)
   async editMember(
     @Param('id') id: string,
     @Body() dto: UpdateMemberDto,
@@ -45,14 +47,14 @@ export class MemberController {
     );
   }
 
-  @Put(':id/block')
+  @Put(MEMBER_ROUTES.BLOCK_MEMBER)
   async blockMember(@Param('id') id: string): Promise<MemberResponseDto> {
     return this.commandBus.execute<MemberResponseDto>(
       new BlockMemberCommand(id, true),
     );
   }
 
-  @Put(':id/unblock')
+  @Put(MEMBER_ROUTES.UNBLOCK_MEMBER)
   async unblockMember(@Param('id') id: string): Promise<MemberResponseDto> {
     return this.commandBus.execute<MemberResponseDto>(
       new BlockMemberCommand(id, false),

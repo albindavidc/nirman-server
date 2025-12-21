@@ -11,12 +11,14 @@ import { CreateVendorUserCommand } from 'src/modules/vendor/application/commands
 import { CreateVendorCompanyDto } from 'src/modules/vendor/application/dto/create-vendor-company.dto';
 import { CreateVendorCompanyCommand } from 'src/modules/vendor/application/commands/create-vendor-company.command';
 
-@Controller('auth/vendor/signup')
+import { VENDOR_SIGNUP_ROUTES } from 'src/app.routes';
+
+@Controller(VENDOR_SIGNUP_ROUTES.ROOT)
 export class VendorSignupController {
   constructor(private commandBus: CommandBus) {}
 
   //User Info
-  @Post('step1')
+  @Post(VENDOR_SIGNUP_ROUTES.STEP_1)
   @UsePipes(new ValidationPipe({ transform: true }))
   async step1(@Body() dto: CreateVendorUserDto) {
     const userId = await this.commandBus.execute(
@@ -30,7 +32,7 @@ export class VendorSignupController {
   }
 
   //Company Details
-  @Post('step2')
+  @Post(VENDOR_SIGNUP_ROUTES.STEP_2)
   @UsePipes(new ValidationPipe({ transform: true }))
   async step2(@Body() dto: CreateVendorCompanyDto) {
     const vendorId = await this.commandBus.execute(

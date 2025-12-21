@@ -9,7 +9,9 @@ import { UpdatePasswordDto } from '../application/dto/update-password.dto';
 import { ProfileResponseDto } from '../application/dto/profile.response.dto';
 import { AuthenticatedRequest } from 'src/modules/auth/application/interfaces/authenticated-request.interface';
 
-@Controller('profile')
+import { PROFILE_ROUTES } from 'src/app.routes';
+
+@Controller(PROFILE_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)
 export class ProfileController {
   constructor(
@@ -17,7 +19,7 @@ export class ProfileController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Get()
+  @Get(PROFILE_ROUTES.GET_PROFILE)
   async getProfile(
     @Request() req: AuthenticatedRequest,
   ): Promise<ProfileResponseDto> {
@@ -26,7 +28,7 @@ export class ProfileController {
     );
   }
 
-  @Put()
+  @Put(PROFILE_ROUTES.UPDATE_PROFILE)
   async updateProfile(
     @Request() req: AuthenticatedRequest,
     @Body() dto: UpdateProfileDto,
@@ -42,7 +44,7 @@ export class ProfileController {
     );
   }
 
-  @Put('password')
+  @Put(PROFILE_ROUTES.UPDATE_PASSWORD)
   async updatePassword(
     @Request() req: AuthenticatedRequest,
     @Body() dto: UpdatePasswordDto,

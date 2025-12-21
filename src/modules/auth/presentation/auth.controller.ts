@@ -24,14 +24,16 @@ import { ForgotPasswordCommand } from 'src/modules/auth/application/commands/for
 import { VerifyResetOtpCommand } from 'src/modules/auth/application/commands/verify-reset-otp.command';
 import { ResetPasswordCommand } from 'src/modules/auth/application/commands/reset-password.command';
 
-@Controller('auth')
+import { AUTH_ROUTES } from 'src/app.routes';
+
+@Controller(AUTH_ROUTES.ROOT)
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly jwtService: JwtService,
   ) {}
 
-  @Post('login')
+  @Post(AUTH_ROUTES.LOGIN)
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
@@ -56,7 +58,7 @@ export class AuthController {
       secure: isProduction,
       sameSite: 'strict',
       maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000000'), // 30 days
-      path: '/auth/refresh', // Only send on refresh endpoint
+      path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`, // Only send on refresh endpoint
     });
 
     return {
@@ -65,7 +67,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
+  @Post(AUTH_ROUTES.REFRESH)
   @HttpCode(HttpStatus.OK)
   refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = (req.cookies as Record<string, string | undefined>)
@@ -106,7 +108,7 @@ export class AuthController {
     }
   }
 
-  @Get('me')
+  @Get(AUTH_ROUTES.ME)
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   getMe(@Req() req: Request) {
@@ -127,21 +129,23 @@ export class AuthController {
     };
   }
 
-  @Post('logout')
+  @Post(AUTH_ROUTES.LOGOUT)
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
-    res.clearCookie('refresh_token', { path: '/auth/refresh' });
+    res.clearCookie('refresh_token', {
+      path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`,
+    });
     return { message: 'Logged out successfully' };
   }
 
-  @Post('forgot-password')
+  @Post(AUTH_ROUTES.FORGOT_PASSWORD)
   @HttpCode(HttpStatus.OK)
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.commandBus.execute(new ForgotPasswordCommand(dto.email));
   }
 
-  @Post('verify-reset-otp')
+  @Post(AUTH_ROUTES.VERIFY_RESET_OTP)
   @HttpCode(HttpStatus.OK)
   verifyResetOtp(@Body() dto: VerifyResetOtpDto) {
     return this.commandBus.execute(
@@ -149,7 +153,7 @@ export class AuthController {
     );
   }
 
-  @Post('reset-password')
+  @Post(AUTH_ROUTES.RESET_PASSWORD)
   @HttpCode(HttpStatus.OK)
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.commandBus.execute(

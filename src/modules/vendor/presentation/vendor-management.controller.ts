@@ -23,7 +23,9 @@ import { CreateVendorByAdminDto } from 'src/modules/vendor/application/dto/creat
 import { GetVendorByIdQuery } from '../application/queries/get-vendor-by-id.query';
 import { VendorResponseDto } from '../application/dto/vendor-response.dto';
 
-@Controller('vendors')
+import { VENDOR_ROUTES } from 'src/app.routes';
+
+@Controller(VENDOR_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)
 export class VendorManagementController {
   constructor(
@@ -32,7 +34,7 @@ export class VendorManagementController {
     private readonly prisma: PrismaService,
   ) {}
 
-  @Post()
+  @Post(VENDOR_ROUTES.CREATE_VENDOR)
   @HttpCode(HttpStatus.CREATED)
   async createVendor(
     @Body() createDto: CreateVendorByAdminDto,
@@ -40,7 +42,7 @@ export class VendorManagementController {
     return this.commandBus.execute(new CreateVendorByAdminCommand(createDto));
   }
 
-  @Get()
+  @Get(VENDOR_ROUTES.GET_VENDORS)
   async getVendors(@Query() queryDto: GetVendorsQueryDto): Promise<{
     data: VendorResponseDto[];
     total: number;
@@ -57,7 +59,7 @@ export class VendorManagementController {
     );
   }
 
-  @Get('stats')
+  @Get(VENDOR_ROUTES.GET_STATS)
   async getStats() {
     const [total, approved] = await Promise.all([
       this.prisma.vendor.count(),
@@ -72,14 +74,14 @@ export class VendorManagementController {
     };
   }
 
-  @Get(':id')
+  @Get(VENDOR_ROUTES.GET_VENDOR_BY_ID)
   async getVendorById(
     @Param('id') id: string,
   ): Promise<VendorResponseDto | null> {
     return this.queryBus.execute(new GetVendorByIdQuery(id));
   }
 
-  @Patch(':id')
+  @Patch(VENDOR_ROUTES.UPDATE_VENDOR)
   @HttpCode(HttpStatus.OK)
   async updateVendor(
     @Param('id') id: string,

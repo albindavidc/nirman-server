@@ -7,11 +7,13 @@ import {
 import { SendOtpCommand } from 'src/modules/otp/application/commands/send-otp.command';
 import { VerifyOtpCommand } from 'src/modules/otp/application/commands/verify-otp.command';
 
-@Controller('auth/otp')
+import { OTP_ROUTES } from 'src/app.routes';
+
+@Controller(OTP_ROUTES.ROOT)
 export class OtpController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Post('send')
+  @Post(OTP_ROUTES.SEND)
   @HttpCode(HttpStatus.OK)
   async sendOtp(@Body() dto: SendOtpDto) {
     const result = await this.commandBus.execute(new SendOtpCommand(dto));
@@ -21,7 +23,7 @@ export class OtpController {
     };
   }
 
-  @Post('verify')
+  @Post(OTP_ROUTES.VERIFY)
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() dto: VerifyOtpDto) {
     const result = await this.commandBus.execute(new VerifyOtpCommand(dto));
@@ -31,7 +33,7 @@ export class OtpController {
     };
   }
 
-  @Post('resend')
+  @Post(OTP_ROUTES.RESEND)
   @HttpCode(HttpStatus.OK)
   async resendOtp(@Body() dto: SendOtpDto) {
     // Resend is same as send - it will generate a new OTP
