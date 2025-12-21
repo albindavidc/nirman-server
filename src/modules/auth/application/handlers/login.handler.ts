@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 import { LoginCommand } from '../commands/login.command';
 import {
   IUserRepository,
@@ -32,13 +32,15 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const user = await this.userRepository.findByEmail(email.toLowerCase());
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials (User not found)');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    const isPasswordValid = await argon2.verify(user.password_hash, password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(
+        'Invalid credentials (Password mismatch)',
+      );
     }
 
     const payload = {

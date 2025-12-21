@@ -59,23 +59,40 @@ export class HttpExceptionFilter implements ExceptionFilter {
           status = HttpStatus.CONFLICT;
           const target =
             (exception.meta?.target as string[])?.join(', ') || 'field';
-          message = `Unique constraint violation on ${target}`;
+          message = `A record with this ${target} already exists`;
           break;
         }
         case 'P2025': {
           // Record not found
           status = HttpStatus.NOT_FOUND;
-          message = 'Record not found';
+          message = 'The requested record was not found';
           break;
         }
         default: {
-          status = HttpStatus.BAD_REQUEST;
-          message = `Database Error: ${exception.message}`;
+          // Log the actual error for debugging but return a generic message
+          this.logger.error(`Database error: ${exception.message}`);
+          status = HttpStatus.SERVICE_UNAVAILABLE;
+          message =
+            'We are experiencing technical difficulties. Please try again later.';
           break;
         }
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
+      // Check for common connection/timeout errors
+      if (
+        exception.message.includes('Server selection timeout') ||
+        exception.message.includes('No available servers') ||
+        exception.message.includes('connection')
+      ) {
+        this.logger.error(`Connection error: ${exception.message}`);
+        status = HttpStatus.SERVICE_UNAVAILABLE;
+        message =
+          'We are experiencing technical difficulties. Please try again later.';
+      } else {
+        // Generic error - don't expose internal error messages
+        this.logger.error(`Unexpected error: ${exception.message}`);
+        message = 'An unexpected error occurred. Please try again.';
+      }
     }
 
     // Log the error

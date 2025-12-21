@@ -82,6 +82,7 @@ export class UserMapper {
             contact_email: entity.vendor.contactEmail ?? null,
             contact_phone: entity.vendor.contactPhone ?? null,
             vendor_status: entity.vendor.vendorStatus,
+            rejection_reason: entity.vendor.rejectionReason ?? null,
           }
         : null,
     };
@@ -122,6 +123,9 @@ export class UserMapper {
             contactEmail: persistence.vendor.contact_email ?? undefined,
             contactPhone: persistence.vendor.contact_phone ?? undefined,
             vendorStatus: persistence.vendor.vendor_status as VendorStatus,
+            rejectionReason:
+              (persistence.vendor.rejection_reason as string | null) ??
+              undefined,
           })
         : undefined,
     });

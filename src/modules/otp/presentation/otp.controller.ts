@@ -6,6 +6,7 @@ import {
 } from 'src/modules/otp/application/dto/otp.dto';
 import { SendOtpCommand } from 'src/modules/otp/application/commands/send-otp.command';
 import { VerifyOtpCommand } from 'src/modules/otp/application/commands/verify-otp.command';
+import { Public } from 'src/modules/auth/infrastructure/decorators/public.decorator';
 
 import { OTP_ROUTES } from 'src/app.routes';
 
@@ -13,6 +14,7 @@ import { OTP_ROUTES } from 'src/app.routes';
 export class OtpController {
   constructor(private readonly commandBus: CommandBus) {}
 
+  @Public()
   @Post(OTP_ROUTES.SEND)
   @HttpCode(HttpStatus.OK)
   async sendOtp(@Body() dto: SendOtpDto) {
@@ -23,6 +25,7 @@ export class OtpController {
     };
   }
 
+  @Public()
   @Post(OTP_ROUTES.VERIFY)
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() dto: VerifyOtpDto) {
@@ -33,6 +36,7 @@ export class OtpController {
     };
   }
 
+  @Public()
   @Post(OTP_ROUTES.RESEND)
   @HttpCode(HttpStatus.OK)
   async resendOtp(@Body() dto: SendOtpDto) {

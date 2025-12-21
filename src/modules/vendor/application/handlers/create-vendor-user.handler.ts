@@ -21,12 +21,15 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
 
   async execute(command: CreateVendorUserCommand): Promise<string> {
     const { dto } = command;
+    // Normalize email to lowercase
+    const email = dto.email.toLowerCase();
+
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException('Passwords do not match');
     }
 
     // Check for existing email
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new ConflictException('A user with this email already exists');
     }
@@ -52,6 +55,7 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
     try {
       const userEntity = UserMapper.dtoToEntity({
         ...dto,
+        email, // Use lowercased email
         password: hashPassword,
       });
       const userPersistence = UserMapper.entityToPersistence(userEntity);

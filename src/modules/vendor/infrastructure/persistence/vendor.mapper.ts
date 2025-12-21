@@ -46,8 +46,7 @@ export class VendorMapper {
   static entityToPersistence(
     entity: Partial<Vendor>,
   ): Partial<VendorPersistence> {
-    return {
-      id: entity.id,
+    const persistence: Partial<VendorPersistence> = {
       user_id: entity.userId,
       created_at: entity.createdAt,
       updated_at: entity.updatedAt,
@@ -64,7 +63,14 @@ export class VendorMapper {
       contact_email: entity.contactEmail,
       contact_phone: entity.contactPhone,
       vendor_status: entity.vendorStatus,
+      rejection_reason: entity.rejectionReason,
     };
+
+    if (entity.id) {
+      persistence.id = entity.id;
+    }
+
+    return persistence;
   }
 
   static persistenceToEntity(persistence: VendorPersistence): Vendor {
@@ -85,6 +91,8 @@ export class VendorMapper {
       contactEmail: persistence.contact_email ?? '',
       contactPhone: persistence.contact_phone ?? '',
       vendorStatus: persistence.vendor_status as VendorStatus,
+      rejectionReason:
+        (persistence.rejection_reason as string | null) ?? undefined,
     });
   }
 

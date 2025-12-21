@@ -16,6 +16,7 @@ export class Vendor extends BaseEntity {
   contactEmail?: string;
   contactPhone?: string;
   vendorStatus: VendorStatus;
+  rejectionReason?: string;
 
   constructor(props: Partial<Vendor>) {
     super();
@@ -36,5 +37,6 @@ export class Vendor extends BaseEntity {
     this.contactEmail = props.contactEmail;
     this.contactPhone = props.contactPhone;
     this.vendorStatus = props.vendorStatus!;
+    this.rejectionReason = props.rejectionReason;
   }
 }

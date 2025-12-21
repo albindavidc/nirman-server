@@ -2,8 +2,8 @@ import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
-  IsPhoneNumber,
   IsStrongPassword,
+  Matches,
   MinLength,
 } from 'class-validator';
 
@@ -17,7 +17,7 @@ export class CreateVendorUserDto {
   @IsEmail()
   email: string;
 
-  @IsPhoneNumber()
+  @Matches(/^\d{10}$/, { message: 'Phone number must be a 10-digit number' })
   phoneNumber: string;
 
   @IsStrongPassword({
