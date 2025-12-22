@@ -19,6 +19,7 @@ import { UpdateVendorCommand } from 'src/modules/vendor/application/commands/upd
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { CreateVendorByAdminCommand } from 'src/modules/vendor/application/commands/create-vendor-by-admin.command';
+import { UnblacklistVendorCommand } from '../application/commands/unblacklist-vendor.command';
 import { CreateVendorByAdminDto } from 'src/modules/vendor/application/dto/create-vendor-by-admin.dto';
 import { GetVendorByIdQuery } from '../application/queries/get-vendor-by-id.query';
 import { VendorResponseDto } from '../application/dto/vendor-response.dto';
@@ -88,5 +89,11 @@ export class VendorManagementController {
     @Body() updateDto: UpdateVendorDto,
   ): Promise<VendorResponseDto> {
     return this.commandBus.execute(new UpdateVendorCommand(id, updateDto));
+  }
+
+  @Patch(':id/unblacklist')
+  @HttpCode(HttpStatus.OK)
+  async unblacklistVendor(@Param('id') id: string): Promise<VendorResponseDto> {
+    return this.commandBus.execute(new UnblacklistVendorCommand(id));
   }
 }
