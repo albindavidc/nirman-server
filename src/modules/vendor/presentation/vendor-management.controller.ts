@@ -20,6 +20,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import { CreateVendorByAdminCommand } from 'src/modules/vendor/application/commands/create-vendor-by-admin.command';
 import { UnblacklistVendorCommand } from '../application/commands/unblacklist-vendor.command';
+import { RejectVendorCommand } from '../application/commands/reject-vendor.command';
+import { RequestRecheckCommand } from '../application/commands/request-recheck.command';
 import { CreateVendorByAdminDto } from 'src/modules/vendor/application/dto/create-vendor-by-admin.dto';
 import { GetVendorByIdQuery } from '../application/queries/get-vendor-by-id.query';
 import { VendorResponseDto } from '../application/dto/vendor-response.dto';
@@ -95,5 +97,20 @@ export class VendorManagementController {
   @HttpCode(HttpStatus.OK)
   async unblacklistVendor(@Param('id') id: string): Promise<VendorResponseDto> {
     return this.commandBus.execute(new UnblacklistVendorCommand(id));
+  }
+
+  @Patch(':id/reject')
+  @HttpCode(HttpStatus.OK)
+  async rejectVendor(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+  ): Promise<VendorResponseDto> {
+    return this.commandBus.execute(new RejectVendorCommand(id, reason));
+  }
+
+  @Patch(':id/request-recheck')
+  @HttpCode(HttpStatus.OK)
+  async requestRecheck(@Param('id') id: string): Promise<VendorResponseDto> {
+    return this.commandBus.execute(new RequestRecheckCommand(id));
   }
 }

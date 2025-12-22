@@ -15,6 +15,9 @@ export interface LoginResult {
     id: string;
     email: string;
     role: string;
+    vendorStatus?: string;
+    rejectionReason?: string | null;
+    vendorId?: string;
   };
 }
 
@@ -66,6 +69,9 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
         id: user.id,
         email: user.email,
         role: user.role,
+        vendorStatus: user.vendor?.vendor_status,
+        rejectionReason: user.vendor?.rejection_reason,
+        vendorId: user.vendor?.id,
       },
     };
   }

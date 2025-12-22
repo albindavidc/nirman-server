@@ -8,9 +8,16 @@ import { UpdateVendorHandler } from 'src/modules/vendor/application/handlers/upd
 import { GetVendorByIdHandler } from 'src/modules/vendor/application/handlers/get-vendor-by-id.handler';
 
 import { UnblacklistVendorHandler } from './application/handlers/unblacklist-vendor.handler';
+import { RejectVendorHandler } from './application/handlers/reject-vendor.handler';
+import { RequestRecheckHandler } from './application/handlers/request-recheck.handler';
 
 const QueryHandlers = [GetVendorsHandler, GetVendorByIdHandler];
-const CommandHandlers = [UpdateVendorHandler, UnblacklistVendorHandler];
+const CommandHandlers = [
+  UpdateVendorHandler,
+  UnblacklistVendorHandler,
+  RejectVendorHandler,
+  RequestRecheckHandler,
+];
 
 @Module({
   imports: [CqrsModule, PrismaModule],
