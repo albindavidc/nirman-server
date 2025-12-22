@@ -49,3 +49,8 @@ export const VENDOR_SIGNUP_ROUTES = {
   STEP_1: 'step1',
   STEP_2: 'step2',
 };
+
+export const UPLOAD_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/upload`,
+  PROFILE_PHOTO: 'profile-photo',
+};

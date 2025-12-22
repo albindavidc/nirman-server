@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { VendorManagementModule } from './modules/vendor/vendor.module';
 import { MemberManagementModule } from './modules/member/member.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { UploadModule } from './modules/upload/upload.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/infrastructure/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/infrastructure/guards/roles.guard';
@@ -22,6 +23,7 @@ import { RolesGuard } from './modules/auth/infrastructure/guards/roles.guard';
     VendorManagementModule,
     MemberManagementModule,
     ProfileModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

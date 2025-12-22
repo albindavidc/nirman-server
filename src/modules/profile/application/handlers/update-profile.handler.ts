@@ -8,6 +8,8 @@ import {
 import { ProfileResponseDto } from '../dto/profile.response.dto';
 import { Role } from 'src/shared/domain/enums/role.enum';
 import { UserStatus } from 'src/shared/domain/enums/user-status.enum';
+import { existsSync, unlinkSync } from 'fs';
+import { join } from 'path';
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {
@@ -23,6 +25,23 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
     const existingUser = await this.userRepository.findById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');
+    }
+
+    // Delete old profile photo if a new one is being uploaded
+    if (profilePhotoUrl !== undefined && existingUser.profile_photo_url) {
+      const oldPhotoPath = existingUser.profile_photo_url;
+      // Only delete if it's a local upload path
+      if (oldPhotoPath.startsWith('/uploads/profiles/')) {
+        const fullPath = join(process.cwd(), oldPhotoPath);
+        if (existsSync(fullPath)) {
+          try {
+            unlinkSync(fullPath);
+          } catch {
+            // Log error but don't fail the update
+            console.warn(`Failed to delete old profile photo: ${fullPath}`);
+          }
+        }
+      }
     }
 
     // Build update data object with only provided fields
