@@ -1,0 +1,78 @@
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Inject, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
+import { LoginCommand } from '../../../commands/auth/login.command';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../../../domain/repositories/user-repository.interface';
+
+export interface LoginResult {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    vendorStatus?: string;
+    rejectionReason?: string | null;
+    vendorId?: string;
+  };
+}
+
+@CommandHandler(LoginCommand)
+export class LoginHandler implements ICommandHandler<LoginCommand> {
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async execute(command: LoginCommand): Promise<LoginResult> {
+    const { email, password } = command;
+
+    const user = await this.userRepository.findByEmail(email.toLowerCase());
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials (User not found)');
+    }
+
+    const isPasswordValid = await argon2.verify(user.passwordHash, password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(
+        'Invalid credentials (Password mismatch)',
+      );
+    }
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.ACCESS_TOKEN_SECRET || 'default-access-secret',
+      expiresIn: '1h',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.REFRESH_TOKEN_SECRET || 'default-refresh-secret',
+      expiresIn: '30d',
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        vendorStatus: user.vendor?.vendorStatus,
+        rejectionReason: user.vendor?.rejectionReason,
+        vendorId: user.vendor?.id,
+      },
+    };
+  }
+}

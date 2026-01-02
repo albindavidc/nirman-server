@@ -1,18 +1,23 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaService } from './prisma/prisma.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { VendorSignupModule } from './modules/vendor/vendor-signup.module';
-import { OtpModule } from './modules/otp/otp.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { VendorManagementModule } from './modules/vendor/vendor.module';
-import { MemberManagementModule } from './modules/member/member.module';
-import { ProfileModule } from './modules/profile/profile.module';
-import { UploadModule } from './modules/upload/upload.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './modules/auth/infrastructure/jwt-auth.guard';
-import { RolesGuard } from './modules/auth/infrastructure/guards/roles.guard';
+
+// Infrastructure
+import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
+import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
+import { JwtAuthGuard } from './infrastructure/security/guards/jwt-auth.guard';
+import { RolesGuard } from './infrastructure/security/guards/roles.guard';
+
+// Presentation Modules
+import { VendorSignupModule } from './presentation/modules/vendor-signup.module';
+import { OtpModule } from './presentation/modules/otp.module';
+import { AuthModule } from './presentation/modules/auth.module';
+import { VendorManagementModule } from './presentation/modules/vendor.module';
+import { ProfileModule } from './presentation/modules/profile.module';
+import { UploadModule } from './presentation/modules/upload.module';
+import { MemberModule } from './presentation/modules/member.module';
 
 @Module({
   imports: [
@@ -21,9 +26,9 @@ import { RolesGuard } from './modules/auth/infrastructure/guards/roles.guard';
     OtpModule,
     AuthModule,
     VendorManagementModule,
-    MemberManagementModule,
     ProfileModule,
     UploadModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [

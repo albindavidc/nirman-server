@@ -5,10 +5,10 @@ import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/winston.config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { loggingInterceptor } from './logging.interceptor';
+import { loggingInterceptor } from './infrastructure/common/interceptors/logging.interceptor';
 import cookieParser from 'cookie-parser';
 
-import { HttpExceptionFilter } from './shared/infrastructure/common/filters/http-exception.filter';
+import { HttpExceptionFilter } from './infrastructure/common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
