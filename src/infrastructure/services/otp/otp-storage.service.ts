@@ -6,7 +6,7 @@ interface OtpRecord {
   email: string;
 }
 
-import { IOtpStorageService } from '../../../application/interfaces/services/otp-storage.interface';
+import { IOtpStorageService } from '../../../application/interfaces/otp-storage.interface';
 
 @Injectable()
 export class OtpStorageService implements IOtpStorageService {

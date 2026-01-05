@@ -1,6 +1,6 @@
 import { Controller, Get, Put, Body, Request, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthGuard } from '../../infrastructure/security/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
 import { UpdateProfileCommand } from '../../application/commands/profile/update-profile.command';
 import { UpdatePasswordCommand } from '../../application/commands/profile/update-password.command';

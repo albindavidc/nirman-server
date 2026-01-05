@@ -2,10 +2,7 @@ import { Inject, BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { VerifyOtpCommand } from '../../../commands/otp/verify-otp.command';
 import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
-import {
-  IOtpStorageService,
-  OTP_STORAGE_SERVICE,
-} from '../../../../application/interfaces/services';
+import { IOtpStorageService, OTP_STORAGE_SERVICE } from '../../../interfaces';
 
 @CommandHandler(VerifyOtpCommand)
 export class VerifyOtpHandler implements ICommandHandler<VerifyOtpCommand> {

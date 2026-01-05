@@ -17,13 +17,24 @@ export const winstonConfig = {
       ),
     }),
 
-    // File transport with rotation
+    // File transport for all logs
     new transports.DailyRotateFile({
       filename: 'logs/application-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: '20m',
-      maxFiles: '14d', // 14 days retention
+      maxFiles: '14d',
+      format: format.combine(format.timestamp(), format.json()),
+    }),
+
+    // File transport for error logs only
+    new transports.DailyRotateFile({
+      filename: 'logs/error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '30d', // Keep errors longer
+      level: 'error',
       format: format.combine(format.timestamp(), format.json()),
     }),
   ],

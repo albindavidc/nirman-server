@@ -7,8 +7,10 @@ import { AppService } from './app.service';
 // Infrastructure
 import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
 import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
-import { JwtAuthGuard } from './infrastructure/security/guards/jwt-auth.guard';
-import { RolesGuard } from './infrastructure/security/guards/roles.guard';
+
+// Common - Security
+import { JwtAuthGuard } from './common/security/guards/jwt-auth.guard';
+import { RolesGuard } from './common/security/guards/roles.guard';
 
 // Presentation Modules
 import { VendorSignupModule } from './presentation/modules/vendor-signup.module';

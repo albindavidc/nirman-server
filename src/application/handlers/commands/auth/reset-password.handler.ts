@@ -9,7 +9,7 @@ import {
 import {
   IResetTokenStorageService,
   RESET_TOKEN_STORAGE_SERVICE,
-} from '../../../../application/interfaces/services';
+} from '../../../interfaces';
 
 @CommandHandler(ResetPasswordCommand)
 export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {

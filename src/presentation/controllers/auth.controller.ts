@@ -13,9 +13,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 
-// Infrastructure
-import { RefreshTokenGuard } from '../../infrastructure/security/guards/refresh-token.guard';
-import { Public } from '../../infrastructure/security/decorators/public.decorator';
+// Common - Security
+import { RefreshTokenGuard } from '../../common/security/guards/refresh-token.guard';
+import { Public } from '../../common/security/decorators/public.decorator';
 
 // DTOs
 import { LoginDto } from '../../application/dto/auth/login.dto';

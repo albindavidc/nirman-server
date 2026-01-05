@@ -10,7 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { JwtAuthGuard } from '../../infrastructure/security/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { UPLOAD_ROUTES } from '../../app.routes';
 import { existsSync, mkdirSync } from 'fs';
 

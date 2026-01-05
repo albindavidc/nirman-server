@@ -6,7 +6,7 @@ interface ResetTokenRecord {
   email: string;
 }
 
-import { IResetTokenStorageService } from '../../../application/interfaces/services/reset-token-storage.interface';
+import { IResetTokenStorageService } from '../../../application/interfaces/reset-token-storage.interface';
 
 @Injectable()
 export class ResetTokenStorageService implements IResetTokenStorageService {

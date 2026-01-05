@@ -10,7 +10,7 @@ import { CreateVendorUserDto } from '../../application/dto/vendor/create-vendor-
 import { CreateVendorUserCommand } from '../../application/commands/vendor/create-vendor-user.command';
 import { CreateVendorCompanyDto } from '../../application/dto/vendor/create-vendor-company.dto';
 import { CreateVendorCompanyCommand } from '../../application/commands/vendor/create-vendor-company.command';
-import { Public } from '../../infrastructure/security/decorators/public.decorator';
+import { Public } from '../../common/security/decorators/public.decorator';
 
 import { VENDOR_SIGNUP_ROUTES } from '../../app.routes';
 

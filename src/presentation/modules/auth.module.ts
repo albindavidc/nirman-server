@@ -24,15 +24,17 @@ import {
   EMAIL_SERVICE,
   OTP_STORAGE_SERVICE,
   RESET_TOKEN_STORAGE_SERVICE,
-} from '../../application/interfaces/services';
+} from '../../application/interfaces';
 
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
-import { JwtStrategy } from '../../infrastructure/security/strategies/jwt.strategy';
-import { JwtAuthGuard } from '../../infrastructure/security/guards/jwt-auth.guard';
-import { RefreshTokenStrategy } from '../../infrastructure/security/strategies/refresh-token.strategy';
-import { RolesGuard } from '../../infrastructure/security/guards/roles.guard';
-import { RefreshTokenGuard } from '../../infrastructure/security/guards/refresh-token.guard';
+
+// Common - Security
+import { JwtStrategy } from '../../common/security/strategies/jwt.strategy';
+import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
+import { RefreshTokenStrategy } from '../../common/security/strategies/refresh-token.strategy';
+import { RolesGuard } from '../../common/security/guards/roles.guard';
+import { RefreshTokenGuard } from '../../common/security/guards/refresh-token.guard';
 
 const CommandHandlers = [
   LoginHandler,

@@ -11,7 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthGuard } from '../../infrastructure/security/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { GetVendorsQueryDto } from '../../application/dto/vendor/get-vendors.dto';
 import { UpdateVendorDto } from '../../application/dto/vendor/update-vendor.dto';
 import { GetVendorsQuery } from '../../application/queries/vendor/get-vendors.query';

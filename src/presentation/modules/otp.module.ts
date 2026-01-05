@@ -14,7 +14,7 @@ import { OtpStorageService } from '../../infrastructure/services/otp/otp-storage
 import {
   EMAIL_SERVICE,
   OTP_STORAGE_SERVICE,
-} from '../../application/interfaces/services';
+} from '../../application/interfaces';
 
 const CommandHandlers = [SendOtpHandler, VerifyOtpHandler];
 

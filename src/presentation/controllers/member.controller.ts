@@ -23,7 +23,7 @@ import {
   MemberResponseDto,
   MemberListResponseDto,
 } from '../../application/dto/member/member-response.dto';
-import { Roles } from '../../infrastructure/security/decorators/roles.decorator';
+import { Roles } from '../../common/security/decorators/roles.decorator';
 
 @Controller('api/v1/members')
 export class MemberController {

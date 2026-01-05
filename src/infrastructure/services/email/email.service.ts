@@ -7,7 +7,7 @@ export interface EmailOptions {
   html: string;
 }
 
-import { IEmailService } from '../../../application/interfaces/services/email-service.interface';
+import { IEmailService } from '../../../application/interfaces/email-service.interface';
 
 @Injectable()
 export class EmailService implements IEmailService {

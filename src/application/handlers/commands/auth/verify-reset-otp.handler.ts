@@ -6,7 +6,7 @@ import {
   IResetTokenStorageService,
   OTP_STORAGE_SERVICE,
   RESET_TOKEN_STORAGE_SERVICE,
-} from '../../../../application/interfaces/services';
+} from '../../../interfaces';
 import { VerifyResetOtpResponseDto } from '../../../dto/auth/verify-reset-otp.dto';
 
 @CommandHandler(VerifyResetOtpCommand)

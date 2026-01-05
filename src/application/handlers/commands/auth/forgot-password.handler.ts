@@ -10,7 +10,7 @@ import {
   IEmailService,
   OTP_STORAGE_SERVICE,
   EMAIL_SERVICE,
-} from '../../../../application/interfaces/services';
+} from '../../../interfaces';
 
 @CommandHandler(ForgotPasswordCommand)
 export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordCommand> {

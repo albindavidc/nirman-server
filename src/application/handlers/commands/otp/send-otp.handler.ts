@@ -6,7 +6,7 @@ import {
   IOtpStorageService,
   EMAIL_SERVICE,
   OTP_STORAGE_SERVICE,
-} from '../../../../application/interfaces/services';
+} from '../../../interfaces';
 
 @CommandHandler(SendOtpCommand)
 export class SendOtpHandler implements ICommandHandler<SendOtpCommand> {

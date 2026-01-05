@@ -3,7 +3,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { SendOtpDto, VerifyOtpDto } from '../../application/dto/otp/otp.dto';
 import { SendOtpCommand } from '../../application/commands/otp/send-otp.command';
 import { VerifyOtpCommand } from '../../application/commands/otp/verify-otp.command';
-import { Public } from '../../infrastructure/security/decorators/public.decorator';
+import { Public } from '../../common/security/decorators/public.decorator';
 
 import { OTP_ROUTES } from '../../app.routes';
 
