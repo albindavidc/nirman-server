@@ -28,6 +28,7 @@ import {
 
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
+import { UploadModule } from '../modules/upload.module';
 
 // Common - Security
 import { JwtStrategy } from '../../common/security/strategies/jwt.strategy';
@@ -52,6 +53,7 @@ const CommandHandlers = [
       secret: process.env.ACCESS_TOKEN_SECRET || 'default-access-secret',
       signOptions: { expiresIn: '1h' },
     }),
+    UploadModule,
   ],
   controllers: [AuthController],
   providers: [

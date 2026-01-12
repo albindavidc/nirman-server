@@ -19,6 +19,7 @@ model User {
 
   professional Professional?
   vendor       Vendor?
+  projects     Project[]
 
   @@index([role])
   @@map("users")

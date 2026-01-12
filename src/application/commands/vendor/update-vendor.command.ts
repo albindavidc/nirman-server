@@ -5,6 +5,7 @@ export class UpdateVendorCommand {
       companyName?: string;
       registrationNumber?: string;
       taxNumber?: string;
+      yearsInBusiness?: number;
       addressStreet?: string;
       addressCity?: string;
       addressState?: string;
@@ -12,6 +13,7 @@ export class UpdateVendorCommand {
       contactPhone?: string;
       contactEmail?: string;
       websiteUrl?: string;
+      productsServices?: string[];
       vendorStatus?: string;
     },
   ) {}

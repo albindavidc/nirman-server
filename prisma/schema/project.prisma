@@ -1,0 +1,33 @@
+enum ProjectStatus {
+  active
+  paused
+  completed
+  on_hold
+}
+
+model Project {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  icon        String        @default("folder")
+  status      ProjectStatus @default(active)
+  progress    Int           @default(0)
+  budget      Float?
+  spent       Float?
+
+  start_date DateTime?
+  due_date   DateTime?
+
+  team_member_ids String[] @db.ObjectId
+  created_by      String   @db.ObjectId
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  creator User @relation(fields: [created_by], references: [id])
+
+  @@index([name])
+  @@index([status])
+  @@index([created_by])
+  @@map("projects")
+}

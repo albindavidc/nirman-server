@@ -37,6 +37,9 @@ export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand>
     if (data.addressState) vendor.addressState = data.addressState;
     if (data.addressZipCode) vendor.addressZipCode = data.addressZipCode;
     if (data.websiteUrl) vendor.websiteUrl = data.websiteUrl;
+    if (data.yearsInBusiness !== undefined)
+      vendor.yearsInBusiness = data.yearsInBusiness;
+    if (data.productsServices) vendor.productsService = data.productsServices;
     if (data.vendorStatus)
       vendor.vendorStatus = data.vendorStatus as VendorStatus;
 

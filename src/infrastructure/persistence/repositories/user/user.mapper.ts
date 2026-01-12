@@ -58,7 +58,7 @@ export class UserMapper {
       password_hash: entity.passwordHash,
       profile_photo_url: entity.profilePhotoUrl ?? null,
       user_status: entity.userStatus,
-      role: entity.role,
+      role: entity.role as any,
 
       created_at: entity.createdAt ?? new Date(),
       updated_at: entity.updatedAt ?? new Date(),

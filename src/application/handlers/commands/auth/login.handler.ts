@@ -7,6 +7,7 @@ import {
   IUserRepository,
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
+import { S3Service } from '../../../../infrastructure/services/s3/s3.service';
 
 export interface LoginResult {
   accessToken: string;
@@ -15,6 +16,9 @@ export interface LoginResult {
     id: string;
     email: string;
     role: string;
+    firstName: string;
+    lastName: string;
+    profilePhotoUrl?: string; // Presigned URL
     vendorStatus?: string;
     rejectionReason?: string | null;
     vendorId?: string;
@@ -27,6 +31,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async execute(command: LoginCommand): Promise<LoginResult> {
@@ -62,6 +67,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       expiresIn: '30d',
     });
 
+    // Generate presigned URL for profile photo if it exists
+    let profilePhotoUrl = user.profilePhotoUrl;
+    if (profilePhotoUrl && !profilePhotoUrl.startsWith('http')) {
+      profilePhotoUrl = await this.s3Service.generateViewUrl(profilePhotoUrl);
+    }
+
     return {
       accessToken,
       refreshToken,
@@ -69,6 +80,9 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
         id: user.id,
         email: user.email,
         role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profilePhotoUrl,
         vendorStatus: user.vendor?.vendorStatus,
         rejectionReason: user.vendor?.rejectionReason,
         vendorId: user.vendor?.id,

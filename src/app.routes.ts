@@ -53,4 +53,15 @@ export const VENDOR_SIGNUP_ROUTES = {
 export const UPLOAD_ROUTES = {
   ROOT: `${API_PREFIX}/${API_VERSION}/upload`,
   PROFILE_PHOTO: 'profile-photo',
+  PRESIGNED_URL: 'presigned-url',
+};
+
+export const PROJECT_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/projects`,
+  CREATE_PROJECT: '',
+  GET_PROJECTS: '',
+  GET_STATS: 'stats',
+  GET_PROJECT_BY_ID: ':id',
+  UPDATE_PROJECT: ':id',
+  DELETE_PROJECT: ':id',
 };

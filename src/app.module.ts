@@ -20,6 +20,7 @@ import { VendorManagementModule } from './presentation/modules/vendor.module';
 import { ProfileModule } from './presentation/modules/profile.module';
 import { UploadModule } from './presentation/modules/upload.module';
 import { MemberModule } from './presentation/modules/member.module';
+import { ProjectModule } from './presentation/modules/project.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MemberModule } from './presentation/modules/member.module';
     ProfileModule,
     UploadModule,
     MemberModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [

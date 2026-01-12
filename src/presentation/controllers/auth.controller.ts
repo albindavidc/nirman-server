@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 
@@ -29,12 +29,16 @@ import { ForgotPasswordCommand } from '../../application/commands/auth/forgot-pa
 import { VerifyResetOtpCommand } from '../../application/commands/auth/verify-reset-otp.command';
 import { ResetPasswordCommand } from '../../application/commands/auth/reset-password.command';
 
+// Queries
+import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
+
 import { AUTH_ROUTES } from '../../app.routes';
 
 @Controller(AUTH_ROUTES.ROOT)
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -110,7 +114,7 @@ export class AuthController {
 
   @Get(AUTH_ROUTES.ME)
   @HttpCode(HttpStatus.OK)
-  getMe(@Req() req: Request) {
+  async getMe(@Req() req: Request) {
     const user = (
       req as Request & {
         user: {
@@ -120,11 +124,13 @@ export class AuthController {
         };
       }
     ).user;
-    return {
-      id: user.userId,
-      email: user.email,
-      role: user.role,
-    };
+
+    // Use GetProfileQuery to fetch full user details + fresh Presigned URL for photo
+    const profile = await this.queryBus.execute(
+      new GetProfileQuery(user.userId),
+    );
+
+    return profile;
   }
 
   @Post(AUTH_ROUTES.LOGOUT)

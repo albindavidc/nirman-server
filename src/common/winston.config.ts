@@ -22,7 +22,7 @@ export const winstonConfig = {
       filename: 'logs/application-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
-      maxSize: '20m',
+      maxSize: process.env.MAX_SIZE,
       maxFiles: '14d',
       format: format.combine(format.timestamp(), format.json()),
     }),

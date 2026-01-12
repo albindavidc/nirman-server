@@ -21,8 +21,10 @@ import { UpdatePasswordHandler } from '../../application/handlers/commands/profi
 const QueryHandlers = [GetProfileHandler];
 const CommandHandlers = [UpdateProfileHandler, UpdatePasswordHandler];
 
+import { UploadModule } from '../modules/upload.module';
+
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, UploadModule],
   controllers: [ProfileController],
   providers: [
     ...QueryHandlers,

@@ -4,6 +4,9 @@ import {
   IsEmail,
   IsEnum,
   MinLength,
+  IsNumber,
+  IsArray,
+  Min,
 } from 'class-validator';
 
 export enum VendorStatusDto {
@@ -26,6 +29,11 @@ export class UpdateVendorDto {
   @IsOptional()
   @IsString()
   taxNumber?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  yearsInBusiness?: number;
 
   @IsOptional()
   @IsString()
@@ -54,6 +62,11 @@ export class UpdateVendorDto {
   @IsOptional()
   @IsString()
   websiteUrl?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  productsServices?: string[];
 
   @IsOptional()
   @IsEnum(VendorStatusDto)
