@@ -17,24 +17,24 @@ export class UserRepository
 
   // Query methods
   async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
+    const user = await this.prisma.user.findFirst({
+      where: { id, is_deleted: false },
       include: { vendor: true, professional: true },
     });
     return user ? UserMapper.persistenceToEntity(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+    const user = await this.prisma.user.findFirst({
+      where: { email, is_deleted: false },
       include: { vendor: true, professional: true },
     });
     return user ? UserMapper.persistenceToEntity(user) : null;
   }
 
   async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { phone_number: phoneNumber },
+    const user = await this.prisma.user.findFirst({
+      where: { phone_number: phoneNumber, is_deleted: false },
       include: { vendor: true, professional: true },
     });
     return user ? UserMapper.persistenceToEntity(user) : null;
@@ -42,18 +42,23 @@ export class UserRepository
 
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
+      where: { is_deleted: false },
       include: { vendor: true, professional: true },
     });
     return users.map((user) => UserMapper.persistenceToEntity(user));
   }
 
   async exists(id: string): Promise<boolean> {
-    const count = await this.prisma.user.count({ where: { id } });
+    const count = await this.prisma.user.count({
+      where: { id, is_deleted: false },
+    });
     return count > 0;
   }
 
   async count(): Promise<number> {
-    return this.prisma.user.count();
+    return this.prisma.user.count({
+      where: { is_deleted: false },
+    });
   }
 
   // Mutation methods
@@ -105,6 +110,12 @@ export class UserRepository
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        is_deleted: true,
+        deleted_at: new Date(),
+      },
+    });
   }
 }

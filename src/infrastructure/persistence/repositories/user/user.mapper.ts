@@ -58,7 +58,7 @@ export class UserMapper {
       password_hash: entity.passwordHash,
       profile_photo_url: entity.profilePhotoUrl ?? null,
       user_status: entity.userStatus,
-      role: entity.role as any,
+      role: entity.role as unknown as UserPersistence['role'],
 
       created_at: entity.createdAt ?? new Date(),
       updated_at: entity.updatedAt ?? new Date(),
@@ -83,6 +83,8 @@ export class UserMapper {
             contact_phone: entity.vendor.contactPhone ?? null,
             vendor_status: entity.vendor.vendorStatus,
             rejection_reason: entity.vendor.rejectionReason ?? null,
+            is_deleted: false,
+            deleted_at: null,
           }
         : null,
     };

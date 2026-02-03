@@ -61,7 +61,40 @@ export const PROJECT_ROUTES = {
   CREATE_PROJECT: '',
   GET_PROJECTS: '',
   GET_STATS: 'stats',
+  GET_PROFESSIONALS: 'professionals',
   GET_PROJECT_BY_ID: ':id',
+  GET_ATTENDANCE: ':id/attendance',
   UPDATE_PROJECT: ':id',
   DELETE_PROJECT: ':id',
+  CREATE_PHASE: ':id/phases',
+  GET_PHASES: ':id/phases',
+  GET_MEMBERS: ':id/members',
+  ADD_MEMBERS: ':id/members',
+  REMOVE_MEMBER: ':id/members/:userId',
+  UPDATE_MEMBER: ':id/members/:userId',
+};
+
+export const MATERIAL_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/materials`,
+  GET_PROJECT_MATERIALS: 'project/:projectId',
+  CREATE_MATERIAL: 'project/:projectId',
+  UPDATE_STOCK: ':id/stock',
+  GET_TRANSACTIONS: ':id/transactions',
+  CREATE_REQUEST: 'requests',
+  GET_PROJECT_REQUESTS: 'project/:projectId/requests',
+};
+
+export const TASK_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/tasks`,
+  GET_MY_TASKS: 'my-tasks',
+  CREATE_TASK: '',
+  GET_TASK_BY_ID: ':id',
+  UPDATE_TASK: ':id',
+  DELETE_TASK: ':id',
+  GET_PROJECT_TASKS: 'project/:projectId',
+  GET_PHASE_TASKS: 'phase/:phaseId',
+  ADD_DEPENDENCY: 'dependencies',
+  REMOVE_DEPENDENCY: 'dependencies/:id',
+  GET_PROJECT_DEPENDENCIES: 'project/:projectId/dependencies',
+  GET_PHASE_DEPENDENCIES: 'phase/:phaseId/dependencies',
 };

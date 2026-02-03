@@ -34,7 +34,7 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProjectComman
     if (data.spent !== undefined) project.spent = data.spent;
     if (data.startDate) project.startDate = new Date(data.startDate);
     if (data.dueDate) project.dueDate = new Date(data.dueDate);
-    if (data.teamMemberIds) project.teamMemberIds = data.teamMemberIds;
+    if (data.managerIds) project.managerIds = data.managerIds;
 
     const updatedProject = await this.projectRepository.update(
       projectId,

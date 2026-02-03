@@ -3,6 +3,10 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
+import { MemberRepository } from '../../infrastructure/persistence/repositories/member/member.repository';
+
+// Domain interfaces
+import { MEMBER_REPOSITORY } from '../../domain/repositories/member-repository.interface';
 
 // Controller
 import { MemberController } from '../controllers/member.controller';
@@ -29,6 +33,12 @@ const CommandHandlers = [
 @Module({
   imports: [CqrsModule, PrismaModule],
   controllers: [MemberController],
-  providers: [...QueryHandlers, ...CommandHandlers],
+  providers: [
+    // Repository binding
+    { provide: MEMBER_REPOSITORY, useClass: MemberRepository },
+    // Handlers
+    ...QueryHandlers,
+    ...CommandHandlers,
+  ],
 })
 export class MemberModule {}

@@ -17,14 +17,15 @@ export class VendorRepository
 
   async findAll(): Promise<Vendor[]> {
     const vendors = await this.prisma.vendor.findMany({
+      where: { is_deleted: false },
       include: { user: true },
     });
     return vendors.map((v) => VendorMapper.persistenceToEntity(v));
   }
 
   async findById(id: string): Promise<Vendor | null> {
-    const vendor = await this.prisma.vendor.findUnique({
-      where: { id },
+    const vendor = await this.prisma.vendor.findFirst({
+      where: { id, is_deleted: false },
       include: {
         user: true, // Include user to map relations if needed by Mapper
       },
@@ -33,8 +34,8 @@ export class VendorRepository
   }
 
   async findByUserId(userId: string): Promise<Vendor | null> {
-    const vendor = await this.prisma.vendor.findUnique({
-      where: { user_id: userId },
+    const vendor = await this.prisma.vendor.findFirst({
+      where: { user_id: userId, is_deleted: false },
       include: { user: true },
     });
     return vendor ? VendorMapper.persistenceToEntity(vendor) : null;
@@ -58,6 +59,7 @@ export class VendorRepository
     const where: Prisma.VendorWhereInput = {
       // Only include vendors whose user_id exists in the users collection
       user_id: { in: validUserIds },
+      is_deleted: false,
     };
 
     if (status) {
@@ -130,15 +132,25 @@ export class VendorRepository
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.vendor.delete({ where: { id } });
+    await this.prisma.vendor.update({
+      where: { id },
+      data: {
+        is_deleted: true,
+        deleted_at: new Date(),
+      },
+    });
   }
 
   async exists(id: string): Promise<boolean> {
-    const count = await this.prisma.vendor.count({ where: { id } });
+    const count = await this.prisma.vendor.count({
+      where: { id, is_deleted: false },
+    });
     return count > 0;
   }
 
   async count(): Promise<number> {
-    return this.prisma.vendor.count();
+    return this.prisma.vendor.count({
+      where: { is_deleted: false },
+    });
   }
 }

@@ -1,75 +1,72 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, Inject } from '@nestjs/common';
 import { CreateMemberCommand } from '../../../commands/member/create-member.command';
-import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
 import { MemberResponseDto } from '../../../dto/member/member-response.dto';
-import { UserRole } from '../../../../generated/client/client';
+import {
+  IMemberRepository,
+  MEMBER_REPOSITORY,
+} from '../../../../domain/repositories/member-repository.interface';
 import * as bcrypt from 'bcrypt';
 
 @CommandHandler(CreateMemberCommand)
 export class CreateMemberHandler implements ICommandHandler<CreateMemberCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(MEMBER_REPOSITORY)
+    private readonly memberRepository: IMemberRepository,
+  ) {}
 
   async execute(command: CreateMemberCommand): Promise<MemberResponseDto> {
     const { data } = command;
 
     // Check if email already exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const existingUser = await this.memberRepository.findByEmail(data.email);
 
     if (existingUser) {
       throw new ConflictException('Email already in use');
     }
 
     // Hash password - use provided or generate default
-    const rawPassword = data.password || 'Temp@1234'; // Default password for new members
+    const rawPassword = data.password || 'Temp@1234';
     const passwordHash = await bcrypt.hash(rawPassword, 10);
 
-    // Create user with optional professional data
-    const user = await this.prisma.user.create({
-      data: {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        phone_number: data.phone, // Front-end sends 'phone'
-        password_hash: passwordHash,
-        role: data.role as UserRole,
-        user_status: 'active',
-        professional: data.professionalTitle
-          ? {
-              create: {
-                professional_title: data.professionalTitle,
-                experience_years: data.experienceYears ?? 0,
-                skills: data.skills ?? [],
-                address_street: data.addressStreet ?? '',
-                address_city: data.addressCity ?? '',
-                address_state: data.addressState ?? '',
-                address_zip_code: data.addressZipCode ?? '',
-              },
-            }
-          : undefined,
-      },
-      include: { professional: true },
+    // Create member with optional professional data
+    const member = await this.memberRepository.create({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phone,
+      passwordHash,
+      role: data.role,
+      professional: data.professionalTitle
+        ? {
+            professionalTitle: data.professionalTitle,
+            experienceYears: data.experienceYears,
+            skills: data.skills,
+            addressStreet: data.addressStreet,
+            addressCity: data.addressCity,
+            addressState: data.addressState,
+            addressZipCode: data.addressZipCode,
+          }
+        : undefined,
     });
 
     return {
-      id: user.id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      phoneNumber: user.phone_number ?? undefined,
-      role: user.role,
-      userStatus: user.user_status,
-      professionalTitle: user.professional?.professional_title,
-      experienceYears: user.professional?.experience_years,
-      skills: user.professional?.skills,
-      addressStreet: user.professional?.address_street,
-      addressCity: user.professional?.address_city,
-      addressState: user.professional?.address_state,
-      addressZipCode: user.professional?.address_zip_code,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at,
+      id: member.id,
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      phoneNumber: member.phoneNumber ?? undefined,
+      role: member.role,
+      userStatus: member.userStatus,
+      professionalTitle: member.professionalTitle,
+      experienceYears: member.experienceYears,
+      skills: member.skills,
+      addressStreet: member.addressStreet,
+      addressCity: member.addressCity,
+      addressState: member.addressState,
+      addressZipCode: member.addressZipCode,
+      createdAt: member.createdAt,
+      updatedAt: member.updatedAt,
     };
   }
 }

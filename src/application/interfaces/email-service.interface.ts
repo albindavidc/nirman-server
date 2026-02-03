@@ -10,6 +10,7 @@ export interface IEmailService {
   }): Promise<boolean>;
   sendOtpEmail(email: string, otp: string): Promise<boolean>;
   sendPasswordResetEmail(email: string, otp: string): Promise<boolean>;
+  sendWelcomeEmail(email: string, firstName: string): Promise<boolean>;
 }
 
 export const EMAIL_SERVICE = Symbol('EMAIL_SERVICE');

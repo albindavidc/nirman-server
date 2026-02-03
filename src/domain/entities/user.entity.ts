@@ -25,7 +25,19 @@ export class User extends AggregateRoot {
   updatedAt: Date;
 
   // Relations (optional, populated by Repository via include)
-  professional?: any;
+  professional?: {
+    id: string;
+    userId: string;
+    professionalTitle: string;
+    experienceYears: number;
+    skills: string[];
+    addressStreet: string;
+    addressCity: string;
+    addressState: string;
+    addressZipCode: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
   vendor?: Vendor;
   // Note: Using 'any' or specific Entity types if available to avoid circular deps.
   // Ideally should import { Professional } and { Vendor } but circular imports are tricky in TS.

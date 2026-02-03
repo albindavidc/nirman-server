@@ -1,8 +1,10 @@
 import { BaseEntity } from './base.entity';
 import { VendorStatus } from '../enums/vendor-status.enum';
+import { VendorUser } from '../types/vendor.types';
 
 export class Vendor extends BaseEntity {
   userId: string;
+  user?: VendorUser;
   companyName: string;
   registrationNumber: string;
   taxNumber?: string;
@@ -16,7 +18,7 @@ export class Vendor extends BaseEntity {
   contactEmail?: string;
   contactPhone?: string;
   vendorStatus: VendorStatus;
-  rejectionReason?: string;
+  rejectionReason?: string | null;
 
   constructor(props: Partial<Vendor>) {
     super();
@@ -38,5 +40,6 @@ export class Vendor extends BaseEntity {
     this.contactPhone = props.contactPhone;
     this.vendorStatus = props.vendorStatus!;
     this.rejectionReason = props.rejectionReason;
+    this.user = props.user;
   }
 }

@@ -1,65 +1,49 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
 import { GetMembersQuery } from '../../../queries/member/get-members.query';
-import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
 import {
   MemberResponseDto,
   MemberListResponseDto,
 } from '../../../dto/member/member-response.dto';
-import { Prisma } from '../../../../generated/client/client';
+import {
+  IMemberRepository,
+  MEMBER_REPOSITORY,
+} from '../../../../domain/repositories/member-repository.interface';
 
 @QueryHandler(GetMembersQuery)
 export class GetMembersHandler implements IQueryHandler<GetMembersQuery> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(MEMBER_REPOSITORY)
+    private readonly memberRepository: IMemberRepository,
+  ) {}
 
   async execute(query: GetMembersQuery): Promise<MemberListResponseDto> {
     const { page, limit, role, search } = query;
-    const skip = (page - 1) * limit;
 
-    // Build where clause - only workers and supervisors are "members"
-    const where: Prisma.UserWhereInput = {
-      role: { in: ['worker', 'supervisor'] },
-    };
+    const { members, total } = await this.memberRepository.findAllWithFilters({
+      page,
+      limit,
+      role,
+      search,
+    });
 
-    if (role) {
-      where.role = role as Prisma.EnumUserRoleFilter;
-    }
-
-    if (search) {
-      where.OR = [
-        { first_name: { contains: search, mode: 'insensitive' } },
-        { last_name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-      ];
-    }
-
-    const [users, total] = await Promise.all([
-      this.prisma.user.findMany({
-        where,
-        skip,
-        take: limit,
-        include: { professional: true },
-        orderBy: { created_at: 'desc' },
-      }),
-      this.prisma.user.count({ where }),
-    ]);
-
-    const data: MemberResponseDto[] = users.map((user) => ({
-      id: user.id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      phoneNumber: user.phone_number ?? undefined,
-      role: user.role,
-      userStatus: user.user_status,
-      professionalTitle: user.professional?.professional_title,
-      experienceYears: user.professional?.experience_years,
-      skills: user.professional?.skills,
-      addressStreet: user.professional?.address_street,
-      addressCity: user.professional?.address_city,
-      addressState: user.professional?.address_state,
-      addressZipCode: user.professional?.address_zip_code,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at,
+    const data: MemberResponseDto[] = members.map((member) => ({
+      id: member.id,
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      phoneNumber: member.phoneNumber ?? undefined,
+      role: member.role,
+      userStatus: member.userStatus,
+      professionalTitle: member.professionalTitle,
+      experienceYears: member.experienceYears,
+      skills: member.skills,
+      addressStreet: member.addressStreet,
+      addressCity: member.addressCity,
+      addressState: member.addressState,
+      addressZipCode: member.addressZipCode,
+      createdAt: member.createdAt,
+      updatedAt: member.updatedAt,
     }));
 
     return {

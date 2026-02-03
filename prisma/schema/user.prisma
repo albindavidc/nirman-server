@@ -16,10 +16,23 @@ model User {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+  deleted_at DateTime?
 
   professional Professional?
   vendor       Vendor?
-  projects     Project[]
+  attendance   Attendance[]
+  
+  // Material Relations
+  created_materials Material[]
+  requested_materials MaterialRequest[] @relation("RequestedMaterials")
+  approved_materials  MaterialRequest[] @relation("ApprovedMaterials")
+  
+  // Phase Approval Relations
+  phase_approval_requests PhaseApproval[] @relation("RequesterRelation")
+  phase_approvals_granted PhaseApproval[] @relation("ApproverRelation")
+  verified_attendance     Attendance[]    @relation("AttendanceVerifier")
+  assigned_tasks          Task[]          @relation("TaskAssignee")
 
   @@index([role])
   @@map("users")

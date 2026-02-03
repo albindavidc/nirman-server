@@ -92,6 +92,14 @@ export class VendorMapper {
       contactPhone: persistence.contact_phone ?? '',
       vendorStatus: persistence.vendor_status as VendorStatus,
       rejectionReason: persistence.rejection_reason ?? undefined,
+      user: persistence.user
+        ? {
+            id: persistence.user.id,
+            firstName: persistence.user.first_name,
+            lastName: persistence.user.last_name,
+            email: persistence.user.email,
+          }
+        : undefined,
     });
   }
 
@@ -118,6 +126,35 @@ export class VendorMapper {
         ? {
             firstName: vendor.user.first_name,
             lastName: vendor.user.last_name,
+            email: vendor.user.email,
+          }
+        : null,
+    };
+  }
+
+  static domainToResponse(vendor: Vendor): VendorResponseDto {
+    return {
+      id: vendor.id,
+      userId: vendor.userId,
+      companyName: vendor.companyName,
+      registrationNumber: vendor.registrationNumber,
+      taxNumber: vendor.taxNumber ?? '',
+      yearsInBusiness: vendor.yearsInBusiness ?? 0,
+      addressStreet: vendor.addressStreet ?? '',
+      addressCity: vendor.addressCity ?? '',
+      addressState: vendor.addressState ?? '',
+      addressZipCode: vendor.addressZipCode ?? '',
+      productsServices: vendor.productsService,
+      websiteUrl: vendor.websiteUrl ?? '',
+      contactEmail: vendor.contactEmail ?? '',
+      contactPhone: vendor.contactPhone ?? '',
+      vendorStatus: vendor.vendorStatus,
+      createdAt: vendor.createdAt,
+      updatedAt: vendor.updatedAt,
+      user: vendor.user
+        ? {
+            firstName: vendor.user.firstName,
+            lastName: vendor.user.lastName,
             email: vendor.user.email,
           }
         : null,

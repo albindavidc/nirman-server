@@ -1,0 +1,92 @@
+
+model Material {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  project_id  String   @db.ObjectId
+  
+  material_name String
+  material_code String
+  category      String
+  
+  description   String?
+  specifications String?
+  
+  current_stock Float    @default(0)
+  unit          String
+  unit_price    Float?
+  
+  reorder_level   Float?
+  storage_location String?
+  preferred_supplier_id String? @db.ObjectId
+  status          String   @default("in_stock") // in_stock, low_stock, out_of_stock
+  
+  created_by      String   @db.ObjectId
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  project           Project @relation(fields: [project_id], references: [id])
+  preferred_supplier Vendor? @relation(fields: [preferred_supplier_id], references: [id])
+  creator           User    @relation(fields: [created_by], references: [id])
+  
+  transactions      MaterialTransaction[]
+
+  @@unique([project_id, material_code])
+  @@index([material_name])
+  @@index([category])
+  @@index([status])
+  @@map("materials")
+}
+
+model MaterialTransaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  material_id String   @db.ObjectId
+  
+  type        String   // IN, OUT, ADJUSTMENT
+  quantity    Float
+  date        DateTime @default(now())
+  
+  reference_id String?  // Invoice ID, Task ID, etc.
+  performed_by String?  @db.ObjectId // User ID
+  notes       String?
+  
+  material    Material @relation(fields: [material_id], references: [id])
+
+  @@index([material_id])
+  @@index([date])
+  @@map("material_transactions")
+}
+
+model MaterialRequest {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  request_number  String   @unique
+  project_id      String   @db.ObjectId
+  requested_by    String   @db.ObjectId
+  
+  items           Json[]   // Array of { material_id, material_name, quantity, ... }
+  
+  priority        String   @default("medium") // low, medium, high, urgent
+  purpose         String?
+  delivery_location String?
+  required_date   DateTime
+  
+  status          String   @default("pending") // pending, approved, rejected, partially_fulfilled, fulfilled, cancelled
+  
+  approved_by     String?  @db.ObjectId
+  approved_at     DateTime?
+  approval_comments String?
+  
+  rejection_reason String?
+  
+  converted_to_po Boolean  @default(false)
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  project         Project @relation(fields: [project_id], references: [id])
+  requester       User    @relation("RequestedMaterials", fields: [requested_by], references: [id])
+  approver        User?   @relation("ApprovedMaterials", fields: [approved_by], references: [id])
+  
+  @@index([project_id])
+  @@index([requested_by])
+  @@index([status])
+  @@map("material_requests")
+}

@@ -8,6 +8,7 @@ import { BadRequestException, ConflictException, Inject } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UserMapper } from '../../../mappers/user/user.mapper';
 import { Prisma } from '../../../../generated/client/client';
+import { UserRegisteredEvent } from '../../../../domain/events/user-registered.event';
 
 @CommandHandler(CreateVendorUserCommand)
 export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUserCommand> {
@@ -61,7 +62,7 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
       const saved = await this.userRepository.create(userEntity);
 
       const userModel = this.eventPublisher.mergeObjectContext(saved);
-      userModel.apply('User Registered');
+      userModel.apply(new UserRegisteredEvent(saved.id, email, dto.firstName));
       userModel.commit();
 
       return saved.id;

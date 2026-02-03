@@ -1,38 +1,34 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UnblacklistVendorCommand } from '../../../commands/vendor/unblacklist-vendor.command';
-import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
-import { NotFoundException } from '@nestjs/common';
+import {
+  IVendorRepository,
+  VENDOR_REPOSITORY,
+} from '../../../../domain/repositories/vendor-repository.interface';
+import { Inject, NotFoundException } from '@nestjs/common';
+import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import { VendorResponseDto } from '../../../dto/vendor/vendor-response.dto';
 import { VendorMapper } from '../../../../infrastructure/persistence/repositories/vendor/vendor.mapper';
 
 @CommandHandler(UnblacklistVendorCommand)
 export class UnblacklistVendorHandler implements ICommandHandler<UnblacklistVendorCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(VENDOR_REPOSITORY)
+    private readonly vendorRepository: IVendorRepository,
+  ) {}
 
   async execute(command: UnblacklistVendorCommand): Promise<VendorResponseDto> {
     const { id } = command;
 
-    const vendor = await this.prisma.vendor.findUnique({
-      where: { id },
-      include: {
-        user: true,
-      },
-    });
+    const vendor = await this.vendorRepository.findById(id);
 
     if (!vendor) {
       throw new NotFoundException(`Vendor with ID ${id} not found`);
     }
 
-    const updatedVendor = await this.prisma.vendor.update({
-      where: { id },
-      data: {
-        vendor_status: 'approved',
-      },
-      include: {
-        user: true,
-      },
+    const updatedVendor = await this.vendorRepository.update(id, {
+      vendorStatus: VendorStatus.APPROVED,
     });
 
-    return VendorMapper.toResponse(updatedVendor);
+    return VendorMapper.domainToResponse(updatedVendor);
   }
 }

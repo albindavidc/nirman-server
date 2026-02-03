@@ -14,6 +14,7 @@ export interface IProjectRepository {
   exists(id: string): Promise<boolean>;
   count(): Promise<number>;
   countByStatus(status: string): Promise<number>;
+  getAggregatedBudget(): Promise<{ totalBudget: number; totalSpent: number }>;
 
   // Mutation methods
   create(data: Partial<Project>): Promise<Project>;

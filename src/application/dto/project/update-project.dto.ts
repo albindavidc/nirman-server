@@ -9,7 +9,7 @@ import {
   Max,
   MinLength,
 } from 'class-validator';
-import { ProjectStatusDto } from './create-project.dto';
+import { ProjectStatus } from '../../../domain/enums/project-status.enum';
 
 export class UpdateProjectDto {
   @IsOptional()
@@ -26,8 +26,8 @@ export class UpdateProjectDto {
   icon?: string;
 
   @IsOptional()
-  @IsEnum(ProjectStatusDto)
-  status?: ProjectStatusDto;
+  @IsEnum(ProjectStatus)
+  status?: ProjectStatus;
 
   @IsOptional()
   @IsNumber()
@@ -56,5 +56,5 @@ export class UpdateProjectDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  teamMemberIds?: string[];
+  managerIds?: string[];
 }

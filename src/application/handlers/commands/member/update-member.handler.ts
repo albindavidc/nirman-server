@@ -1,108 +1,75 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateMemberCommand } from '../../../commands/member/update-member.command';
-import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
 import { MemberResponseDto } from '../../../dto/member/member-response.dto';
-import { UserRole } from '../../../../generated/client/client';
+import {
+  IMemberRepository,
+  MEMBER_REPOSITORY,
+} from '../../../../domain/repositories/member-repository.interface';
 
 @CommandHandler(UpdateMemberCommand)
 export class UpdateMemberHandler implements ICommandHandler<UpdateMemberCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(MEMBER_REPOSITORY)
+    private readonly memberRepository: IMemberRepository,
+  ) {}
 
   async execute(command: UpdateMemberCommand): Promise<MemberResponseDto> {
     const { id, data } = command;
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { id },
-      include: { professional: true },
-    });
+    // Check if member exists
+    const existingMember = await this.memberRepository.findById(id);
 
-    if (!existingUser) {
+    if (!existingMember) {
       throw new NotFoundException('Member not found');
     }
 
-    // Update user data
-    await this.prisma.user.update({
-      where: { id },
-      data: {
-        first_name: data.firstName ?? existingUser.first_name,
-        last_name: data.lastName ?? existingUser.last_name,
-        email: data.email ?? existingUser.email,
-        phone_number: data.phone ?? existingUser.phone_number,
-        role: data.role ? (data.role as UserRole) : existingUser.role,
-      },
-    });
+    // Build professional data if any professional fields are provided
+    const hasProfessionalData =
+      data.professionalTitle !== undefined ||
+      data.experienceYears !== undefined ||
+      data.skills !== undefined ||
+      data.addressStreet !== undefined ||
+      data.addressCity !== undefined ||
+      data.addressState !== undefined ||
+      data.addressZipCode !== undefined;
 
-    // Update professional data if exists or create if needed
-    if (
-      data.professionalTitle ||
-      data.experienceYears ||
-      data.skills ||
-      data.addressStreet ||
-      data.addressCity ||
-      data.addressState ||
-      data.addressZipCode
-    ) {
-      if (existingUser.professional) {
-        await this.prisma.professional.update({
-          where: { user_id: id },
-          data: {
-            professional_title:
-              data.professionalTitle ??
-              existingUser.professional.professional_title,
-            experience_years:
-              data.experienceYears ??
-              existingUser.professional.experience_years,
-            skills: data.skills ?? existingUser.professional.skills,
-            address_street:
-              data.addressStreet ?? existingUser.professional.address_street,
-            address_city:
-              data.addressCity ?? existingUser.professional.address_city,
-            address_state:
-              data.addressState ?? existingUser.professional.address_state,
-            address_zip_code:
-              data.addressZipCode ?? existingUser.professional.address_zip_code,
-          },
-        });
-      } else {
-        await this.prisma.professional.create({
-          data: {
-            user_id: id,
-            professional_title: data.professionalTitle ?? '',
-            experience_years: data.experienceYears ?? 0,
-            skills: data.skills ?? [],
-            address_street: data.addressStreet ?? '',
-            address_city: data.addressCity ?? '',
-            address_state: data.addressState ?? '',
-            address_zip_code: data.addressZipCode ?? '',
-          },
-        });
-      }
-    }
-
-    // Refetch with updated professional
-    const updatedUser = await this.prisma.user.findUnique({
-      where: { id },
-      include: { professional: true },
+    // Update member
+    const updatedMember = await this.memberRepository.update(id, {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phoneNumber: data.phone,
+      role: data.role,
+      professional: hasProfessionalData
+        ? {
+            professionalTitle: data.professionalTitle,
+            experienceYears: data.experienceYears,
+            skills: data.skills,
+            addressStreet: data.addressStreet,
+            addressCity: data.addressCity,
+            addressState: data.addressState,
+            addressZipCode: data.addressZipCode,
+          }
+        : undefined,
     });
 
     return {
-      id: updatedUser!.id,
-      firstName: updatedUser!.first_name,
-      lastName: updatedUser!.last_name,
-      email: updatedUser!.email,
-      phoneNumber: updatedUser!.phone_number ?? undefined,
-      role: updatedUser!.role,
-      userStatus: updatedUser!.user_status,
-      professionalTitle: updatedUser!.professional?.professional_title,
-      experienceYears: updatedUser!.professional?.experience_years,
-      skills: updatedUser!.professional?.skills,
-      addressStreet: updatedUser!.professional?.address_street,
-      addressCity: updatedUser!.professional?.address_city,
-      addressState: updatedUser!.professional?.address_state,
-      addressZipCode: updatedUser!.professional?.address_zip_code,
-      createdAt: updatedUser!.created_at,
-      updatedAt: updatedUser!.updated_at,
+      id: updatedMember.id,
+      firstName: updatedMember.firstName,
+      lastName: updatedMember.lastName,
+      email: updatedMember.email,
+      phoneNumber: updatedMember.phoneNumber ?? undefined,
+      role: updatedMember.role,
+      userStatus: updatedMember.userStatus,
+      professionalTitle: updatedMember.professionalTitle,
+      experienceYears: updatedMember.experienceYears,
+      skills: updatedMember.skills,
+      addressStreet: updatedMember.addressStreet,
+      addressCity: updatedMember.addressCity,
+      addressState: updatedMember.addressState,
+      addressZipCode: updatedMember.addressZipCode,
+      createdAt: updatedMember.createdAt,
+      updatedAt: updatedMember.updatedAt,
     };
   }
 }

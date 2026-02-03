@@ -8,19 +8,35 @@ import {
   Min,
   Max,
   MinLength,
+  ValidateNested,
+  IsIn,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export enum ProjectStatusDto {
-  ACTIVE = 'active',
-  PAUSED = 'paused',
-  COMPLETED = 'completed',
-  ON_HOLD = 'on_hold',
+import { ProjectStatus } from '../../../domain/enums/project-status.enum';
+
+export class ProjectMemberDto {
+  @IsString()
+  userId: string;
+
+  @IsString()
+  @IsIn(['Admin', 'Viewer'])
+  role: 'Admin' | 'Viewer';
+
+  @IsOptional()
+  @IsDateString()
+  joinedAt?: string;
 }
 
 export class CreateProjectDto {
   @IsString()
   @MinLength(2)
   name: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  managerIds?: string[];
 
   @IsOptional()
   @IsString()
@@ -31,8 +47,8 @@ export class CreateProjectDto {
   icon?: string;
 
   @IsOptional()
-  @IsEnum(ProjectStatusDto)
-  status?: ProjectStatusDto;
+  @IsEnum(ProjectStatus)
+  status?: ProjectStatus;
 
   @IsOptional()
   @IsNumber()
@@ -59,7 +75,16 @@ export class CreateProjectDto {
   dueDate?: string;
 
   @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  teamMemberIds?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => ProjectMemberDto)
+  members?: ProjectMemberDto[];
 }

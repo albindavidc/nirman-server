@@ -21,6 +21,9 @@ import { ProfileModule } from './presentation/modules/profile.module';
 import { UploadModule } from './presentation/modules/upload.module';
 import { MemberModule } from './presentation/modules/member.module';
 import { ProjectModule } from './presentation/modules/project.module';
+import { MaterialModule } from './presentation/modules/material.module';
+import { AttendanceModule } from './presentation/modules/attendance.module';
+import { TaskModule } from './presentation/modules/task.module';
 
 @Module({
   imports: [
@@ -33,6 +36,9 @@ import { ProjectModule } from './presentation/modules/project.module';
     UploadModule,
     MemberModule,
     ProjectModule,
+    MaterialModule,
+    AttendanceModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [

@@ -25,14 +25,16 @@ import {
 } from '../../application/dto/member/member-response.dto';
 import { Roles } from '../../common/security/decorators/roles.decorator';
 
-@Controller('api/v1/members')
+import { MEMBER_ROUTES } from '../../app.routes';
+
+@Controller(MEMBER_ROUTES.ROOT)
 export class MemberController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Get()
+  @Get(MEMBER_ROUTES.GET_MEMBERS)
   @Roles('admin', 'supervisor')
   async getMembers(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -45,13 +47,13 @@ export class MemberController {
     );
   }
 
-  @Post()
+  @Post(MEMBER_ROUTES.ADD_MEMBER)
   @Roles('admin')
   async createMember(@Body() dto: CreateMemberDto): Promise<MemberResponseDto> {
     return this.commandBus.execute(new CreateMemberCommand(dto));
   }
 
-  @Put(':id')
+  @Put(MEMBER_ROUTES.EDIT_MEMBER)
   @Roles('admin', 'supervisor')
   async updateMember(
     @Param('id') id: string,
@@ -60,13 +62,13 @@ export class MemberController {
     return this.commandBus.execute(new UpdateMemberCommand(id, dto));
   }
 
-  @Put(':id/block')
+  @Put(MEMBER_ROUTES.BLOCK_MEMBER)
   @Roles('admin')
   async blockMember(@Param('id') id: string): Promise<MemberResponseDto> {
     return this.commandBus.execute(new BlockMemberCommand(id));
   }
 
-  @Put(':id/unblock')
+  @Put(MEMBER_ROUTES.UNBLOCK_MEMBER)
   @Roles('admin')
   async unblockMember(@Param('id') id: string): Promise<MemberResponseDto> {
     return this.commandBus.execute(new UnblockMemberCommand(id));

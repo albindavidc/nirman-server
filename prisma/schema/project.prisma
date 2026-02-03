@@ -5,9 +5,17 @@ enum ProjectStatus {
   on_hold
 }
 
+type ProjectMember {
+  user_id    String
+  role       String
+  joined_at  DateTime @default(now())
+  is_creator Boolean  @default(false)
+}
+
 model Project {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   name        String
+  manager_ids String[]      @db.ObjectId
   description String?
   icon        String        @default("folder")
   status      ProjectStatus @default(active)
@@ -18,16 +26,148 @@ model Project {
   start_date DateTime?
   due_date   DateTime?
 
-  team_member_ids String[] @db.ObjectId
-  created_by      String   @db.ObjectId
+  latitude  Float?
+  longitude Float?
+
+  members ProjectMember[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+  deleted_at DateTime?
 
-  creator User @relation(fields: [created_by], references: [id])
-
+  phases      ProjectPhase[]
+  attendance  Attendance[]
+  materials   Material[]
+  material_requests MaterialRequest[]
+  
   @@index([name])
   @@index([status])
-  @@index([created_by])
   @@map("projects")
+}
+
+model ProjectPhase {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  project_id        String    @db.ObjectId
+  name              String
+  description       String?
+  progress          Int       @default(0)
+  planned_start_date DateTime?
+  planned_end_date   DateTime?
+  actual_start_date  DateTime?
+  actual_end_date    DateTime?
+  status            String    @default("Not Started")
+  sequence          Int
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  project           Project   @relation(fields: [project_id], references: [id])
+  approvals         PhaseApproval[]
+  tasks             Task[]
+
+  @@map("project_phases")
+  @@index([project_id])
+}
+
+type MediaItem {
+  type String
+  url  String
+}
+
+model PhaseApproval {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id        String      @db.ObjectId
+  approved_by     String?     @db.ObjectId // Optional, initially null
+  requested_by    String      @db.ObjectId // The user requesting approval
+  approval_status String      // pending, approved, rejected
+  comments        String?
+  media           MediaItem[]
+  approved_at     DateTime?
+  requested_at    DateTime    @default(now())
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  phase           ProjectPhase @relation(fields: [phase_id], references: [id])
+  approver        User?        @relation("ApproverRelation", fields: [approved_by], references: [id])
+  requester       User         @relation("RequesterRelation", fields: [requested_by], references: [id])
+
+  @@map("phase_approvals")
+  @@index([phase_id])
+  @@index([approved_by])
+  @@index([requested_by])
+}
+
+model Attendance {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  project_id  String    @db.ObjectId
+  user_id     String    @db.ObjectId
+  date        DateTime
+  check_in    DateTime?
+  check_out   DateTime?
+  status      String
+  location    String?
+  work_hours  Float?
+
+  method           String    @default("Manual") // 'QR Code', 'Manual', 'Geofence'
+  supervisor_notes String?
+  is_verified      Boolean   @default(false)
+  verified_by      String?   @db.ObjectId
+  verified_at      DateTime?
+
+  project Project @relation(fields: [project_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id])
+  verifier User?   @relation("AttendanceVerifier", fields: [verified_by], references: [id])
+
+  @@map("attendance")
+}
+
+model Task {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id          String    @db.ObjectId
+  assigned_to       String?   @db.ObjectId
+  name              String
+  description       String?
+  planned_start_date DateTime?
+  planned_end_date   DateTime?
+  actual_start_date  DateTime?
+  actual_end_date    DateTime?
+  status            String    @default("Not Started") // 'Not Started', 'In Progress', 'Completed', 'Delayed'
+  priority          String    @default("Medium") // 'Low', 'Medium', 'High', 'Critical'
+  progress          Int       @default(0)
+  notes             String?   
+  
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  phase             ProjectPhase @relation(fields: [phase_id], references: [id])
+  assignee          User?        @relation("TaskAssignee", fields: [assigned_to], references: [id])
+  
+  successors        TaskDependency[] @relation("TaskSuccessor")
+  predecessors      TaskDependency[] @relation("TaskPredecessor")
+
+  @@map("tasks")
+  @@index([phase_id])
+  @@index([assigned_to])
+}
+
+model TaskDependency {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id            String   @db.ObjectId
+  successor_task_id   String   @db.ObjectId
+  predecessor_task_id String   @db.ObjectId
+  
+  type                String   @default("FS") // 'FS', 'SS', 'FF', 'SF'
+  lag_time            Int      @default(0) // In days
+  notes               String?
+
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  successor           Task     @relation("TaskSuccessor", fields: [successor_task_id], references: [id])
+  predecessor         Task     @relation("TaskPredecessor", fields: [predecessor_task_id], references: [id])
+  
+  @@map("task_dependencies")
+  @@index([successor_task_id])
+  @@index([predecessor_task_id])
+  @@index([phase_id])
 }

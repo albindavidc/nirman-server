@@ -19,8 +19,30 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
   async execute(command: CreateProjectCommand): Promise<ProjectResponseDto> {
     const { data, createdBy } = command;
 
+    const members =
+      data.members?.map((m) => ({
+        userId: m.userId,
+        role: m.role,
+        joinedAt: m.joinedAt ? new Date(m.joinedAt) : new Date(),
+        isCreator: false,
+      })) ?? [];
+
+    // Add creator as member if not present
+    const creatorIndex = members.findIndex((m) => m.userId === createdBy);
+    if (creatorIndex === -1) {
+      members.unshift({
+        userId: createdBy,
+        role: 'Admin',
+        joinedAt: new Date(),
+        isCreator: true,
+      });
+    } else {
+      members[creatorIndex].isCreator = true;
+    }
+
     const project = await this.projectRepository.create({
       name: data.name,
+      managerIds: data.managerIds ?? [],
       description: data.description,
       icon: data.icon ?? 'folder',
       status: (data.status as unknown as ProjectStatus) ?? ProjectStatus.ACTIVE,
@@ -29,8 +51,9 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
       spent: data.spent,
       startDate: data.startDate ? new Date(data.startDate) : undefined,
       dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-      teamMemberIds: data.teamMemberIds ?? [],
-      createdBy,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      members: members,
     });
 
     return ProjectMapper.toResponse(project);
