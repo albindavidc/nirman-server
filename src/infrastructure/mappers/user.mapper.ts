@@ -1,12 +1,46 @@
 import { User } from 'src/domain/entities/user.entity';
 import { Vendor } from 'src/domain/entities/vendor.entity';
+import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
 import { CreateVendorUserDto } from 'src/application/dto/vendor/create-vendor-user.dto';
 import { Role } from 'src/domain/enums/role.enum';
-import { UserPersistence } from 'src/infrastructure/persistence/repositories/user/user.persistence';
+import { UserPersistence } from 'src/infrastructure/types/user.types';
 import { UserStatus } from 'src/domain/enums/user-status.enum';
-import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
 
+/**
+ * Type-safe mapper for User entity <-> Prisma persistence conversion.
+ * All 'any' types are encapsulated within this mapper with eslint-disable comments.
+ */
 export class UserMapper {
+  /**
+   * Converts a Prisma result to domain entity.
+   */
+  static fromPrismaResult<T extends Record<string, unknown>>(result: T): User {
+    return this.persistenceToEntity(result as unknown as UserPersistence);
+  }
+
+  /**
+   * Converts a Prisma result array to domain entities.
+   */
+  static fromPrismaResults<T extends Record<string, unknown>>(
+    results: T[],
+  ): User[] {
+    return results.map((r) => this.fromPrismaResult(r));
+  }
+
+  /**
+   * Converts create input to Prisma-compatible format.
+   */
+  static toPrismaCreateInput(data: Partial<User>): Partial<UserPersistence> {
+    return this.entityToPersistence(data);
+  }
+
+  /**
+   * Converts update input to Prisma-compatible format.
+   */
+  static toPrismaUpdateInput(data: Partial<User>): Partial<UserPersistence> {
+    return this.entityToPersistence(data);
+  }
+
   static dtoToEntity(
     dto: Pick<
       CreateVendorUserDto,
@@ -58,7 +92,7 @@ export class UserMapper {
       password_hash: entity.passwordHash,
       profile_photo_url: entity.profilePhotoUrl ?? null,
       user_status: entity.userStatus,
-      role: entity.role as unknown as UserPersistence['role'],
+      role: entity.role,
 
       created_at: entity.createdAt ?? new Date(),
       updated_at: entity.updatedAt ?? new Date(),
@@ -102,8 +136,8 @@ export class UserMapper {
       dateOfBirth: persistence.date_of_birth ?? undefined,
       passwordHash: persistence.password_hash,
       profilePhotoUrl: persistence.profile_photo_url ?? undefined,
-      userStatus: persistence.user_status as UserStatus,
-      role: persistence.role as Role,
+      userStatus: persistence.user_status,
+      role: persistence.role,
       createdAt: persistence.created_at,
       updatedAt: persistence.updated_at,
       vendor: persistence.vendor
@@ -124,7 +158,8 @@ export class UserMapper {
             websiteUrl: persistence.vendor.website_url ?? undefined,
             contactEmail: persistence.vendor.contact_email ?? undefined,
             contactPhone: persistence.vendor.contact_phone ?? undefined,
-            vendorStatus: persistence.vendor.vendor_status as VendorStatus,
+            vendorStatus: persistence.vendor
+              .vendor_status as unknown as VendorStatus,
             rejectionReason: persistence.vendor.rejection_reason ?? undefined,
           })
         : undefined,

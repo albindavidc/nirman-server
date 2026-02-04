@@ -1,28 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+
 import {
   IAttendanceRepository,
   AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+} from '../../domain/repositories/attendance-repository.interface';
 
-// Local interface to match Prisma output
-interface PrismaAttendance {
-  id: string;
-  project_id: string;
-  user_id: string;
-  date: Date;
-  check_in: Date | null;
-  check_out: Date | null;
-  status: string;
-  location: string | null;
-  work_hours: number | null;
-  method: string;
-  supervisor_notes: string | null;
-  is_verified: boolean;
-  verified_by: string | null;
-  verified_at: Date | null;
-  user?: any;
-}
+import { PrismaAttendance } from '../types/attendance.types';
 
 @Injectable()
 export class AttendanceRepository implements IAttendanceRepository {
@@ -46,7 +30,9 @@ export class AttendanceRepository implements IAttendanceRepository {
       },
     });
 
-    return records.map((record) => this.mapToDomain(record));
+    return records.map((record) =>
+      this.mapToDomain(record as PrismaAttendance),
+    );
   }
 
   async findById(id: string): Promise<AttendanceRecord | null> {
@@ -61,7 +47,7 @@ export class AttendanceRepository implements IAttendanceRepository {
       return null;
     }
 
-    return this.mapToDomain(record);
+    return this.mapToDomain(record as PrismaAttendance);
   }
 
   async findByUserProjectDate(
@@ -89,7 +75,7 @@ export class AttendanceRepository implements IAttendanceRepository {
       return null;
     }
 
-    return this.mapToDomain(record);
+    return this.mapToDomain(record as PrismaAttendance);
   }
 
   async findByUserAndDateRange(
@@ -115,7 +101,9 @@ export class AttendanceRepository implements IAttendanceRepository {
       },
     });
 
-    return records.map((record) => this.mapToDomain(record));
+    return records.map((record) =>
+      this.mapToDomain(record as PrismaAttendance),
+    );
   }
 
   async create(data: Partial<AttendanceRecord>): Promise<AttendanceRecord> {

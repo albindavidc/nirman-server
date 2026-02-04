@@ -13,7 +13,7 @@ import { ResetPasswordHandler } from '../../application/handlers/commands/auth/r
 import { VerifyResetOtpHandler } from '../../application/handlers/commands/auth/verify-reset-otp.handler';
 
 // Repositories
-import { UserRepository } from '../../infrastructure/persistence/repositories/user/user.repository';
+import { UserRepository } from '../../infrastructure/repositories/user.repository';
 import { USER_REPOSITORY } from '../../domain/repositories/user-repository.interface';
 
 // Services
@@ -27,7 +27,7 @@ import {
 } from '../../application/interfaces';
 
 // Infrastructure
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { UploadModule } from '../modules/upload.module';
 
 // Common - Security

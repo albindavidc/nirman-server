@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import {
   ITaskRepository,
   Task,
   TaskDependency,
-  TASK_REPOSITORY,
-} from '../../../../domain/repositories/task-repository.interface';
+} from '../../domain/repositories/task-repository.interface';
+
+import { TaskDependencyRecord, TaskRecord } from '../types/task.types';
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
@@ -131,7 +132,7 @@ export class TaskRepository implements ITaskRepository {
     return deps.map((d) => this.mapDependencyToDomain(d));
   }
 
-  private mapTaskToDomain(prismaTask: any): Task {
+  private mapTaskToDomain(prismaTask: TaskRecord): Task {
     return {
       id: prismaTask.id,
       phaseId: prismaTask.phase_id,
@@ -158,7 +159,9 @@ export class TaskRepository implements ITaskRepository {
     };
   }
 
-  private mapDependencyToDomain(prismaDep: any): TaskDependency {
+  private mapDependencyToDomain(
+    prismaDep: TaskDependencyRecord,
+  ): TaskDependency {
     return {
       id: prismaDep.id,
       phaseId: prismaDep.phase_id,

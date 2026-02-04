@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+
 import {
   IPhaseApprovalRepository,
   CreatePhaseApprovalData,
   PhaseApprovalResult,
-} from '../../../../domain/repositories/phase-approval-repository.interface';
+} from '../../domain/repositories/phase-approval-repository.interface';
+
+import { PhaseApprovalWithUsers } from '../types/phase-approval.types';
 
 @Injectable()
 export class PhaseApprovalRepository implements IPhaseApprovalRepository {
@@ -22,7 +25,7 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
         },
       },
       orderBy: { created_at: 'desc' },
-    })) as any[];
+    })) as PhaseApprovalWithUsers[];
 
     return approvals.map((a) => ({
       id: a.id,
@@ -57,12 +60,12 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
         },
       },
       orderBy: { created_at: 'desc' },
-    })) as any[];
+    })) as PhaseApprovalWithUsers[];
 
     return approvals.map((a) => ({
       id: a.id,
       phaseId: a.phase_id,
-      phaseName: a.phase.name,
+      phaseName: a.phase!.name,
       approvedBy: a.approved_by,
       approverFirstName: a.approver?.first_name ?? null,
       approverLastName: a.approver?.last_name ?? null,
@@ -101,7 +104,7 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
           select: { first_name: true, last_name: true },
         },
       },
-    })) as any;
+    })) as PhaseApprovalWithUsers;
 
     return {
       id: approval.id,

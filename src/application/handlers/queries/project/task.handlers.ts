@@ -21,7 +21,7 @@ export class GetPhaseTasksHandler implements IQueryHandler<GetPhaseTasksQuery> {
     private readonly taskRepository: ITaskRepository,
   ) {}
 
-  async execute(query: GetPhaseTasksQuery): Promise<any> {
+  async execute(query: GetPhaseTasksQuery): Promise<Task[]> {
     return this.taskRepository.findByPhaseId(query.phaseId);
   }
 }
@@ -33,7 +33,7 @@ export class GetTaskDetailsHandler implements IQueryHandler<GetTaskDetailsQuery>
     private readonly taskRepository: ITaskRepository,
   ) {}
 
-  async execute(query: GetTaskDetailsQuery): Promise<any> {
+  async execute(query: GetTaskDetailsQuery): Promise<Task | null> {
     return this.taskRepository.findById(query.taskId);
   }
 }

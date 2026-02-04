@@ -1,10 +1,9 @@
-import { Prisma } from '../../../../generated/client/client';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user-repository.interface';
-import { BaseRepository } from '../../base.repository';
-import { User } from '../../../../domain/entities/user.entity';
-import { UserMapper } from './user.mapper';
+import { IUserRepository } from '../../domain/repositories/user-repository.interface';
+import { BaseRepository } from './base.repository';
+import { User } from '../../domain/entities/user.entity';
+import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
 export class UserRepository
@@ -15,13 +14,12 @@ export class UserRepository
     super(prisma);
   }
 
-  // Query methods
   async findById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: { id, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.persistenceToEntity(user) : null;
+    return user ? UserMapper.fromPrismaResult(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -29,7 +27,7 @@ export class UserRepository
       where: { email, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.persistenceToEntity(user) : null;
+    return user ? UserMapper.fromPrismaResult(user) : null;
   }
 
   async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
@@ -37,7 +35,7 @@ export class UserRepository
       where: { phone_number: phoneNumber, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.persistenceToEntity(user) : null;
+    return user ? UserMapper.fromPrismaResult(user) : null;
   }
 
   async findAll(): Promise<User[]> {
@@ -45,7 +43,7 @@ export class UserRepository
       where: { is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return users.map((user) => UserMapper.persistenceToEntity(user));
+    return UserMapper.fromPrismaResults(users);
   }
 
   async exists(id: string): Promise<boolean> {
@@ -61,42 +59,48 @@ export class UserRepository
     });
   }
 
-  // Mutation methods
   async create(data: Partial<User>): Promise<User> {
     const persistenceData = UserMapper.entityToPersistence(data);
 
     // Remove relation keys as we handle them through connect if needed
-    const createData = { ...persistenceData };
-    delete createData.vendor;
-    delete createData.professional;
+    const createDataRaw = { ...persistenceData };
+    delete createDataRaw.vendor;
+    delete createDataRaw.professional;
+
+    const prismaData = UserMapper.toPrismaCreateInput({ ...data });
+    delete prismaData.vendor;
+    delete prismaData.professional;
 
     const created = await this.prisma.user.create({
-      data: createData as Prisma.UserCreateInput,
+      data: prismaData as unknown as Parameters<
+        PrismaService['user']['create']
+      >[0]['data'],
     });
 
-    // Fetch full structure to return domain entity
     return (await this.findById(created.id))!;
   }
 
   async update(id: string, data: Partial<User>): Promise<User> {
-    const persistenceData = UserMapper.entityToPersistence(data);
-    // Remove relation keys and id as we handle them through connect if needed
-    const updateData = { ...persistenceData };
-    delete updateData.vendor;
-    delete updateData.professional;
-    delete updateData.id; // id cannot be updated in Prisma
+    const prismaData = UserMapper.toPrismaUpdateInput(data);
 
-    // Explicitly handle undefined to avoid wiping data with nulls if mapper returns them
-    // The mapper typically returns Partial<UserPersistence>
-    // We need to ensure we only update fields that are defined.
-    // Clean undefined fields:
-    Object.keys(updateData).forEach(
-      (key) => updateData[key] === undefined && delete updateData[key],
+    delete prismaData.vendor;
+
+    delete prismaData.professional;
+
+    delete prismaData.id;
+
+    // Clean undefined fields
+
+    Object.keys(prismaData).forEach(
+      (key) => prismaData[key] === undefined && delete prismaData[key],
     );
 
     await this.prisma.user.update({
       where: { id },
-      data: updateData as Prisma.UserUpdateInput,
+
+      data: prismaData as unknown as Parameters<
+        PrismaService['user']['update']
+      >[0]['data'],
     });
 
     return (await this.findById(id))!;

@@ -1,6 +1,6 @@
 /**
  * Email Service Interface
- * Port definition for email notifications.
+ *
  */
 export interface IEmailService {
   sendEmail(options: {

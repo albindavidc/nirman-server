@@ -2,8 +2,6 @@ import { ProjectPhase } from '../entities/project-phase.entity';
 
 /**
  * Project Phase Repository Interface
- *
- * Defines the contract for project phase persistence operations.
  */
 
 export interface UpdateProjectPhaseData {

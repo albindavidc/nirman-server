@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { TaskController } from '../controllers/task.controller';
-import { TaskRepository } from '../../infrastructure/persistence/repositories/project/task.repository';
+import { TaskRepository } from '../../infrastructure/repositories/task.repository';
 import { TASK_REPOSITORY } from '../../domain/repositories/task-repository.interface';
 import {
   CreateTaskHandler,

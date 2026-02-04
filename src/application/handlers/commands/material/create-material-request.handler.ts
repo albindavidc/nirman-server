@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MaterialRequestRepository } from '../../../../infrastructure/persistence/repositories/material/material-request.repository';
+import { MaterialRequestRepository } from '../../../../infrastructure/repositories/material-request.repository';
 import { MaterialRequestDto } from '../../../dto/material/request.dto';
 import {
   MaterialRequest,

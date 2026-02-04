@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MaterialRepository } from '../../../../infrastructure/persistence/repositories/material/material.repository';
+import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
 import { MaterialDto } from '../../../dto/material/material.dto';
 import { CreateMaterialCommand } from '../../../commands/material/create-material.command';
 import { Material } from '../../../../domain/entities/material.entity';

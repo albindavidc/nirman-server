@@ -1,10 +1,11 @@
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { IProjectRepository } from '../../../../domain/repositories/project-repository.interface';
-import { BaseRepository } from '../../base.repository';
-import { Project } from '../../../../domain/entities/project.entity';
-import { ProjectMapper } from './project.mapper';
-import { Prisma, ProjectStatus } from '../../../../generated/client/client';
+import { IProjectRepository } from '../../domain/repositories/project-repository.interface';
+import { BaseRepository } from './base.repository';
+import { Project } from '../../domain/entities/project.entity';
+import { ProjectMapper } from '../mappers/project.mapper';
+import { ProjectWherePersistenceInput } from '../types/project.types';
+import { ProjectStatus } from '../../domain/enums/project-status.enum';
 
 @Injectable()
 export class ProjectRepository
@@ -21,7 +22,7 @@ export class ProjectRepository
       include: { phases: { orderBy: { sequence: 'asc' } } },
       orderBy: { created_at: 'desc' },
     });
-    return projects.map((p) => ProjectMapper.persistenceToEntity(p));
+    return ProjectMapper.fromPrismaResults(projects);
   }
 
   async findById(id: string): Promise<Project | null> {
@@ -29,7 +30,7 @@ export class ProjectRepository
       where: { id, is_deleted: false },
       include: { phases: { orderBy: { sequence: 'asc' } } },
     });
-    return project ? ProjectMapper.persistenceToEntity(project) : null;
+    return project ? ProjectMapper.fromPrismaResult(project) : null;
   }
 
   async findByCreator(userId: string): Promise<Project[]> {
@@ -46,7 +47,7 @@ export class ProjectRepository
       include: { phases: { orderBy: { sequence: 'asc' } } },
       orderBy: { created_at: 'desc' },
     });
-    return projects.map((p) => ProjectMapper.persistenceToEntity(p));
+    return ProjectMapper.fromPrismaResults(projects);
   }
 
   async findAllWithFilters(params: {
@@ -58,7 +59,7 @@ export class ProjectRepository
     const { search, status, page, limit } = params;
     const skip = (page - 1) * limit;
 
-    const where: Prisma.ProjectWhereInput = {
+    const where: ProjectWherePersistenceInput = {
       is_deleted: false,
     };
 
@@ -73,53 +74,57 @@ export class ProjectRepository
       ];
     }
 
+    const prismaWhere = ProjectMapper.toPrismaWhereInput(where);
+
     const [projects, total] = await Promise.all([
       this.prisma.project.findMany({
-        where,
+        where: prismaWhere as unknown as NonNullable<
+          Parameters<PrismaService['project']['findMany']>[0]
+        >['where'],
         skip,
         take: limit,
         include: { phases: { orderBy: { sequence: 'asc' } } },
         orderBy: { created_at: 'desc' },
       }),
-      this.prisma.project.count({ where }),
+      this.prisma.project.count({
+        where: prismaWhere as unknown as NonNullable<
+          Parameters<PrismaService['project']['count']>[0]
+        >['where'],
+      }),
     ]);
 
     return {
-      projects: projects.map((p) => ProjectMapper.persistenceToEntity(p)),
+      projects: ProjectMapper.fromPrismaResults(projects),
       total,
     };
   }
 
   async create(data: Partial<Project>): Promise<Project> {
-    const persistenceData = ProjectMapper.entityToPersistence(data);
-    const { id: _id, ...createData } = persistenceData as {
-      id?: string;
-    };
-    void _id;
+    const prismaData = ProjectMapper.toPrismaCreateInput(data);
+
+    if (!prismaData.name) {
+      throw new Error('Project name is required for creation');
+    }
 
     const created = await this.prisma.project.create({
-      data: createData as Prisma.ProjectCreateInput,
+      data: prismaData as unknown as Parameters<
+        PrismaService['project']['create']
+      >[0]['data'],
       include: { phases: true },
     });
 
-    return ProjectMapper.persistenceToEntity(created);
+    return ProjectMapper.fromPrismaResult(created);
   }
 
   async update(id: string, data: Partial<Project>): Promise<Project> {
-    const persistenceData = ProjectMapper.entityToPersistence(data);
-    const { id: _id, ...updateData } = persistenceData as {
-      id?: string;
-    };
-    void _id;
-
-    // Clean undefined
-    Object.keys(updateData).forEach(
-      (key) => updateData[key] === undefined && delete updateData[key],
-    );
+    const prismaData = ProjectMapper.toPrismaUpdateInput(data);
 
     await this.prisma.project.update({
       where: { id },
-      data: updateData as Prisma.ProjectUpdateInput,
+
+      data: prismaData as unknown as Parameters<
+        PrismaService['project']['update']
+      >[0]['data'],
     });
 
     return (await this.findById(id))!;
@@ -149,11 +154,15 @@ export class ProjectRepository
   }
 
   async countByStatus(status: string): Promise<number> {
+    const where: ProjectWherePersistenceInput = {
+      status: status as ProjectStatus,
+      is_deleted: false,
+    };
+    const prismaWhere = ProjectMapper.toPrismaWhereInput(where);
     return this.prisma.project.count({
-      where: {
-        status: status as ProjectStatus,
-        is_deleted: false,
-      },
+      where: prismaWhere as unknown as NonNullable<
+        Parameters<PrismaService['project']['count']>[0]
+      >['where'],
     });
   }
 

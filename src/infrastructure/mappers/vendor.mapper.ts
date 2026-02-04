@@ -1,7 +1,12 @@
 import { Vendor } from 'src/domain/entities/vendor.entity';
 import { CreateVendorCompanyDto } from 'src/application/dto/vendor/create-vendor-company.dto';
 import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
-import { VendorPersistence } from 'src/infrastructure/persistence/repositories/vendor/vendor.persistence';
+import {
+  VendorPersistence,
+  VendorCreatePersistenceInput,
+  VendorUpdatePersistenceInput,
+  VendorWherePersistenceInput,
+} from 'src/infrastructure/types/vendor.types';
 import { VendorResponseDto } from 'src/application/dto/vendor/vendor-response.dto';
 
 export class VendorMapper {
@@ -43,41 +48,56 @@ export class VendorMapper {
     };
   }
 
-  static entityToPersistence(
-    entity: Partial<Vendor>,
-  ): Partial<VendorPersistence> {
-    const persistence: Partial<VendorPersistence> = {
-      user_id: entity.userId,
-      created_at: entity.createdAt,
-      updated_at: entity.updatedAt,
-      company_name: entity.companyName,
-      registration_number: entity.registrationNumber,
-      tax_number: entity.taxNumber,
-      years_in_business: entity.yearsInBusiness,
-      address_street: entity.addressStreet,
-      address_city: entity.addressCity,
-      address_state: entity.addressState,
-      address_zip_code: entity.addressZipCode,
-      products_services: entity.productsService,
-      website_url: entity.websiteUrl,
-      contact_email: entity.contactEmail,
-      contact_phone: entity.contactPhone,
-      vendor_status: entity.vendorStatus,
-      rejection_reason: entity.rejectionReason,
-    };
+  /**
+   * Converts a Prisma result to domain entity.
+   * Encapsulates the type conversion internally.
+   */
+  static fromPrismaResult<T extends Record<string, unknown>>(
+    result: T,
+  ): Vendor {
+    return this.persistenceToEntity(result as unknown as VendorPersistence);
+  }
 
-    if (entity.id) {
-      persistence.id = entity.id;
-    }
+  /**
+   * Converts a Prisma result array to domain entities.
+   */
+  static fromPrismaResults<T extends Record<string, unknown>>(
+    results: T[],
+  ): Vendor[] {
+    return results.map((r) => this.fromPrismaResult(r));
+  }
 
-    return persistence;
+  /**
+   * Converts create input to Prisma-compatible format.
+   * The return type is intentionally widened for Prisma compatibility.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static toPrismaCreateInput(data: Partial<Vendor>): any {
+    return this.createToPersistence(data);
+  }
+
+  /**
+   * Converts update input to Prisma-compatible format.
+   * The return type is intentionally widened for Prisma compatibility.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static toPrismaUpdateInput(data: Partial<Vendor>): any {
+    return this.updateToPersistence(data);
+  }
+
+  /**
+   * Converts where input to Prisma-compatible format.
+   * The return type is intentionally widened for Prisma compatibility.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static toPrismaWhereInput(where: VendorWherePersistenceInput): any {
+    return where;
   }
 
   static persistenceToEntity(persistence: VendorPersistence): Vendor {
     return new Vendor({
       id: persistence.id,
-      createdAt: persistence.created_at,
-      updatedAt: persistence.updated_at,
+      userId: persistence.user_id,
       companyName: persistence.company_name,
       registrationNumber: persistence.registration_number,
       taxNumber: persistence.tax_number ?? undefined,
@@ -90,7 +110,7 @@ export class VendorMapper {
       websiteUrl: persistence.website_url ?? '',
       contactEmail: persistence.contact_email ?? '',
       contactPhone: persistence.contact_phone ?? '',
-      vendorStatus: persistence.vendor_status as VendorStatus,
+      vendorStatus: persistence.vendor_status as unknown as VendorStatus,
       rejectionReason: persistence.rejection_reason ?? undefined,
       user: persistence.user
         ? {
@@ -159,5 +179,65 @@ export class VendorMapper {
           }
         : null,
     };
+  }
+
+  static createToPersistence(
+    data: Partial<Vendor>,
+  ): VendorCreatePersistenceInput {
+    return {
+      user_id: data.userId!,
+      company_name: data.companyName!,
+      registration_number: data.registrationNumber!,
+      tax_number: data.taxNumber ?? null,
+      years_in_business: data.yearsInBusiness ?? null,
+      address_street: data.addressStreet ?? null,
+      address_city: data.addressCity ?? null,
+      address_state: data.addressState ?? null,
+      address_zip_code: data.addressZipCode ?? null,
+      products_services: data.productsService ?? [],
+      website_url: data.websiteUrl ?? null,
+      contact_email: data.contactEmail ?? null,
+      contact_phone: data.contactPhone ?? null,
+      vendor_status: data.vendorStatus!,
+      rejection_reason: data.rejectionReason ?? null,
+      is_deleted: false,
+    };
+  }
+
+  static updateToPersistence(
+    data: Partial<Vendor>,
+  ): VendorUpdatePersistenceInput {
+    const updateData: VendorUpdatePersistenceInput = {};
+
+    if (data.companyName !== undefined)
+      updateData.company_name = data.companyName;
+    if (data.registrationNumber !== undefined)
+      updateData.registration_number = data.registrationNumber;
+    if (data.taxNumber !== undefined)
+      updateData.tax_number = data.taxNumber ?? null;
+    if (data.yearsInBusiness !== undefined)
+      updateData.years_in_business = data.yearsInBusiness ?? null;
+    if (data.addressStreet !== undefined)
+      updateData.address_street = data.addressStreet ?? null;
+    if (data.addressCity !== undefined)
+      updateData.address_city = data.addressCity ?? null;
+    if (data.addressState !== undefined)
+      updateData.address_state = data.addressState ?? null;
+    if (data.addressZipCode !== undefined)
+      updateData.address_zip_code = data.addressZipCode ?? null;
+    if (data.productsService !== undefined)
+      updateData.products_services = data.productsService;
+    if (data.websiteUrl !== undefined)
+      updateData.website_url = data.websiteUrl ?? null;
+    if (data.contactEmail !== undefined)
+      updateData.contact_email = data.contactEmail ?? null;
+    if (data.contactPhone !== undefined)
+      updateData.contact_phone = data.contactPhone ?? null;
+    if (data.vendorStatus !== undefined)
+      updateData.vendor_status = data.vendorStatus;
+    if (data.rejectionReason !== undefined)
+      updateData.rejection_reason = data.rejectionReason ?? null;
+
+    return updateData;
   }
 }

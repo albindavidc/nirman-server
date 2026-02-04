@@ -1,6 +1,6 @@
 /**
  * OTP Storage Service Interface
- * Port definition for OTP persistence.
+ *
  */
 export interface IOtpStorageService {
   generateOtp(): string;

@@ -1,9 +1,5 @@
 /**
  * Member Repository Interface
- *
- * Defines the contract for member (worker/supervisor) persistence operations.
- * This interface is part of the Domain Layer and should be implemented
- * in the Infrastructure Layer.
  */
 
 export interface MemberWithProfessional {

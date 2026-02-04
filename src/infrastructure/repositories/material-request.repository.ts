@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { MaterialRequest } from '../../../../domain/entities/material-request.entity';
-import { MaterialRequestMapper } from '../../../../application/mappers/material-request.mapper';
+import { PrismaService } from '../prisma/prisma.service';
+import { MaterialRequest } from '../../domain/entities/material-request.entity';
+import { MaterialRequestMapper } from '../../application/mappers/material-request.mapper';
 
 @Injectable()
 export class MaterialRequestRepository {

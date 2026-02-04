@@ -1,6 +1,6 @@
 /**
  * Reset Token Storage Service Interface
- * Port definition for password reset token persistence.
+ *
  */
 export interface IResetTokenStorageService {
   generateResetToken(): string;

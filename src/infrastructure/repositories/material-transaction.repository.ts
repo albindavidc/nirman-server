@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { MaterialTransaction } from '../../../../domain/entities/material-transaction.entity';
-import { MaterialTransactionMapper } from '../../../../application/mappers/material-transaction.mapper';
+import { PrismaService } from '../prisma/prisma.service';
+import { MaterialTransaction } from '../../domain/entities/material-transaction.entity';
+import { MaterialTransactionMapper } from '../../application/mappers/material-transaction.mapper';
 
 @Injectable()
 export class MaterialTransactionRepository {

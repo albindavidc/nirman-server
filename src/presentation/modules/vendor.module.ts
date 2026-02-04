@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 // Infrastructure
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
-import { VendorRepository } from '../../infrastructure/persistence/repositories/vendor/vendor.repository';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
+import { VendorRepository } from '../../infrastructure/repositories/vendor.repository';
 
 // Domain interfaces
 import { VENDOR_REPOSITORY } from '../../domain/repositories/vendor-repository.interface';

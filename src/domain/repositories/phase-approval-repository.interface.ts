@@ -1,7 +1,5 @@
 /**
  * Phase Approval Repository Interface
- *
- * Defines the contract for phase approval persistence operations.
  */
 
 export interface PhaseApprovalMedia {

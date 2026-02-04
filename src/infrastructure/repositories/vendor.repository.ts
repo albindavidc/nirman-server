@@ -1,10 +1,11 @@
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { IVendorRepository } from '../../../../domain/repositories/vendor-repository.interface';
-import { BaseRepository } from '../../base.repository';
-import { Vendor } from '../../../../domain/entities/vendor.entity';
-import { VendorMapper } from './vendor.mapper';
-import { Prisma, VendorStatus } from '../../../../generated/client/client';
+import { IVendorRepository } from '../../domain/repositories/vendor-repository.interface';
+import { BaseRepository } from './base.repository';
+import { Vendor } from '../../domain/entities/vendor.entity';
+import { VendorStatus } from '../../domain/enums/vendor-status.enum';
+import { VendorMapper } from '../mappers/vendor.mapper';
+import { VendorWherePersistenceInput } from '../types/vendor.types';
 
 @Injectable()
 export class VendorRepository
@@ -20,17 +21,15 @@ export class VendorRepository
       where: { is_deleted: false },
       include: { user: true },
     });
-    return vendors.map((v) => VendorMapper.persistenceToEntity(v));
+    return VendorMapper.fromPrismaResults(vendors);
   }
 
   async findById(id: string): Promise<Vendor | null> {
     const vendor = await this.prisma.vendor.findFirst({
       where: { id, is_deleted: false },
-      include: {
-        user: true, // Include user to map relations if needed by Mapper
-      },
+      include: { user: true },
     });
-    return vendor ? VendorMapper.persistenceToEntity(vendor) : null;
+    return vendor ? VendorMapper.fromPrismaResult(vendor) : null;
   }
 
   async findByUserId(userId: string): Promise<Vendor | null> {
@@ -38,32 +37,30 @@ export class VendorRepository
       where: { user_id: userId, is_deleted: false },
       include: { user: true },
     });
-    return vendor ? VendorMapper.persistenceToEntity(vendor) : null;
+    return vendor ? VendorMapper.fromPrismaResult(vendor) : null;
   }
 
   async findAllWithFilters(params: {
     search?: string;
-    status?: string;
+    status?: VendorStatus;
     page: number;
     limit: number;
   }): Promise<{ vendors: Vendor[]; total: number }> {
     const { search, status, page, limit } = params;
     const skip = (page - 1) * limit;
 
-    // First, get all user IDs that exist to filter out orphaned vendors
     const existingUserIds = await this.prisma.user.findMany({
       select: { id: true },
     });
     const validUserIds = existingUserIds.map((u) => u.id);
 
-    const where: Prisma.VendorWhereInput = {
-      // Only include vendors whose user_id exists in the users collection
+    const where: VendorWherePersistenceInput = {
       user_id: { in: validUserIds },
       is_deleted: false,
     };
 
     if (status) {
-      where.vendor_status = status as VendorStatus;
+      where.vendor_status = status;
     }
 
     if (search) {
@@ -73,59 +70,42 @@ export class VendorRepository
       ];
     }
 
+    const prismaWhere = VendorMapper.toPrismaWhereInput(where);
+
     const [vendors, total] = await Promise.all([
       this.prisma.vendor.findMany({
-        where,
+        where: prismaWhere,
         skip,
         take: limit,
         include: { user: true },
         orderBy: { created_at: 'desc' },
       }),
-      this.prisma.vendor.count({ where }),
+      this.prisma.vendor.count({ where: prismaWhere }),
     ]);
 
     return {
-      vendors: vendors.map((v) => VendorMapper.persistenceToEntity(v)),
+      vendors: VendorMapper.fromPrismaResults(vendors),
       total,
     };
   }
 
   async create(data: Partial<Vendor>): Promise<Vendor> {
-    const persistenceData = VendorMapper.entityToPersistence(data);
-    const { user: _user, ...createData } = persistenceData as {
-      user?: unknown;
-    };
-    void _user; // Intentionally unused - user relation should not be included in create data
+    const prismaData = VendorMapper.toPrismaCreateInput(data);
 
     const created = await this.prisma.vendor.create({
-      data: createData as Prisma.VendorCreateInput,
+      data: prismaData,
       include: { user: true },
     });
 
-    return VendorMapper.persistenceToEntity(created);
+    return VendorMapper.fromPrismaResult(created);
   }
 
   async update(id: string, data: Partial<Vendor>): Promise<Vendor> {
-    const persistenceData = VendorMapper.entityToPersistence(data);
-    const {
-      user: _user,
-      id: _id,
-      ...updateData
-    } = persistenceData as {
-      user?: unknown;
-      id?: string;
-    };
-    void _user; // Intentionally unused - user relation should not be included in update data
-    void _id; // Intentionally unused - id is used in where clause, not in update data
-
-    // Clean undefined
-    Object.keys(updateData).forEach(
-      (key) => updateData[key] === undefined && delete updateData[key],
-    );
+    const prismaData = VendorMapper.toPrismaUpdateInput(data);
 
     await this.prisma.vendor.update({
       where: { id },
-      data: updateData as Prisma.VendorUpdateInput,
+      data: prismaData,
     });
 
     return (await this.findById(id))!;

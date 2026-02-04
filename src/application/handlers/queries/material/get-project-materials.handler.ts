@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { MaterialRepository } from '../../../../infrastructure/persistence/repositories/material/material.repository';
-import { MaterialTransactionRepository } from '../../../../infrastructure/persistence/repositories/material/material-transaction.repository';
+import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
+import { MaterialTransactionRepository } from '../../../../infrastructure/repositories/material-transaction.repository';
 import { MaterialDto } from '../../../dto/material/material.dto';
 import { MaterialMapper } from '../../../mappers/material.mapper';
 

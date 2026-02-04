@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 // Infrastructure
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
-import { UserRepository } from '../../infrastructure/persistence/repositories/user/user.repository';
-import { VendorRepository } from '../../infrastructure/persistence/repositories/vendor/vendor.repository';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
+import { UserRepository } from '../../infrastructure/repositories/user.repository';
+import { VendorRepository } from '../../infrastructure/repositories/vendor.repository';
 import { EmailService } from '../../infrastructure/services/email/email.service';
 
 // Domain interfaces

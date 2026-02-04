@@ -7,7 +7,7 @@ import {
 import { Inject, NotFoundException } from '@nestjs/common';
 import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import { VendorResponseDto } from '../../../dto/vendor/vendor-response.dto';
-import { VendorMapper } from '../../../../infrastructure/persistence/repositories/vendor/vendor.mapper';
+import { VendorMapper } from '../../../../infrastructure/mappers/vendor.mapper';
 
 @CommandHandler(UnblacklistVendorCommand)
 export class UnblacklistVendorHandler implements ICommandHandler<UnblacklistVendorCommand> {

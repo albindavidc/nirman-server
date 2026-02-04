@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import {
   IProfessionalRepository,
   ProfessionalWithUser,
-} from '../../../../domain/repositories/professional-repository.interface';
-import { Prisma } from '../../../../generated/client/client';
+} from '../../domain/repositories/professional-repository.interface';
+import { ProfessionalWherePersistenceInput } from '../types/professional.types';
 
 @Injectable()
 export class ProfessionalRepository implements IProfessionalRepository {
@@ -18,7 +18,7 @@ export class ProfessionalRepository implements IProfessionalRepository {
     const { search, excludeUserIds, limit = 50 } = params;
 
     // Build search filter
-    const whereClause: Prisma.ProfessionalWhereInput = {};
+    const whereClause: ProfessionalWherePersistenceInput = {};
 
     if (search) {
       whereClause.OR = [

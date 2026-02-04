@@ -16,7 +16,7 @@ import { GetVendorsQueryDto } from '../../application/dto/vendor/get-vendors.dto
 import { UpdateVendorDto } from '../../application/dto/vendor/update-vendor.dto';
 import { GetVendorsQuery } from '../../application/queries/vendor/get-vendors.query';
 import { UpdateVendorCommand } from '../../application/commands/vendor/update-vendor.command';
-import { PrismaService } from '../../infrastructure/persistence/prisma/prisma.service';
+import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
 import { CreateVendorByAdminCommand } from '../../application/commands/vendor/create-vendor-by-admin.command';
 import { UnblacklistVendorCommand } from '../../application/commands/vendor/unblacklist-vendor.command';
@@ -27,6 +27,8 @@ import { GetVendorByIdQuery } from '../../application/queries/vendor/get-vendor-
 import { VendorResponseDto } from '../../application/dto/vendor/vendor-response.dto';
 
 import { VENDOR_ROUTES } from '../../app.routes';
+
+import { VendorStatus } from '../../domain/enums/vendor-status.enum';
 
 @Controller(VENDOR_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)
@@ -54,7 +56,7 @@ export class VendorManagementController {
   }> {
     return this.queryBus.execute(
       new GetVendorsQuery(
-        queryDto.status,
+        queryDto.status as unknown as VendorStatus,
         queryDto.search,
         queryDto.page,
         queryDto.limit,

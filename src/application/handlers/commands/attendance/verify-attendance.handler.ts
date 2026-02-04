@@ -4,6 +4,7 @@ import { VerifyAttendanceCommand } from '../../../commands/attendance/attendance
 import {
   ATTENDANCE_REPOSITORY,
   IAttendanceRepository,
+  AttendanceRecord,
 } from '../../../../domain/repositories/attendance-repository.interface';
 
 @CommandHandler(VerifyAttendanceCommand)
@@ -13,7 +14,7 @@ export class VerifyAttendanceHandler implements ICommandHandler<VerifyAttendance
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(command: VerifyAttendanceCommand): Promise<any> {
+  async execute(command: VerifyAttendanceCommand): Promise<AttendanceRecord> {
     const { attendanceId, supervisorId, isVerified, supervisorNotes } = command;
 
     return this.attendanceRepository.update(attendanceId, {

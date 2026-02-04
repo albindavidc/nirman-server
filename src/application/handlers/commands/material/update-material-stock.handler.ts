@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MaterialRepository } from '../../../../infrastructure/persistence/repositories/material/material.repository';
-import { MaterialTransactionRepository } from '../../../../infrastructure/persistence/repositories/material/material-transaction.repository';
+import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
+import { MaterialTransactionRepository } from '../../../../infrastructure/repositories/material-transaction.repository';
 import { MaterialTransaction } from '../../../../domain/entities/material-transaction.entity';
 import { MaterialTransactionMapper } from '../../../mappers/material-transaction.mapper';
 

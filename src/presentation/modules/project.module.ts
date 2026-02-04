@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 // Infrastructure
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
-import { ProjectRepository } from '../../infrastructure/persistence/repositories/project/project.repository';
-import { ProjectPhaseRepository } from '../../infrastructure/persistence/repositories/project/project-phase.repository';
-import { ProjectMemberRepository } from '../../infrastructure/persistence/repositories/project/project-member.repository';
-import { PhaseApprovalRepository } from '../../infrastructure/persistence/repositories/project/phase-approval.repository';
-import { AttendanceRepository } from '../../infrastructure/persistence/repositories/project/attendance.repository';
-import { ProfessionalRepository } from '../../infrastructure/persistence/repositories/user/professional.repository';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
+import { ProjectRepository } from '../../infrastructure/repositories/project.repository';
+import { ProjectPhaseRepository } from '../../infrastructure/repositories/project-phase.repository';
+import { ProjectMemberRepository } from '../../infrastructure/repositories/project-member.repository';
+import { PhaseApprovalRepository } from '../../infrastructure/repositories/phase-approval.repository';
+import { AttendanceRepository } from '../../infrastructure/repositories/attendance.repository';
+import { ProfessionalRepository } from '../../infrastructure/repositories/professional.repository';
 
 // Domain interfaces
 import { PROJECT_REPOSITORY } from '../../domain/repositories/project-repository.interface';

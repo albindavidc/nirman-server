@@ -6,8 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 // Infrastructure
-import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
-import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
+import { PrismaService } from './infrastructure/prisma/prisma.service';
+import { PrismaModule } from './infrastructure/prisma/prisma.module';
 
 // Common - Security
 import { JwtAuthGuard } from './common/security/guards/jwt-auth.guard';

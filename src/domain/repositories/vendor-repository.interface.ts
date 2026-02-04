@@ -1,3 +1,4 @@
+import { VendorStatus } from '../enums/vendor-status.enum';
 import { Vendor } from '../entities/vendor.entity';
 
 export interface IVendorRepository {
@@ -6,7 +7,7 @@ export interface IVendorRepository {
   findAll(): Promise<Vendor[]>;
   findAllWithFilters(params: {
     search?: string;
-    status?: string;
+    status?: VendorStatus;
     page: number;
     limit: number;
   }): Promise<{ vendors: Vendor[]; total: number }>;

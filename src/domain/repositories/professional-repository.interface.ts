@@ -1,7 +1,5 @@
 /**
  * Professional Repository Interface
- *
- * Defines the contract for professional persistence operations.
  */
 
 export interface ProfessionalWithUser {

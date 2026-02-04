@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ProjectPhase } from '../../../../domain/entities/project-phase.entity';
-import { ProjectPhaseMapper } from '../../../../application/mappers/project-phase.mapper';
+import { PrismaService } from '../prisma/prisma.service';
+import { ProjectPhase } from '../../domain/entities/project-phase.entity';
+
+import { ProjectPhaseMapper } from '../../application/mappers/project-phase.mapper';
 import {
   IProjectPhaseRepository,
   UpdateProjectPhaseData,
   PhaseWithApprovals,
-} from '../../../../domain/repositories/project-phase-repository.interface';
-import { Prisma } from '../../../../generated/client/client';
+} from '../../domain/repositories/project-phase-repository.interface';
+
+import {
+  PhaseWithApprovalsResult,
+  ProjectPhaseRecord,
+} from '../types/project-phase.types';
 
 @Injectable()
 export class ProjectPhaseRepository implements IProjectPhaseRepository {
@@ -30,7 +35,7 @@ export class ProjectPhaseRepository implements IProjectPhaseRepository {
 
   async findWithApprovals(phaseId: string): Promise<PhaseWithApprovals | null> {
     // Cast include to any to allow 'tasks' relation if it's not yet in the generated type
-    const phase: any = await this.prisma.projectPhase.findUnique({
+    const phase = (await this.prisma.projectPhase.findUnique({
       where: { id: phaseId },
       include: {
         project: {
@@ -55,8 +60,8 @@ export class ProjectPhaseRepository implements IProjectPhaseRepository {
         tasks: {
           select: { status: true },
         },
-      } as any,
-    });
+      },
+    })) as PhaseWithApprovalsResult;
 
     if (!phase) {
       return null;
@@ -87,8 +92,7 @@ export class ProjectPhaseRepository implements IProjectPhaseRepository {
       })),
       taskStats: {
         total: phase.tasks.length,
-        completed: phase.tasks.filter((t: any) => t.status === 'Completed')
-          .length,
+        completed: phase.tasks.filter((t) => t.status === 'Completed').length,
       },
     };
   }
@@ -96,7 +100,7 @@ export class ProjectPhaseRepository implements IProjectPhaseRepository {
   async create(phase: ProjectPhase): Promise<ProjectPhase> {
     const data = ProjectPhaseMapper.toPersistence(phase);
     const created = await this.prisma.projectPhase.create({
-      data: data as Prisma.ProjectPhaseUncheckedCreateInput,
+      data: data as ProjectPhaseRecord, // Using subset type shape
     });
     return ProjectPhaseMapper.toDomain(created);
   }

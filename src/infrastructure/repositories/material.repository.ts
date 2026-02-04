@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Material } from '../../../../domain/entities/material.entity';
-import { MaterialMapper } from '../../../../application/mappers/material.mapper';
+import { PrismaService } from '../prisma/prisma.service';
+import { Material } from '../../domain/entities/material.entity';
+import { MaterialMapper } from '../../application/mappers/material.mapper';
 
 @Injectable()
 export class MaterialRepository {
@@ -24,14 +24,6 @@ export class MaterialRepository {
 
   async create(material: Material): Promise<Material> {
     const data = MaterialMapper.toPersistence(material);
-    // Remove id if it's auto-generated or let Prisma handle plain object
-    // Prisma create expects input type, not raw object sometimes mapping issues.
-    // Explicit mapping involves calling prisma.material.create({ data: ... })
-    // We need to exclude 'id' if we want Mongo to generate it, or pass it if we generated it.
-    // Usually domain entity has ID. If new, it might be empty or pre-generated.
-    // Let's assume we let Prisma generate ID => we should pass everything EXCEPT id.
-    // BUT my mapper includes ID.
-    // I will use exclude logic here.
     const { id, ...createData } = data;
     void id;
     const created = await this.prisma.material.create({

@@ -1,7 +1,5 @@
 /**
  * Attendance Repository Interface
- *
- * Defines the contract for attendance persistence operations.
  */
 
 export interface AttendanceRecord {

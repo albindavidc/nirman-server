@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import {
   IProjectMemberRepository,
   ProjectMemberData,
   ProjectMemberWithUser,
   AddMemberData,
-} from '../../../../domain/repositories/project-member-repository.interface';
+} from '../../domain/repositories/project-member-repository.interface';
 
 @Injectable()
 export class ProjectMemberRepository implements IProjectMemberRepository {

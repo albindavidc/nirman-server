@@ -1,8 +1,5 @@
 /**
  * Project Member Repository Interface
- *
- * Defines the contract for project member persistence operations.
- * Project members are embedded in the Project document (MongoDB).
  */
 
 import { ProjectMember } from '../types';
