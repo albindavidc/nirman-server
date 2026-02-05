@@ -5,9 +5,9 @@ import {
 } from 'src/domain/repositories/member-repository.interface';
 import {
   MemberPersistence,
+  MemberWherePersistenceInput,
   MemberCreatePersistenceInput,
   MemberUpdatePersistenceInput,
-  MemberWherePersistenceInput,
 } from '../types/member.types';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 
@@ -39,53 +39,6 @@ export class MemberMapper {
   static toPrismaCreateInput(
     data: CreateMemberData,
   ): MemberCreatePersistenceInput {
-    return this.createToPersistence(data);
-  }
-
-  /**
-   * Converts update input to Prisma-compatible format.
-   */
-  static toPrismaUpdateInput(
-    data: UpdateMemberData,
-  ): MemberUpdatePersistenceInput {
-    return this.updateToPersistence(data);
-  }
-
-  /**
-   * Converts where input to Prisma-compatible format.
-   */
-  static toPrismaWhereInput(
-    where: MemberWherePersistenceInput,
-  ): MemberWherePersistenceInput {
-    return where;
-  }
-
-  static persistenceToEntity(
-    persistence: MemberPersistence,
-  ): MemberWithProfessional {
-    return {
-      id: persistence.id,
-      firstName: persistence.first_name,
-      lastName: persistence.last_name,
-      email: persistence.email,
-      phoneNumber: persistence.phone_number,
-      role: persistence.role,
-      userStatus: persistence.user_status,
-      professionalTitle: persistence.professional?.professional_title,
-      experienceYears: persistence.professional?.experience_years,
-      skills: persistence.professional?.skills,
-      addressStreet: persistence.professional?.address_street,
-      addressCity: persistence.professional?.address_city,
-      addressState: persistence.professional?.address_state,
-      addressZipCode: persistence.professional?.address_zip_code,
-      createdAt: persistence.created_at,
-      updatedAt: persistence.updated_at,
-    };
-  }
-
-  static createToPersistence(
-    data: CreateMemberData,
-  ): MemberCreatePersistenceInput {
     return {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -110,7 +63,10 @@ export class MemberMapper {
     };
   }
 
-  static updateToPersistence(
+  /**
+   * Converts update input to Prisma-compatible format.
+   */
+  static toPrismaUpdateInput(
     data: UpdateMemberData,
   ): MemberUpdatePersistenceInput {
     const updateData: MemberUpdatePersistenceInput = {};
@@ -161,5 +117,51 @@ export class MemberMapper {
     }
 
     return updateData;
+  }
+
+  /**
+   * Converts where input to Prisma-compatible format.
+   */
+  static toPrismaWhereInput(
+    where: MemberWherePersistenceInput,
+  ): MemberWherePersistenceInput {
+    const prismaWhere: MemberWherePersistenceInput = {};
+
+    if (where.role) {
+      if (typeof where.role === 'object' && 'in' in where.role) {
+        prismaWhere.role = { in: where.role.in };
+      } else {
+        prismaWhere.role = where.role;
+      }
+    }
+
+    if (where.OR) {
+      prismaWhere.OR = where.OR.map((condition) => ({ ...condition }));
+    }
+
+    return prismaWhere;
+  }
+
+  static persistenceToEntity(
+    persistence: MemberPersistence,
+  ): MemberWithProfessional {
+    return {
+      id: persistence.id,
+      firstName: persistence.first_name,
+      lastName: persistence.last_name,
+      email: persistence.email,
+      phoneNumber: persistence.phone_number,
+      role: persistence.role,
+      userStatus: persistence.user_status,
+      professionalTitle: persistence.professional?.professional_title,
+      experienceYears: persistence.professional?.experience_years,
+      skills: persistence.professional?.skills,
+      addressStreet: persistence.professional?.address_street,
+      addressCity: persistence.professional?.address_city,
+      addressState: persistence.professional?.address_state,
+      addressZipCode: persistence.professional?.address_zip_code,
+      createdAt: persistence.created_at,
+      updatedAt: persistence.updated_at,
+    };
   }
 }

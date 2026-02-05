@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '../../generated/client/client';
 import {
   IMemberRepository,
   MemberWithProfessional,
@@ -59,18 +60,14 @@ export class MemberRepository implements IMemberRepository {
 
     const [members, total] = await Promise.all([
       this.prisma.user.findMany({
-        where: prismaWhere as unknown as NonNullable<
-          Parameters<PrismaService['user']['findMany']>[0]
-        >['where'],
+        where: prismaWhere as Prisma.UserWhereInput,
         skip,
         take: limit,
         include: { professional: true },
         orderBy: { created_at: 'desc' },
       }),
       this.prisma.user.count({
-        where: prismaWhere as unknown as NonNullable<
-          Parameters<PrismaService['user']['count']>[0]
-        >['where'],
+        where: prismaWhere as Prisma.UserWhereInput,
       }),
     ]);
 
@@ -84,9 +81,7 @@ export class MemberRepository implements IMemberRepository {
     const prismaData = MemberMapper.toPrismaCreateInput(data);
 
     const created = await this.prisma.user.create({
-      data: prismaData as unknown as Parameters<
-        PrismaService['user']['create']
-      >[0]['data'],
+      data: prismaData as Prisma.UserCreateInput,
       include: { professional: true },
     });
 
@@ -102,9 +97,7 @@ export class MemberRepository implements IMemberRepository {
     await this.prisma.user.update({
       where: { id },
 
-      data: prismaData as unknown as Parameters<
-        PrismaService['user']['update']
-      >[0]['data'],
+      data: prismaData as Prisma.UserUpdateInput,
     });
 
     return (await this.findById(id))!;

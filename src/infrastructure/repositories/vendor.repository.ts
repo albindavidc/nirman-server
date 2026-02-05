@@ -1,5 +1,6 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '../../generated/client/client';
 import { IVendorRepository } from '../../domain/repositories/vendor-repository.interface';
 import { BaseRepository } from './base.repository';
 import { Vendor } from '../../domain/entities/vendor.entity';
@@ -74,13 +75,15 @@ export class VendorRepository
 
     const [vendors, total] = await Promise.all([
       this.prisma.vendor.findMany({
-        where: prismaWhere,
+        where: prismaWhere as Prisma.VendorWhereInput,
         skip,
         take: limit,
         include: { user: true },
         orderBy: { created_at: 'desc' },
       }),
-      this.prisma.vendor.count({ where: prismaWhere }),
+      this.prisma.vendor.count({
+        where: prismaWhere as Prisma.VendorWhereInput,
+      }),
     ]);
 
     return {
@@ -93,7 +96,7 @@ export class VendorRepository
     const prismaData = VendorMapper.toPrismaCreateInput(data);
 
     const created = await this.prisma.vendor.create({
-      data: prismaData,
+      data: prismaData as Prisma.VendorUncheckedCreateInput,
       include: { user: true },
     });
 
@@ -105,7 +108,7 @@ export class VendorRepository
 
     await this.prisma.vendor.update({
       where: { id },
-      data: prismaData,
+      data: prismaData as Prisma.VendorUpdateInput,
     });
 
     return (await this.findById(id))!;

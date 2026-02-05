@@ -13,7 +13,7 @@ export type RepoUser = Pick<User, 'id' | 'email' | 'role'> & {
   updated_at: User['updatedAt'];
 };
 
-export interface PrismaAttendance {
+export interface AttendanceBase {
   id: string;
   project_id: string;
   user_id: string;
@@ -28,5 +28,40 @@ export interface PrismaAttendance {
   is_verified: boolean;
   verified_by: string | null;
   verified_at: Date | null;
+  created_at?: Date;
+  updated_at?: Date;
+}
+
+export interface AttendancePersistence extends AttendanceBase {
   user?: RepoUser;
 }
+
+export type PrismaAttendance = AttendancePersistence;
+
+export interface AttendanceWherePersistenceInput {
+  project_id?: string;
+  user_id?: string;
+  date?: {
+    gte?: Date;
+    lte?: Date;
+  };
+  id?: string;
+}
+
+export type AttendanceCreatePersistenceInput = Omit<
+  AttendanceBase,
+  | 'id'
+  | 'created_at'
+  | 'updated_at'
+  | 'supervisor_notes'
+  | 'is_verified'
+  | 'verified_by'
+  | 'verified_at'
+>;
+
+export type AttendanceUpdatePersistenceInput = Partial<
+  Omit<
+    AttendanceBase,
+    'id' | 'created_at' | 'updated_at' | 'project_id' | 'user_id' | 'date'
+  >
+>;

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
+import { Prisma } from '../../generated/client/client';
 import {
   IAttendanceRepository,
   AttendanceRecord,
 } from '../../domain/repositories/attendance-repository.interface';
-
-import { PrismaAttendance } from '../types/attendance.types';
+import { AttendanceMapper } from '../mappers/attendance.mapper';
+import { AttendancePersistence } from '../types/attendance.types';
 
 @Injectable()
 export class AttendanceRepository implements IAttendanceRepository {
@@ -30,8 +31,8 @@ export class AttendanceRepository implements IAttendanceRepository {
       },
     });
 
-    return records.map((record) =>
-      this.mapToDomain(record as PrismaAttendance),
+    return AttendanceMapper.fromPrismaResults(
+      records as unknown as AttendancePersistence[],
     );
   }
 
@@ -47,7 +48,9 @@ export class AttendanceRepository implements IAttendanceRepository {
       return null;
     }
 
-    return this.mapToDomain(record as PrismaAttendance);
+    return AttendanceMapper.fromPrismaResult(
+      record as unknown as AttendancePersistence,
+    );
   }
 
   async findByUserProjectDate(
@@ -75,7 +78,9 @@ export class AttendanceRepository implements IAttendanceRepository {
       return null;
     }
 
-    return this.mapToDomain(record as PrismaAttendance);
+    return AttendanceMapper.fromPrismaResult(
+      record as unknown as AttendancePersistence,
+    );
   }
 
   async findByUserAndDateRange(
@@ -101,65 +106,32 @@ export class AttendanceRepository implements IAttendanceRepository {
       },
     });
 
-    return records.map((record) =>
-      this.mapToDomain(record as PrismaAttendance),
+    return AttendanceMapper.fromPrismaResults(
+      records as unknown as AttendancePersistence[],
     );
   }
 
   async create(data: Partial<AttendanceRecord>): Promise<AttendanceRecord> {
+    const prismaData = AttendanceMapper.toPrismaCreateInput(data);
     const record = await this.prisma.attendance.create({
-      data: {
-        user_id: data.userId!,
-        project_id: data.projectId!,
-        date: data.date!,
-        check_in: data.checkIn,
-        check_out: data.checkOut,
-        status: data.status!,
-        location: data.location,
-        method: data.method,
-        work_hours: data.workHours,
-      },
+      data: prismaData as Prisma.AttendanceUncheckedCreateInput,
     });
-    return this.mapToDomain(record);
+    return AttendanceMapper.fromPrismaResult(
+      record as unknown as AttendancePersistence,
+    );
   }
 
   async update(
     id: string,
     data: Partial<AttendanceRecord>,
   ): Promise<AttendanceRecord> {
+    const prismaData = AttendanceMapper.toPrismaUpdateInput(data);
     const record = await this.prisma.attendance.update({
       where: { id },
-      data: {
-        check_in: data.checkIn,
-        check_out: data.checkOut,
-        status: data.status,
-        location: data.location,
-        work_hours: data.workHours,
-        supervisor_notes: data.supervisorNotes,
-        is_verified: data.isVerified,
-        verified_by: data.verifiedBy,
-        verified_at: data.verifiedAt,
-      },
+      data: prismaData as Prisma.AttendanceUpdateInput,
     });
-    return this.mapToDomain(record);
-  }
-
-  private mapToDomain(record: PrismaAttendance): AttendanceRecord {
-    return {
-      id: record.id,
-      userId: record.user_id,
-      projectId: record.project_id,
-      date: record.date,
-      checkIn: record.check_in,
-      checkOut: record.check_out,
-      status: record.status,
-      location: record.location,
-      workHours: record.work_hours,
-      method: record.method,
-      supervisorNotes: record.supervisor_notes,
-      isVerified: record.is_verified,
-      verifiedBy: record.verified_by,
-      verifiedAt: record.verified_at,
-    };
+    return AttendanceMapper.fromPrismaResult(
+      record as unknown as AttendancePersistence,
+    );
   }
 }

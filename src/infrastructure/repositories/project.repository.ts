@@ -1,5 +1,6 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '../../generated/client/client';
 import { IProjectRepository } from '../../domain/repositories/project-repository.interface';
 import { BaseRepository } from './base.repository';
 import { Project } from '../../domain/entities/project.entity';
@@ -78,18 +79,14 @@ export class ProjectRepository
 
     const [projects, total] = await Promise.all([
       this.prisma.project.findMany({
-        where: prismaWhere as unknown as NonNullable<
-          Parameters<PrismaService['project']['findMany']>[0]
-        >['where'],
+        where: prismaWhere as Prisma.ProjectWhereInput,
         skip,
         take: limit,
         include: { phases: { orderBy: { sequence: 'asc' } } },
         orderBy: { created_at: 'desc' },
       }),
       this.prisma.project.count({
-        where: prismaWhere as unknown as NonNullable<
-          Parameters<PrismaService['project']['count']>[0]
-        >['where'],
+        where: prismaWhere as Prisma.ProjectWhereInput,
       }),
     ]);
 
@@ -107,9 +104,7 @@ export class ProjectRepository
     }
 
     const created = await this.prisma.project.create({
-      data: prismaData as unknown as Parameters<
-        PrismaService['project']['create']
-      >[0]['data'],
+      data: prismaData as Prisma.ProjectCreateInput,
       include: { phases: true },
     });
 
@@ -122,9 +117,7 @@ export class ProjectRepository
     await this.prisma.project.update({
       where: { id },
 
-      data: prismaData as unknown as Parameters<
-        PrismaService['project']['update']
-      >[0]['data'],
+      data: prismaData as Prisma.ProjectUpdateInput,
     });
 
     return (await this.findById(id))!;
@@ -160,9 +153,7 @@ export class ProjectRepository
     };
     const prismaWhere = ProjectMapper.toPrismaWhereInput(where);
     return this.prisma.project.count({
-      where: prismaWhere as unknown as NonNullable<
-        Parameters<PrismaService['project']['count']>[0]
-      >['where'],
+      where: prismaWhere as Prisma.ProjectWhereInput,
     });
   }
 
