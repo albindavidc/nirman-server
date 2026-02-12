@@ -17,12 +17,12 @@ export class EmailService implements IEmailService {
   constructor() {
     // Configure Brevo SMTP transporter
     this.transporter = nodemailer.createTransport({
-      host: process.env.BREVO_HOST,
+      host: process.env.EMAIL_HOST,
       port: 587,
       secure: false,
       auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_APP_PASSWORD,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
   }

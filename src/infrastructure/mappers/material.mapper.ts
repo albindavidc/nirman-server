@@ -68,12 +68,34 @@ export class MaterialMapper {
       description: domain.description || null,
       specifications: domain.specifications || null,
       current_stock: domain.currentStock,
-      // Assuming unit, code might be immutable?
+      unit: domain.unit,
       unit_price: domain.unitPrice || null,
       reorder_level: domain.reorderLevel || null,
       storage_location: domain.storageLocation || null,
       preferred_supplier_id: domain.preferredSupplierId || null,
       status: domain.status,
+    };
+  }
+  static toDto(domain: Material): any {
+    // Return a DTO object. For now, we can return the domain object or map it detailedly.
+    // The previous code returned MaterialDto.
+    return {
+      id: domain.id,
+      projectId: domain.projectId,
+      name: domain.name,
+      code: domain.code,
+      category: domain.category,
+      description: domain.description,
+      specifications: domain.specifications,
+      currentStock: domain.currentStock,
+      unit: domain.unit,
+      unitPrice: domain.unitPrice,
+      reorderLevel: domain.reorderLevel,
+      storageLocation: domain.storageLocation,
+      preferredSupplierId: domain.preferredSupplierId,
+      status: domain.status,
+      createdAt: domain.createdAt.toISOString(),
+      updatedAt: domain.updatedAt.toISOString(),
     };
   }
 }

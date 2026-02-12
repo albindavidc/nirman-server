@@ -33,6 +33,10 @@ export interface CreateMaterialDto {
   preferredSupplierId?: string;
 }
 
+export interface UpdateMaterialDto extends Partial<CreateMaterialDto> {
+  status?: 'in_stock' | 'low_stock' | 'out_of_stock';
+}
+
 export interface UpdateMaterialStockDto {
   quantity: number;
   type: 'IN' | 'OUT' | 'ADJUSTMENT';

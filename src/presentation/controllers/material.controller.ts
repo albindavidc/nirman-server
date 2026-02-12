@@ -6,18 +6,22 @@ import {
   Post,
   UseGuards,
   Request,
+  Delete,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { GetProjectMaterialsQuery } from '../../application/queries/material/get-project-materials.query';
 import { CreateMaterialCommand } from '../../application/commands/material/create-material.command';
 import { UpdateMaterialStockCommand } from '../../application/commands/material/update-material-stock.command';
+import { UpdateMaterialCommand } from '../../application/commands/material/update-material.command';
+import { DeleteMaterialCommand } from '../../application/commands/material/delete-material.command';
 import { CreateMaterialRequestCommand } from '../../application/commands/material/create-material-request.command';
 import { GetMaterialTransactionsQuery } from '../../application/queries/material/get-material-transactions.query';
 import { GetProjectMaterialRequestsQuery } from '../../application/queries/material/get-project-material-requests.query';
 
 import {
   CreateMaterialDto,
+  UpdateMaterialDto,
   MaterialDto,
 } from '../../application/dto/material/material.dto';
 import {
@@ -57,6 +61,26 @@ export class MaterialController {
     );
   }
 
+  @Post(':id')
+  async updateMaterial(
+    @Param('id') id: string,
+    @Body() dto: UpdateMaterialDto,
+    @Request() req: { user: { userId: string } },
+  ): Promise<MaterialDto> {
+    return this.commandBus.execute(
+      new UpdateMaterialCommand(id, req.user.userId, dto),
+    );
+  }
+
+  @Delete(':id')
+  async deleteMaterial(
+    @Param('id') id: string,
+    @Request() req: { user: { userId: string } },
+  ): Promise<void> {
+    return this.commandBus.execute(
+      new DeleteMaterialCommand(id, req.user.userId),
+    );
+  }
   @Post(MATERIAL_ROUTES.UPDATE_STOCK)
   async updateStock(
     @Param('id') id: string,

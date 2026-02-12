@@ -7,6 +7,7 @@ export class PhaseApproval {
   constructor(
     public id: string,
     public phaseId: string,
+    public requestedBy: string,
     public approvedBy: string | null,
     public approvalStatus: string,
     public comments: string | null,

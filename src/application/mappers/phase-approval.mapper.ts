@@ -31,6 +31,7 @@ export class PhaseApprovalMapper {
     return new PhaseApproval(
       prisma.id,
       prisma.phase_id,
+      prisma.requested_by,
       prisma.approved_by,
       prisma.approval_status,
       prisma.comments,
@@ -38,10 +39,6 @@ export class PhaseApprovalMapper {
       prisma.approved_at,
       prisma.created_at,
       prisma.updated_at,
-      // Missing requestedBy etc in domain entity constructor?
-      // I Will skip Domain Entity update if it's not critical for this specific flow
-      // OR I should better update it.
-      // Let's assume for now we use DTOs primarily for this response.
     );
   }
 

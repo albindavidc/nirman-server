@@ -46,6 +46,11 @@ export interface IPhaseApprovalRepository {
   findByProjectId(projectId: string): Promise<PhaseApprovalResult[]>;
 
   /**
+   * Find the latest approval for a phase
+   */
+  findLatestByPhaseId(phaseId: string): Promise<PhaseApprovalResult | null>;
+
+  /**
    * Create a new phase approval
    */
   create(data: CreatePhaseApprovalData): Promise<PhaseApprovalResult>;

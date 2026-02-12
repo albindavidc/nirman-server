@@ -46,13 +46,22 @@ export class MaterialRepository {
     const updated = await this.prisma.material.update({
       where: { id: material.id },
       data: {
-        current_stock: prismaData.current_stock,
-        status: prismaData.status,
+        ...prismaData,
         updated_at: new Date(),
       },
     });
     return MaterialMapper.fromPrismaResult(
       updated as unknown as MaterialPersistence,
     );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.material.update({
+      where: { id },
+      data: {
+        status: 'archived',
+        updated_at: new Date(),
+      },
+    });
   }
 }

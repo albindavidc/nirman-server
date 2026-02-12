@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  IsIn,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class MediaItemDto {
@@ -11,7 +17,8 @@ class MediaItemDto {
 
 export class CreatePhaseApprovalDto {
   @IsString()
-  approvalStatus!: string; // 'approved' | 'rejected'
+  @IsIn(['approved', 'rejected'])
+  approvalStatus!: string;
 
   @IsOptional()
   @IsString()

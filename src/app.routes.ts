@@ -10,6 +10,7 @@ export const AUTH_ROUTES = {
   FORGOT_PASSWORD: 'forgot-password',
   VERIFY_RESET_OTP: 'verify-reset-otp',
   RESET_PASSWORD: 'reset-password',
+  WORKER_SIGNUP: 'worker/signup',
 };
 
 export const MEMBER_ROUTES = {

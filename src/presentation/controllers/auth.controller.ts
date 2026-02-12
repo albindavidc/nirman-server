@@ -28,6 +28,8 @@ import { LoginCommand } from '../../application/commands/auth/login.command';
 import { ForgotPasswordCommand } from '../../application/commands/auth/forgot-password.command';
 import { VerifyResetOtpCommand } from '../../application/commands/auth/verify-reset-otp.command';
 import { ResetPasswordCommand } from '../../application/commands/auth/reset-password.command';
+import { WorkerSignupCommand } from '../../application/commands/auth/worker-signup.command';
+import { WorkerSignupDto } from '../../application/dto/auth/worker-signup.dto';
 
 // Queries
 import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
@@ -136,8 +138,17 @@ export class AuthController {
   @Post(AUTH_ROUTES.LOGOUT)
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('access_token');
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+    });
     res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
       path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`,
     });
     return { message: 'Logged out successfully' };
@@ -166,5 +177,12 @@ export class AuthController {
     return this.commandBus.execute(
       new ResetPasswordCommand(dto.email, dto.resetToken, dto.newPassword),
     );
+  }
+
+  @Public()
+  @Post(AUTH_ROUTES.WORKER_SIGNUP)
+  @HttpCode(HttpStatus.OK)
+  workerSignup(@Body() dto: WorkerSignupDto) {
+    return this.commandBus.execute(new WorkerSignupCommand(dto));
   }
 }

@@ -9,6 +9,8 @@ import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { MaterialRequestRepository } from '../../infrastructure/repositories/material-request.repository';
 import { MaterialTransactionRepository } from '../../infrastructure/repositories/material-transaction.repository';
 import { UpdateMaterialStockHandler } from '../../application/handlers/commands/material/update-material-stock.handler';
+import { UpdateMaterialHandler } from '../../application/handlers/commands/material/update-material.handler';
+import { DeleteMaterialHandler } from '../../application/handlers/commands/material/delete-material.handler';
 import { GetMaterialTransactionsHandler } from '../../application/handlers/queries/material/get-material-transactions.handler';
 import { CreateMaterialRequestHandler } from '../../application/handlers/commands/material/create-material-request.handler';
 import { GetProjectMaterialRequestsHandler } from '../../application/handlers/queries/material/get-project-material-requests.handler';
@@ -21,6 +23,8 @@ const QueryHandlers = [
 const CommandHandlers = [
   CreateMaterialHandler,
   UpdateMaterialStockHandler,
+  UpdateMaterialHandler,
+  DeleteMaterialHandler,
   CreateMaterialRequestHandler,
 ];
 

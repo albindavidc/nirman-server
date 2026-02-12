@@ -45,6 +45,44 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
     }));
   }
 
+  async findLatestByPhaseId(
+    phaseId: string,
+  ): Promise<PhaseApprovalResult | null> {
+    const approval = (await this.prisma.phaseApproval.findFirst({
+      where: { phase_id: phaseId },
+      include: {
+        approver: {
+          select: { first_name: true, last_name: true },
+        },
+        requester: {
+          select: { first_name: true, last_name: true },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    })) as PhaseApprovalWithUsers | null;
+
+    if (!approval) {
+      return null;
+    }
+
+    return {
+      id: approval.id,
+      phaseId: approval.phase_id,
+      approvedBy: approval.approved_by,
+      approverFirstName: approval.approver?.first_name ?? null,
+      approverLastName: approval.approver?.last_name ?? null,
+      requestedBy: approval.requested_by,
+      requesterFirstName: approval.requester.first_name,
+      requesterLastName: approval.requester.last_name,
+      approvalStatus: approval.approval_status,
+      comments: approval.comments,
+      media: (approval.media as Array<{ type: string; url: string }>) ?? [],
+      approvedAt: approval.approved_at,
+      requestedAt: approval.requested_at,
+      createdAt: approval.created_at,
+    };
+  }
+
   async findByProjectId(projectId: string): Promise<PhaseApprovalResult[]> {
     const approvals = (await this.prisma.phaseApproval.findMany({
       where: { phase: { project_id: projectId } },
