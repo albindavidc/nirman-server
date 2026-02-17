@@ -2,11 +2,12 @@ import {
   IsArray,
   IsEmail,
   IsInt,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   Min,
 } from 'class-validator';
-import { VendorStatus } from '../../../generated/client/enums';
+import { VendorStatus } from '../../../domain/enums/vendor-status.enum';
 
 export class CreateVendorByAdminDto {
   // User Details
@@ -68,5 +69,6 @@ export class CreateVendorByAdminDto {
   contactPhone?: string;
 
   @IsOptional()
+  @IsEnum(VendorStatus)
   vendorStatus?: VendorStatus;
 }

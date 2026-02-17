@@ -6,8 +6,9 @@ import {
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
 import { Role } from '../../../../domain/enums/role.enum';
+import { UserStatus } from '../../../../domain/enums/user-status.enum';
 import { BadRequestException, NotFoundException, Inject } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 
 @CommandHandler(WorkerSignupCommand)
 export class WorkerSignupHandler implements ICommandHandler<WorkerSignupCommand> {
@@ -16,7 +17,9 @@ export class WorkerSignupHandler implements ICommandHandler<WorkerSignupCommand>
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(command: WorkerSignupCommand): Promise<void> {
+  async execute(
+    command: WorkerSignupCommand,
+  ): Promise<{ success: boolean; message: string }> {
     const { email, password, confirmPassword } = command.dto;
 
     if (password !== confirmPassword) {
@@ -37,15 +40,19 @@ export class WorkerSignupHandler implements ICommandHandler<WorkerSignupCommand>
     }
 
     // Hash password
-    const saltRound = 10;
-    const passwordHash = await bcrypt.hash(password, saltRound);
+    // Hash password
+    const passwordHash = await argon2.hash(password);
 
-    // Update user password and status
-    // Assuming status logic is handled by password presence or explicit field
-    // For now, we update the password hash which activates the account access
+    // Update user password
     await this.userRepository.updatePassword(email, passwordHash);
 
-    // Optionally update status to 'active' if such field exists and needed
-    // await this.userRepository.update(user.id, { status: 'active' });
+    // Update user status to ACTIVE
+    if (user.id) {
+      await this.userRepository.update(user.id, {
+        userStatus: UserStatus.ACTIVE,
+      });
+    }
+
+    return { success: true, message: 'Account activated successfully' };
   }
 }

@@ -1,6 +1,6 @@
 import { Vendor } from 'src/domain/entities/vendor.entity';
 import { CreateVendorCompanyDto } from 'src/application/dto/vendor/create-vendor-company.dto';
-import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
+
 import { VendorResponseDto } from 'src/application/dto/vendor/vendor-response.dto';
 
 export class VendorMapper {
@@ -19,7 +19,7 @@ export class VendorMapper {
       websiteUrl: dto.websiteUrl,
       contactEmail: dto.contactEmail,
       contactPhone: dto.contactPhone,
-      vendorStatus: dto.vendorStatus as VendorStatus,
+      vendorStatus: dto.vendorStatus,
     });
   }
 
