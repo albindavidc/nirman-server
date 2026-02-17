@@ -20,6 +20,7 @@ export interface PhaseApprovalResult {
   id: string;
   phaseId: string;
   phaseName?: string;
+  projectName?: string;
   approvedBy: string | null;
   approverFirstName: string | null;
   approverLastName: string | null;
@@ -44,6 +45,11 @@ export interface IPhaseApprovalRepository {
    * Find all approvals for a project
    */
   findByProjectId(projectId: string): Promise<PhaseApprovalResult[]>;
+
+  /**
+   * Find all phase approvals
+   */
+  findAll(): Promise<PhaseApprovalResult[]>;
 
   /**
    * Find the latest approval for a phase

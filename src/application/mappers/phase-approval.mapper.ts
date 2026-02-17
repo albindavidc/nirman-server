@@ -23,11 +23,6 @@ type PrismaPhaseApproval = {
 
 export class PhaseApprovalMapper {
   static toDomain(prisma: PrismaPhaseApproval): PhaseApproval {
-    // Note: Domain entity might need update too, but for DTO purposes we can map directly
-    // Assuming domain entity constructor matches or we update it.
-    // For now, let's assume we focus on DTOs.
-    // If domain entity is strictly used, we should update it.
-    // Checking previous file content, toDomain used 9 args.
     return new PhaseApproval(
       prisma.id,
       prisma.phase_id,
@@ -65,11 +60,13 @@ export class PhaseApprovalMapper {
   }
 
   static toDtoFromResult(
+    this: void,
     result: PhaseApprovalResult,
   ): PhaseApprovalResponseDto {
     return {
       id: result.id,
       phaseId: result.phaseId,
+      projectName: result.projectName,
       approvedBy: result.approvedBy,
       approverName: result.approverFirstName
         ? `${result.approverFirstName} ${result.approverLastName}`

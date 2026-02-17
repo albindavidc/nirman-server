@@ -119,6 +119,44 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
     }));
   }
 
+  async findAll(): Promise<PhaseApprovalResult[]> {
+    const approvals = (await this.prisma.phaseApproval.findMany({
+      include: {
+        approver: {
+          select: { first_name: true, last_name: true },
+        },
+        requester: {
+          select: { first_name: true, last_name: true },
+        },
+        phase: {
+          select: { name: true, project: { select: { name: true } } },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    })) as (PhaseApprovalWithUsers & {
+      phase: { project: { name: string } };
+    })[];
+
+    return approvals.map((a) => ({
+      id: a.id,
+      phaseId: a.phase_id,
+      phaseName: a.phase.name,
+      projectName: a.phase.project.name,
+      approvedBy: a.approved_by,
+      approverFirstName: a.approver?.first_name ?? null,
+      approverLastName: a.approver?.last_name ?? null,
+      requestedBy: a.requested_by,
+      requesterFirstName: a.requester?.first_name,
+      requesterLastName: a.requester?.last_name,
+      approvalStatus: a.approval_status,
+      comments: a.comments,
+      media: (a.media as Array<{ type: string; url: string }>) ?? [],
+      approvedAt: a.approved_at,
+      requestedAt: a.requested_at,
+      createdAt: a.created_at,
+    }));
+  }
+
   async create(data: CreatePhaseApprovalData): Promise<PhaseApprovalResult> {
     const approval = (await this.prisma.phaseApproval.create({
       data: {

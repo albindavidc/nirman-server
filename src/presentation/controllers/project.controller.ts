@@ -57,6 +57,7 @@ import { RequestPhaseApprovalDto } from '../../application/dto/phase-approval/re
 import { UpdateProjectPhaseDto } from '../../application/dto/project/phase/update-project-phase.dto';
 
 import { GetProjectApprovalsQuery } from '../../application/queries/phase-approval/get-project-approvals.query';
+import { GetAllPhaseApprovalsQuery } from '../../application/queries/phase-approval/get-all-phase-approvals.query';
 
 import { PROJECT_ROUTES } from '../../app.routes';
 
@@ -274,6 +275,11 @@ export class ProjectController {
         dto.approverId,
       ),
     );
+  }
+
+  @Get('approvals')
+  async getAllPhaseApprovals(): Promise<PhaseApprovalResponseDto[]> {
+    return this.queryBus.execute(new GetAllPhaseApprovalsQuery());
   }
 
   @Get(':id/approvals')

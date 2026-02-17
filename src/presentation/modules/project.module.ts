@@ -48,6 +48,7 @@ import { CreatePhaseApprovalHandler } from '../../application/handlers/commands/
 import { RequestPhaseApprovalHandler } from '../../application/handlers/commands/phase-approval/request-phase-approval.handler';
 
 import { GetProjectApprovalsHandler } from '../../application/handlers/queries/phase-approval/get-project-approvals.handler';
+import { GetAllPhaseApprovalsHandler } from '../../application/handlers/queries/phase-approval/get-all-phase-approvals.handler';
 
 const QueryHandlers = [
   GetProjectsHandler,
@@ -60,6 +61,7 @@ const QueryHandlers = [
   GetPhaseForApprovalHandler,
   GetProjectStatsHandler,
   GetProjectApprovalsHandler,
+  GetAllPhaseApprovalsHandler,
 ];
 
 const CommandHandlers = [
