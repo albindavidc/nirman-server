@@ -17,6 +17,7 @@ export type TaskRecord = {
   status: string;
   priority: string;
   progress: number;
+  color: string | null;
   notes: string | null;
   created_at: Date;
   updated_at: Date;

@@ -42,7 +42,13 @@ export class CreateTaskDto {
 
   @IsString()
   @IsOptional()
+  @IsString()
+  @IsOptional()
   notes?: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
 }
 
 export class UpdateTaskDto {
@@ -88,7 +94,13 @@ export class UpdateTaskDto {
 
   @IsString()
   @IsOptional()
+  @IsString()
+  @IsOptional()
   notes?: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
 }
 
 export class CreateTaskDependencyDto {

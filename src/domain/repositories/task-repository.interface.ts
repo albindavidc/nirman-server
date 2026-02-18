@@ -19,6 +19,7 @@ export interface Task {
     lastName: string;
     email: string;
   } | null;
+  color?: string | null;
 }
 
 export interface TaskDependency {

@@ -23,6 +23,7 @@ export class TaskRepository implements ITaskRepository {
         planned_end_date: data.plannedEndDate,
         priority: data.priority,
         status: data.status,
+        color: data.color,
       },
       include: { assignee: true },
     });
@@ -44,6 +45,7 @@ export class TaskRepository implements ITaskRepository {
         priority: data.priority,
         progress: data.progress,
         notes: data.notes,
+        color: data.color,
       },
       include: { assignee: true },
     });
@@ -147,6 +149,7 @@ export class TaskRepository implements ITaskRepository {
       priority: prismaTask.priority,
       progress: prismaTask.progress,
       notes: prismaTask.notes,
+      color: prismaTask.color,
       createdAt: prismaTask.created_at,
       updatedAt: prismaTask.updated_at,
       assignee: prismaTask.assignee

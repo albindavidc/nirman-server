@@ -134,6 +134,7 @@ model Task {
   status            String    @default("Not Started") // 'Not Started', 'In Progress', 'Completed', 'Delayed'
   priority          String    @default("Medium") // 'Low', 'Medium', 'High', 'Critical'
   progress          Int       @default(0)
+  color             String?   // Hex color code
   notes             String?   
   
   created_at        DateTime  @default(now())

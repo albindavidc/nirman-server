@@ -37,6 +37,7 @@ export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
       priority: dto.priority,
       status: dto.status,
       notes: dto.notes || null,
+      color: dto.color || null,
     });
   }
 }
@@ -70,6 +71,7 @@ export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand> {
       priority: dto.priority,
       progress: dto.progress,
       notes: dto.notes || undefined,
+      color: dto.color || undefined,
     });
   }
 }
