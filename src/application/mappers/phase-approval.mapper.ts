@@ -66,6 +66,7 @@ export class PhaseApprovalMapper {
     return {
       id: result.id,
       phaseId: result.phaseId,
+      projectId: result.projectId,
       projectName: result.projectName,
       approvedBy: result.approvedBy,
       approverName: result.approverFirstName

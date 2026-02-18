@@ -6,6 +6,7 @@ export interface MediaItemResponse {
 export interface PhaseApprovalResponseDto {
   id: string;
   phaseId: string;
+  projectId?: string;
   projectName?: string;
   approvedBy: string | null;
   approverName: string | null;

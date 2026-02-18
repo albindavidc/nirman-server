@@ -20,6 +20,7 @@ export interface PhaseApprovalResult {
   id: string;
   phaseId: string;
   phaseName?: string;
+  projectId?: string;
   projectName?: string;
   approvedBy: string | null;
   approverFirstName: string | null;

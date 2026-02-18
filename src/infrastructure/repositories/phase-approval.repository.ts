@@ -129,18 +129,19 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
           select: { first_name: true, last_name: true },
         },
         phase: {
-          select: { name: true, project: { select: { name: true } } },
+          select: { name: true, project: { select: { id: true, name: true } } },
         },
       },
       orderBy: { created_at: 'desc' },
     })) as (PhaseApprovalWithUsers & {
-      phase: { project: { name: string } };
+      phase: { name: string; project: { id: string; name: string } };
     })[];
 
     return approvals.map((a) => ({
       id: a.id,
       phaseId: a.phase_id,
       phaseName: a.phase.name,
+      projectId: a.phase.project.id,
       projectName: a.phase.project.name,
       approvedBy: a.approved_by,
       approverFirstName: a.approver?.first_name ?? null,
