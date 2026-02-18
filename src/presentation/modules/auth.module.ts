@@ -12,6 +12,7 @@ import { ForgotPasswordHandler } from '../../application/handlers/commands/auth/
 import { ResetPasswordHandler } from '../../application/handlers/commands/auth/reset-password.handler';
 import { VerifyResetOtpHandler } from '../../application/handlers/commands/auth/verify-reset-otp.handler';
 import { WorkerSignupHandler } from '../../application/handlers/commands/auth/worker-signup.handler';
+import { SupervisorSignupHandler } from '../../application/handlers/commands/auth/supervisor-signup.handler';
 
 // Repositories
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
@@ -44,6 +45,7 @@ const CommandHandlers = [
   VerifyResetOtpHandler,
   ResetPasswordHandler,
   WorkerSignupHandler,
+  SupervisorSignupHandler,
 ];
 
 @Module({

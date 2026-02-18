@@ -11,6 +11,7 @@ export const AUTH_ROUTES = {
   VERIFY_RESET_OTP: 'verify-reset-otp',
   RESET_PASSWORD: 'reset-password',
   WORKER_SIGNUP: 'worker/signup',
+  SUPERVISOR_SIGNUP: 'supervisor/signup',
 };
 
 export const MEMBER_ROUTES = {

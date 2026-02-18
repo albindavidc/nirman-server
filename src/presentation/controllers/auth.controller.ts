@@ -30,6 +30,8 @@ import { VerifyResetOtpCommand } from '../../application/commands/auth/verify-re
 import { ResetPasswordCommand } from '../../application/commands/auth/reset-password.command';
 import { WorkerSignupCommand } from '../../application/commands/auth/worker-signup.command';
 import { WorkerSignupDto } from '../../application/dto/auth/worker-signup.dto';
+import { SupervisorSignupCommand } from '../../application/commands/auth/supervisor-signup.command';
+import { SupervisorSignupDto } from '../../application/dto/auth/supervisor-signup.dto';
 
 // Queries
 import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
@@ -184,5 +186,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   workerSignup(@Body() dto: WorkerSignupDto) {
     return this.commandBus.execute(new WorkerSignupCommand(dto));
+  }
+
+  @Public()
+  @Post(AUTH_ROUTES.SUPERVISOR_SIGNUP)
+  @HttpCode(HttpStatus.OK)
+  supervisorSignup(@Body() dto: SupervisorSignupDto) {
+    return this.commandBus.execute(new SupervisorSignupCommand(dto));
   }
 }

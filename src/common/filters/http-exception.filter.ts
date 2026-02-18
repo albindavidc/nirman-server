@@ -58,8 +58,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         case 'P2002': {
           // Unique constraint violation
           status = HttpStatus.CONFLICT;
-          const target =
-            (prismaException.meta?.target as string[])?.join(', ') || 'field';
+          const targetMeta = prismaException.meta?.target;
+          const target = Array.isArray(targetMeta)
+            ? targetMeta.join(', ')
+            : (targetMeta as string) || 'field';
           message = `A record with this ${target} already exists`;
           break;
         }
