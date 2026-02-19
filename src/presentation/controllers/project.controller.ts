@@ -10,11 +10,11 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  Request,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { User } from '../../common/decorators/user.decorator';
 import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { GetProjectsQueryDto } from '../../application/dto/project/get-projects.dto';
 import { CreateProjectDto } from '../../application/dto/project/create-project.dto';
@@ -73,11 +73,9 @@ export class ProjectController {
   @HttpCode(HttpStatus.CREATED)
   async createProject(
     @Body() createDto: CreateProjectDto,
-    @Request() req: { user: { userId: string } },
+    @User('id') userId: string,
   ): Promise<ProjectResponseDto> {
-    return this.commandBus.execute(
-      new CreateProjectCommand(createDto, req.user.userId),
-    );
+    return this.commandBus.execute(new CreateProjectCommand(createDto, userId));
   }
 
   @Get(PROJECT_ROUTES.GET_PROJECTS)
@@ -245,13 +243,13 @@ export class ProjectController {
   async createPhaseApproval(
     @Param('phaseId') phaseId: string,
     @Body() dto: CreatePhaseApprovalDto,
-    @Request() req: { user: { id: string } },
+    @User('id') userId: string,
   ): Promise<PhaseApprovalResponseDto> {
     return this.commandBus.execute(
       new CreatePhaseApprovalCommand(
         phaseId,
-        req.user.id,
-        req.user.id, // requestedBy
+        userId,
+        userId, // requestedBy
         dto.approvalStatus,
         dto.comments ?? null,
         dto.media ?? [],
@@ -264,12 +262,12 @@ export class ProjectController {
   async requestPhaseApproval(
     @Param('phaseId') phaseId: string,
     @Body() dto: RequestPhaseApprovalDto,
-    @Request() req: { user: { userId: string } },
+    @User('id') userId: string,
   ): Promise<PhaseApprovalResponseDto> {
     return this.commandBus.execute(
       new RequestPhaseApprovalCommand(
         phaseId,
-        req.user['id'] || req.user['userId'],
+        userId,
         dto.comments ?? null,
         dto.media ?? [],
         dto.approverId,

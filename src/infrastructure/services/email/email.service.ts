@@ -37,7 +37,7 @@ export class EmailService implements IEmailService {
       });
       return true;
     } catch (error) {
-      console.error('Error sending email:', error);
+      this.logger.error('Error sending email:', error);
       return false;
     }
   }
@@ -71,7 +71,6 @@ export class EmailService implements IEmailService {
 
     // Log OTP for testing
     this.logger.log(`📧 Verification OTP for ${email}: ${otp}`);
-    console.log(`\n🔐 VERIFICATION OTP for ${email}: ${otp}\n`);
 
     return this.sendEmail({
       to: email,
@@ -109,7 +108,6 @@ export class EmailService implements IEmailService {
 
     // Log OTP for testing
     this.logger.log(`📧 Password Reset OTP for ${email}: ${otp}`);
-    console.log(`\n🔐 PASSWORD RESET OTP for ${email}: ${otp}\n`);
 
     return this.sendEmail({
       to: email,
@@ -151,7 +149,6 @@ export class EmailService implements IEmailService {
     `;
 
     this.logger.log(`📧 Welcome email sent to ${email}`);
-    console.log(`\n🎉 WELCOME EMAIL sent to ${email}\n`);
 
     return this.sendEmail({
       to: email,

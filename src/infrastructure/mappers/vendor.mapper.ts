@@ -27,7 +27,7 @@ export class VendorMapper {
       websiteUrl: dto.websiteUrl,
       contactEmail: dto.contactEmail,
       contactPhone: dto.contactPhone,
-      vendorStatus: dto.vendorStatus as DomainVendorStatus,
+      vendorStatus: dto.vendorStatus,
     });
   }
 

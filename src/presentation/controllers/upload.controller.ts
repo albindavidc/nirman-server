@@ -72,32 +72,6 @@ export class UploadController {
    */
   @Delete('*key')
   async deleteFile(@Param('key') key: string): Promise<{ message: string }> {
-    // The key parameter will capture the rest of the path, including 'profiles/uuid.jpg'
-    // NestJS/Express often captures wildcard as an array or indexed object, let's ensure we get the string.
-    // Actually, with @Delete('*key'), the param name is literal '0' usually in Express,
-    // but NestJS @Param('key') might not map it directly if we use *key syntax.
-    // A safer standard approach for "rest" parameter in recent Express is simply using a wildcard and extracting it.
-
-    // Let's try the suggestion: /users/*path
-    // So here: @Delete('*key') matches /upload/profiles/etc
-
-    // However, simple solution: Client sends URL encoded key or we just take the wildcard.
-    // Let's use @Delete('*') but then we need to access param[0].
-
-    // Actually, let's look at the specific error suggestion: "/users/*path".
-    // So let's try @Delete('*key') and see if @Param('key') works.
-
-    // Note: The specific error said: "PathError [TypeError]: Missing parameter name... /api/v1/upload/:key(*)".
-    // This confirms the old syntax was explicitly :key(*).
-
-    // Let's use standard wildcard semantics.
-    // In many NestJS versions, just using the param decorator on a wildcard works.
-
-    // However, to be safe and simple, let's assume the key is passed as a query param OR verify *key behavior.
-
-    // Wait, the client is sending DELETE /api/v1/upload/profiles/image.jpg
-
-    // Let's use the explicit wildcard syntax suggested.
     await this.s3Service.deleteFile(key);
     return { message: 'File deleted successfully' };
   }

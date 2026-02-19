@@ -4,6 +4,7 @@ import {
   MaterialCreatePersistenceInput,
   MaterialUpdatePersistenceInput,
 } from '../types/material.types';
+import { MaterialDto } from '../../application/dto/material/material.dto';
 
 export class MaterialMapper {
   static fromPrismaResult(result: MaterialPersistence): Material {
@@ -76,26 +77,24 @@ export class MaterialMapper {
       status: domain.status,
     };
   }
-  static toDto(domain: Material): any {
-    // Return a DTO object. For now, we can return the domain object or map it detailedly.
-    // The previous code returned MaterialDto.
+  static toDto(domain: Material): MaterialDto {
     return {
       id: domain.id,
       projectId: domain.projectId,
       name: domain.name,
       code: domain.code,
       category: domain.category,
-      description: domain.description,
-      specifications: domain.specifications,
+      description: domain.description ?? undefined,
+      specifications: domain.specifications ?? undefined,
       currentStock: domain.currentStock,
       unit: domain.unit,
-      unitPrice: domain.unitPrice,
-      reorderLevel: domain.reorderLevel,
-      storageLocation: domain.storageLocation,
-      preferredSupplierId: domain.preferredSupplierId,
+      unitPrice: domain.unitPrice ?? undefined,
+      reorderLevel: domain.reorderLevel ?? undefined,
+      storageLocation: domain.storageLocation ?? undefined,
+      preferredSupplierId: domain.preferredSupplierId ?? undefined,
       status: domain.status,
-      createdAt: domain.createdAt.toISOString(),
-      updatedAt: domain.updatedAt.toISOString(),
+      createdAt: domain.createdAt,
+      updatedAt: domain.updatedAt,
     };
   }
 }

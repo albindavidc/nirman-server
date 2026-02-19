@@ -154,3 +154,32 @@ export class CreateTaskDependencyDto {
     this.lagTime = partial.lagTime;
   }
 }
+
+export class TaskDto {
+  id: string;
+  phaseId: string;
+  name: string;
+  description?: string;
+  assignedTo?: string;
+  plannedStartDate?: Date;
+  plannedEndDate?: Date;
+  actualStartDate?: Date;
+  actualEndDate?: Date;
+  status: string;
+  priority: string;
+  progress: number;
+  notes?: string;
+  color?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export class TaskDependencyDto {
+  id: string;
+  successorTaskId: string;
+  predecessorTaskId: string;
+  type: string;
+  lagTime: number;
+  createdAt: Date;
+  updatedAt: Date;
+}

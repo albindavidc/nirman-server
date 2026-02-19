@@ -8,7 +8,6 @@ import { UserStatus } from 'src/domain/enums/user-status.enum';
 
 /**
  * Type-safe mapper for User entity <-> Prisma persistence conversion.
- * All 'any' types are encapsulated within this mapper with eslint-disable comments.
  */
 export class UserMapper {
   /**

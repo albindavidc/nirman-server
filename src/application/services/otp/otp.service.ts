@@ -44,7 +44,6 @@ export class OtpService {
       });
 
       this.logger.log(`OTP sent to ${email}: ${otp}`);
-      console.log(`OTP sent to ${email}: ${otp}`);
 
       // Send email
       await this.transporter.sendMail({
@@ -80,7 +79,7 @@ export class OtpService {
 
       return { success: true, message: 'OTP sent successfully' };
     } catch (error) {
-      console.error('Error sending OTP:', error);
+      this.logger.error('Error sending OTP:', error);
       return { success: false, message: 'Failed to send OTP' };
     }
   }

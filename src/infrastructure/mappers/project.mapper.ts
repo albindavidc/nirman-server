@@ -11,7 +11,6 @@ import {
 
 /**
  * Type-safe mapper for Project entity <-> Prisma persistence conversion.
- * All 'any' types are encapsulated within this mapper with eslint-disable comments.
  */
 export class ProjectMapper {
   /**

@@ -22,6 +22,6 @@ export class DeleteMaterialHandler implements ICommandHandler<DeleteMaterialComm
 
     const updatedMaterial = await this.materialRepository.update(material);
 
-    return MaterialMapper.toDto(updatedMaterial) as MaterialDto;
+    return MaterialMapper.toDto(updatedMaterial);
   }
 }

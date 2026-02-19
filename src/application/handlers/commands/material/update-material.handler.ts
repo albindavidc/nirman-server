@@ -29,7 +29,7 @@ export class UpdateMaterialHandler implements ICommandHandler<UpdateMaterialComm
       material.storageLocation = dto.storageLocation;
     if (dto.preferredSupplierId !== undefined)
       material.preferredSupplierId = dto.preferredSupplierId;
-    if (dto.status !== undefined) material.status = dto.status as any; // Cast if status is enum in domain
+    if (dto.status !== undefined) material.status = dto.status;
 
     const updatedMaterial = await this.repository.update(material);
 
