@@ -26,7 +26,7 @@ import { CreateVendorByAdminDto } from '../../application/dto/vendor/create-vend
 import { GetVendorByIdQuery } from '../../application/queries/vendor/get-vendor-by-id.query';
 import { VendorResponseDto } from '../../application/dto/vendor/vendor-response.dto';
 
-import { VENDOR_ROUTES } from '../../app.routes';
+import { VENDOR_ROUTES } from '../../common/constants/routes.constants';
 
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
 
@@ -95,13 +95,13 @@ export class VendorManagementController {
     return this.commandBus.execute(new UpdateVendorCommand(id, updateDto));
   }
 
-  @Patch(':id/unblacklist')
+  @Patch(VENDOR_ROUTES.UNBLACKLIST)
   @HttpCode(HttpStatus.OK)
   async unblacklistVendor(@Param('id') id: string): Promise<VendorResponseDto> {
     return this.commandBus.execute(new UnblacklistVendorCommand(id));
   }
 
-  @Patch(':id/reject')
+  @Patch(VENDOR_ROUTES.REJECT)
   @HttpCode(HttpStatus.OK)
   async rejectVendor(
     @Param('id') id: string,
@@ -110,7 +110,7 @@ export class VendorManagementController {
     return this.commandBus.execute(new RejectVendorCommand(id, reason));
   }
 
-  @Patch(':id/request-recheck')
+  @Patch(VENDOR_ROUTES.REQUEST_RECHECK)
   @HttpCode(HttpStatus.OK)
   async requestRecheck(@Param('id') id: string): Promise<VendorResponseDto> {
     return this.commandBus.execute(new RequestRecheckCommand(id));

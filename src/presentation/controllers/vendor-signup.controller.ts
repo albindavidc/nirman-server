@@ -12,7 +12,7 @@ import { CreateVendorCompanyDto } from '../../application/dto/vendor/create-vend
 import { CreateVendorCompanyCommand } from '../../application/commands/vendor/create-vendor-company.command';
 import { Public } from '../../common/security/decorators/public.decorator';
 
-import { VENDOR_SIGNUP_ROUTES } from '../../app.routes';
+import { VENDOR_SIGNUP_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(VENDOR_SIGNUP_ROUTES.ROOT)
 export class VendorSignupController {

@@ -9,7 +9,7 @@ import { UpdatePasswordDto } from '../../application/dto/profile/update-password
 import { ProfileResponseDto } from '../../application/dto/profile/profile.response.dto';
 import { AuthenticatedRequest } from '../../domain/interfaces/authenticated-request.interface';
 
-import { PROFILE_ROUTES } from '../../app.routes';
+import { PROFILE_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(PROFILE_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)

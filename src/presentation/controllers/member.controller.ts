@@ -25,7 +25,7 @@ import {
 } from '../../application/dto/member/member-response.dto';
 import { Roles } from '../../common/security/decorators/roles.decorator';
 
-import { MEMBER_ROUTES } from '../../app.routes';
+import { MEMBER_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(MEMBER_ROUTES.ROOT)
 export class MemberController {

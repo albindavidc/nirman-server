@@ -8,7 +8,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
-import { UPLOAD_ROUTES } from '../../app.routes';
+import { UPLOAD_ROUTES } from '../../common/constants/routes.constants';
 import {
   S3Service,
   PresignedUploadResponse,
@@ -70,7 +70,7 @@ export class UploadController {
    * Delete a file from S3.
    * @param key - The S3 object key (e.g., 'profiles/uuid.jpg')
    */
-  @Delete('*key')
+  @Delete(UPLOAD_ROUTES.DELETE_FILE)
   async deleteFile(@Param('key') key: string): Promise<{ message: string }> {
     await this.s3Service.deleteFile(key);
     return { message: 'File deleted successfully' };

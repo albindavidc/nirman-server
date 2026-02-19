@@ -5,7 +5,7 @@ import { SendOtpCommand } from '../../application/commands/otp/send-otp.command'
 import { VerifyOtpCommand } from '../../application/commands/otp/verify-otp.command';
 import { Public } from '../../common/security/decorators/public.decorator';
 
-import { OTP_ROUTES } from '../../app.routes';
+import { OTP_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(OTP_ROUTES.ROOT)
 export class OtpController {

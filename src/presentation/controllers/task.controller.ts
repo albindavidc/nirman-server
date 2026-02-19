@@ -36,7 +36,7 @@ import {
 } from '../../application/queries/project/task.queries';
 import { GetMyTasksQuery } from '../../application/queries/project/get-my-tasks.query';
 
-import { TASK_ROUTES } from '../../app.routes';
+import { TASK_ROUTES } from '../../common/constants/routes.constants';
 
 // AuthenticatedRequest interface removed
 

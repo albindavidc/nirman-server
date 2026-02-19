@@ -59,7 +59,7 @@ import { UpdateProjectPhaseDto } from '../../application/dto/project/phase/updat
 import { GetProjectApprovalsQuery } from '../../application/queries/phase-approval/get-project-approvals.query';
 import { GetAllPhaseApprovalsQuery } from '../../application/queries/phase-approval/get-all-phase-approvals.query';
 
-import { PROJECT_ROUTES } from '../../app.routes';
+import { PROJECT_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(PROJECT_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)
@@ -133,7 +133,7 @@ export class ProjectController {
     return this.queryBus.execute(new GetProjectAttendanceQuery(id));
   }
 
-  @Get(':id/attendance/export')
+  @Get(PROJECT_ROUTES.EXPORT_ATTENDANCE)
   async exportProjectAttendance(
     @Param('id') projectId: string,
     @Res() res: Response,
@@ -173,7 +173,7 @@ export class ProjectController {
     return this.queryBus.execute(new GetProjectPhasesQuery(projectId));
   }
 
-  @Patch(':id/phases/:phaseId')
+  @Patch(PROJECT_ROUTES.UPDATE_PHASE)
   @HttpCode(HttpStatus.OK)
   async updateProjectPhase(
     @Param('phaseId') phaseId: string,
@@ -231,14 +231,14 @@ export class ProjectController {
   }
 
   // Phase Approval Endpoints
-  @Get(':id/phases/:phaseId/approval')
+  @Get(PROJECT_ROUTES.GET_PHASE_APPROVAL)
   async getPhaseForApproval(
     @Param('phaseId') phaseId: string,
   ): Promise<PhaseForApprovalDto> {
     return this.queryBus.execute(new GetPhaseForApprovalQuery(phaseId));
   }
 
-  @Post(':id/phases/:phaseId/approval')
+  @Post(PROJECT_ROUTES.CREATE_PHASE_APPROVAL)
   @HttpCode(HttpStatus.CREATED)
   async createPhaseApproval(
     @Param('phaseId') phaseId: string,
@@ -257,7 +257,7 @@ export class ProjectController {
     );
   }
 
-  @Post(':id/phases/:phaseId/approval-request')
+  @Post(PROJECT_ROUTES.REQUEST_PHASE_APPROVAL)
   @HttpCode(HttpStatus.CREATED)
   async requestPhaseApproval(
     @Param('phaseId') phaseId: string,
@@ -275,12 +275,12 @@ export class ProjectController {
     );
   }
 
-  @Get('approvals')
+  @Get(PROJECT_ROUTES.GET_ALL_APPROVALS)
   async getAllPhaseApprovals(): Promise<PhaseApprovalResponseDto[]> {
     return this.queryBus.execute(new GetAllPhaseApprovalsQuery());
   }
 
-  @Get(':id/approvals')
+  @Get(PROJECT_ROUTES.GET_PROJECT_APPROVALS)
   async getProjectApprovals(
     @Param('id') projectId: string,
   ): Promise<PhaseApprovalResponseDto[]> {

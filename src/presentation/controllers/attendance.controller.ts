@@ -17,14 +17,16 @@ import {
 // Assuming we have an AuthGuard
 // import { AuthGuard } from '../../guards/auth.guard';
 
-@Controller('api/v1/projects/:projectId/attendance')
+import { ATTENDANCE_ROUTES } from '../../common/constants/routes.constants';
+
+@Controller(ATTENDANCE_ROUTES.ROOT)
 export class AttendanceController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Post('check-in')
+  @Post(ATTENDANCE_ROUTES.CHECK_IN)
   async checkIn(
     @Param('projectId') projectId: string,
     @Body() dto: CheckInDto,
@@ -37,12 +39,12 @@ export class AttendanceController {
     return this.commandBus.execute(new CheckInCommand(dto));
   }
 
-  @Post('check-out')
+  @Post(ATTENDANCE_ROUTES.CHECK_OUT)
   async checkOut(@Body() dto: CheckOutDto): Promise<AttendanceRecordDto> {
     return this.commandBus.execute(new CheckOutCommand(dto));
   }
 
-  @Get('me/history')
+  @Get(ATTENDANCE_ROUTES.GET_MY_HISTORY)
   async getMyHistory(
     @Param('projectId') projectId: string,
     @Query('userId') userId: string, // Should be from token
@@ -54,7 +56,7 @@ export class AttendanceController {
     );
   }
 
-  @Get('me/stats')
+  @Get(ATTENDANCE_ROUTES.GET_MY_STATS)
   async getMyStats(
     @Param('projectId') projectId: string,
     @Query('userId') userId: string, // Should be from token
@@ -64,7 +66,7 @@ export class AttendanceController {
     );
   }
 
-  @Get('')
+  @Get(ATTENDANCE_ROUTES.GET_PROJECT_ATTENDANCE)
   async getProjectAttendance(
     @Param('projectId') projectId: string,
     @Query('date') date: string,
@@ -74,7 +76,7 @@ export class AttendanceController {
     );
   }
 
-  @Get('stats')
+  @Get(ATTENDANCE_ROUTES.GET_PROJECT_STATS)
   async getProjectStats(
     @Param('projectId') projectId: string,
     @Query('date') date: string,

@@ -33,7 +33,7 @@ import {
   MaterialRequestDto,
 } from '../../application/dto/material/request.dto';
 
-import { MATERIAL_ROUTES } from '../../app.routes';
+import { MATERIAL_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(MATERIAL_ROUTES.ROOT)
 @UseGuards(JwtAuthGuard)
@@ -61,7 +61,7 @@ export class MaterialController {
     );
   }
 
-  @Post(':id')
+  @Post(MATERIAL_ROUTES.UPDATE_MATERIAL)
   async updateMaterial(
     @Param('id') id: string,
     @Body() dto: UpdateMaterialDto,
@@ -72,7 +72,7 @@ export class MaterialController {
     );
   }
 
-  @Delete(':id')
+  @Delete(MATERIAL_ROUTES.DELETE_MATERIAL)
   async deleteMaterial(
     @Param('id') id: string,
     @Request() req: { user: { userId: string } },

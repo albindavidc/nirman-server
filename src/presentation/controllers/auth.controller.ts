@@ -36,7 +36,7 @@ import { SupervisorSignupDto } from '../../application/dto/auth/supervisor-signu
 // Queries
 import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
 
-import { AUTH_ROUTES } from '../../app.routes';
+import { AUTH_ROUTES } from '../../common/constants/routes.constants';
 
 @Controller(AUTH_ROUTES.ROOT)
 export class AuthController {
