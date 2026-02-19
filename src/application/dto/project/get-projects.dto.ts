@@ -21,4 +21,11 @@ export class GetProjectsQueryDto {
   @IsNumber()
   @Min(1)
   limit?: number = 10;
+
+  constructor(partial: Partial<GetProjectsQueryDto>) {
+    this.status = partial.status;
+    this.search = partial.search;
+    this.page = partial.page ?? 1;
+    this.limit = partial.limit ?? 10;
+  }
 }

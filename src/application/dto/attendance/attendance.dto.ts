@@ -2,7 +2,6 @@ import {
   IsString,
   IsOptional,
   IsNotEmpty,
-  IsNumber,
   IsBoolean,
   IsDateString,
 } from 'class-validator';
@@ -23,6 +22,13 @@ export class CheckInDto {
   @IsString()
   @IsOptional()
   method?: string;
+
+  constructor(partial: Partial<CheckInDto>) {
+    this.projectId = partial.projectId ?? '';
+    this.userId = partial.userId ?? '';
+    this.location = partial.location;
+    this.method = partial.method;
+  }
 }
 
 export class CheckOutDto {
@@ -33,6 +39,11 @@ export class CheckOutDto {
   @IsDateString()
   @IsOptional()
   checkOutTime?: Date;
+
+  constructor(partial: Partial<CheckOutDto>) {
+    this.attendanceId = partial.attendanceId ?? '';
+    this.checkOutTime = partial.checkOutTime;
+  }
 }
 
 export class VerifyAttendanceDto {
@@ -51,4 +62,11 @@ export class VerifyAttendanceDto {
   @IsString()
   @IsOptional()
   supervisorNotes?: string;
+
+  constructor(partial: Partial<VerifyAttendanceDto>) {
+    this.attendanceId = partial.attendanceId ?? '';
+    this.supervisorId = partial.supervisorId ?? '';
+    this.isVerified = partial.isVerified ?? false;
+    this.supervisorNotes = partial.supervisorNotes;
+  }
 }

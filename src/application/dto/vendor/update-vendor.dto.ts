@@ -71,4 +71,20 @@ export class UpdateVendorDto {
   @IsOptional()
   @IsEnum(VendorStatusDto)
   vendorStatus?: VendorStatusDto;
+
+  constructor(partial: Partial<UpdateVendorDto>) {
+    this.companyName = partial.companyName;
+    this.registrationNumber = partial.registrationNumber;
+    this.taxNumber = partial.taxNumber;
+    this.yearsInBusiness = partial.yearsInBusiness;
+    this.addressStreet = partial.addressStreet;
+    this.addressCity = partial.addressCity;
+    this.addressState = partial.addressState;
+    this.addressZipCode = partial.addressZipCode;
+    this.contactPhone = partial.contactPhone;
+    this.contactEmail = partial.contactEmail;
+    this.websiteUrl = partial.websiteUrl;
+    this.productsServices = partial.productsServices;
+    this.vendorStatus = partial.vendorStatus;
+  }
 }

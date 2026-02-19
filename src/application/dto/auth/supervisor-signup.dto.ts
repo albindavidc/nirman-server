@@ -13,4 +13,10 @@ export class SupervisorSignupDto {
   @IsString()
   @IsNotEmpty()
   confirmPassword: string;
+
+  constructor(partial: Partial<SupervisorSignupDto>) {
+    this.email = partial.email ?? '';
+    this.password = partial.password ?? '';
+    this.confirmPassword = partial.confirmPassword ?? '';
+  }
 }

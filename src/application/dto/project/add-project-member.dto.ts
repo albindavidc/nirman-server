@@ -9,4 +9,9 @@ export class AddProjectMemberDto {
   @IsString()
   @IsNotEmpty()
   role: string;
+
+  constructor(partial: Partial<AddProjectMemberDto>) {
+    this.userIds = partial.userIds ?? [];
+    this.role = partial.role ?? '';
+  }
 }

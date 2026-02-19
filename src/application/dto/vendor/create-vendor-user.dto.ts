@@ -40,4 +40,13 @@ export class CreateVendorUserDto {
   get isPasswordMatch(): boolean {
     return true;
   }
+
+  constructor(partial: Partial<CreateVendorUserDto>) {
+    this.firstName = partial.firstName ?? '';
+    this.lastName = partial.lastName ?? '';
+    this.email = partial.email ?? '';
+    this.phoneNumber = partial.phoneNumber ?? '';
+    this.password = partial.password ?? '';
+    this.confirmPassword = partial.confirmPassword ?? '';
+  }
 }

@@ -4,7 +4,6 @@ import {
   IsDateString,
   IsNumber,
   IsNotEmpty,
-  IsEnum,
 } from 'class-validator';
 
 export class CreateTaskDto {
@@ -49,6 +48,19 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
+
+  constructor(partial: Partial<CreateTaskDto>) {
+    this.phaseId = partial.phaseId ?? '';
+    this.name = partial.name ?? '';
+    this.description = partial.description;
+    this.assignedTo = partial.assignedTo;
+    this.plannedStartDate = partial.plannedStartDate;
+    this.plannedEndDate = partial.plannedEndDate;
+    this.priority = partial.priority;
+    this.status = partial.status;
+    this.notes = partial.notes;
+    this.color = partial.color;
+  }
 }
 
 export class UpdateTaskDto {
@@ -101,6 +113,21 @@ export class UpdateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
+
+  constructor(partial: Partial<UpdateTaskDto>) {
+    this.name = partial.name;
+    this.description = partial.description;
+    this.assignedTo = partial.assignedTo;
+    this.plannedStartDate = partial.plannedStartDate;
+    this.plannedEndDate = partial.plannedEndDate;
+    this.actualStartDate = partial.actualStartDate;
+    this.actualEndDate = partial.actualEndDate;
+    this.status = partial.status;
+    this.priority = partial.priority;
+    this.progress = partial.progress;
+    this.notes = partial.notes;
+    this.color = partial.color;
+  }
 }
 
 export class CreateTaskDependencyDto {
@@ -119,4 +146,11 @@ export class CreateTaskDependencyDto {
   @IsNumber()
   @IsOptional()
   lagTime?: number;
+
+  constructor(partial: Partial<CreateTaskDependencyDto>) {
+    this.successorTaskId = partial.successorTaskId ?? '';
+    this.predecessorTaskId = partial.predecessorTaskId ?? '';
+    this.type = partial.type;
+    this.lagTime = partial.lagTime;
+  }
 }

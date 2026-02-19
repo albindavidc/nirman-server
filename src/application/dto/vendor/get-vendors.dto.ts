@@ -28,4 +28,11 @@ export class GetVendorsQueryDto {
   @Min(1)
   @Transform(({ value }: { value: string }) => parseInt(value))
   limit?: number = 10;
+
+  constructor(partial: Partial<GetVendorsQueryDto>) {
+    this.status = partial.status;
+    this.search = partial.search;
+    this.page = partial.page ?? 1;
+    this.limit = partial.limit ?? 10;
+  }
 }

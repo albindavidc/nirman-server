@@ -13,6 +13,11 @@ class MediaItemDto {
 
   @IsString()
   url!: string;
+
+  constructor(partial: Partial<MediaItemDto>) {
+    this.type = partial.type ?? '';
+    this.url = partial.url ?? '';
+  }
 }
 
 export class CreatePhaseApprovalDto {
@@ -29,4 +34,10 @@ export class CreatePhaseApprovalDto {
   @ValidateNested({ each: true })
   @Type(() => MediaItemDto)
   media?: MediaItemDto[];
+
+  constructor(partial: Partial<CreatePhaseApprovalDto>) {
+    this.approvalStatus = partial.approvalStatus ?? '';
+    this.comments = partial.comments;
+    this.media = partial.media;
+  }
 }

@@ -8,6 +8,11 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  constructor(partial: Partial<LoginDto>) {
+    this.email = partial.email ?? '';
+    this.password = partial.password ?? '';
+  }
 }
 
 export class LoginResponseDto {
@@ -19,4 +24,15 @@ export class LoginResponseDto {
     lastName: string;
     role: string;
   };
+
+  constructor(partial: Partial<LoginResponseDto>) {
+    this.accessToken = partial.accessToken ?? '';
+    this.user = partial.user ?? {
+      id: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      role: '',
+    };
+  }
 }

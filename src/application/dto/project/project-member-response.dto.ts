@@ -13,4 +13,12 @@ export class ProjectMemberResponseDto {
     profilePhoto: string | null;
     title: string;
   } | null;
+
+  constructor(partial: Partial<ProjectMemberResponseDto>) {
+    this.userId = partial.userId ?? '';
+    this.role = partial.role ?? '';
+    this.joinedAt = partial.joinedAt ?? new Date();
+    this.isCreator = partial.isCreator ?? false;
+    this.user = partial.user ?? null;
+  }
 }

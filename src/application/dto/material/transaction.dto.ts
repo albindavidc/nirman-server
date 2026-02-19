@@ -9,6 +9,17 @@ export class MaterialTransactionDto {
   referenceId?: string;
   performedBy?: string;
   notes?: string;
+
+  constructor(partial: Partial<MaterialTransactionDto>) {
+    this.id = partial.id ?? '';
+    this.materialId = partial.materialId ?? '';
+    this.type = partial.type ?? '';
+    this.quantity = partial.quantity ?? 0;
+    this.date = partial.date ?? new Date();
+    this.referenceId = partial.referenceId;
+    this.performedBy = partial.performedBy;
+    this.notes = partial.notes;
+  }
 }
 
 export class CreateMaterialTransactionDto {
@@ -30,4 +41,12 @@ export class CreateMaterialTransactionDto {
   @IsOptional()
   @IsNumber()
   unitPrice?: number;
+
+  constructor(partial: Partial<CreateMaterialTransactionDto>) {
+    this.type = partial.type ?? 'IN';
+    this.quantity = partial.quantity ?? 0;
+    this.referenceId = partial.referenceId;
+    this.notes = partial.notes;
+    this.unitPrice = partial.unitPrice;
+  }
 }

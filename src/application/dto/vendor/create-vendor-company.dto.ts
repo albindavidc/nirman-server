@@ -56,4 +56,21 @@ export class CreateVendorCompanyDto {
   @IsOptional()
   @IsEnum(VendorStatus)
   vendorStatus: VendorStatus;
+
+  constructor(partial: Partial<CreateVendorCompanyDto>) {
+    this.userId = partial.userId ?? '';
+    this.companyName = partial.companyName ?? '';
+    this.registrationNumber = partial.registrationNumber ?? '';
+    this.taxNumber = partial.taxNumber ?? '';
+    this.yearsInBusiness = partial.yearsInBusiness ?? 0;
+    this.addressStreet = partial.addressStreet ?? '';
+    this.addressCity = partial.addressCity ?? '';
+    this.addressState = partial.addressState ?? '';
+    this.addressZipCode = partial.addressZipCode ?? '';
+    this.productsServices = partial.productsServices ?? [];
+    this.websiteUrl = partial.websiteUrl ?? '';
+    this.contactEmail = partial.contactEmail ?? '';
+    this.contactPhone = partial.contactPhone ?? '';
+    this.vendorStatus = partial.vendorStatus ?? VendorStatus.PENDING;
+  }
 }

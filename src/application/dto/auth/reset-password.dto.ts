@@ -13,4 +13,10 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   @MinLength(8)
   newPassword: string;
+
+  constructor(partial: Partial<ResetPasswordDto>) {
+    this.email = partial.email ?? '';
+    this.resetToken = partial.resetToken ?? '';
+    this.newPassword = partial.newPassword ?? '';
+  }
 }

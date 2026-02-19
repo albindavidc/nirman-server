@@ -9,4 +9,9 @@ export class UpdatePasswordDto {
   @IsNotEmpty()
   @MinLength(6)
   newPassword: string;
+
+  constructor(partial: Partial<UpdatePasswordDto>) {
+    this.currentPassword = partial.currentPassword ?? '';
+    this.newPassword = partial.newPassword ?? '';
+  }
 }

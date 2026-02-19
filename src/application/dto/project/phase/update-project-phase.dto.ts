@@ -51,4 +51,16 @@ export class UpdateProjectPhaseDto {
   @IsOptional()
   @IsNumber()
   sequence?: number;
+
+  constructor(partial: Partial<UpdateProjectPhaseDto>) {
+    this.name = partial.name;
+    this.description = partial.description;
+    this.progress = partial.progress;
+    this.status = partial.status;
+    this.plannedStartDate = partial.plannedStartDate;
+    this.plannedEndDate = partial.plannedEndDate;
+    this.actualStartDate = partial.actualStartDate;
+    this.actualEndDate = partial.actualEndDate;
+    this.sequence = partial.sequence;
+  }
 }

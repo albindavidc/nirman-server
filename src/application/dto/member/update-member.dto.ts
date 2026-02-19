@@ -61,4 +61,19 @@ export class UpdateMemberDto {
   @IsOptional()
   @IsString()
   addressZipCode?: string;
+
+  constructor(partial: Partial<UpdateMemberDto>) {
+    this.firstName = partial.firstName;
+    this.lastName = partial.lastName;
+    this.email = partial.email;
+    this.phone = partial.phone;
+    this.role = partial.role;
+    this.professionalTitle = partial.professionalTitle;
+    this.experienceYears = partial.experienceYears;
+    this.skills = partial.skills;
+    this.addressStreet = partial.addressStreet;
+    this.addressCity = partial.addressCity;
+    this.addressState = partial.addressState;
+    this.addressZipCode = partial.addressZipCode;
+  }
 }

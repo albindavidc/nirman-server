@@ -14,4 +14,19 @@ export class ProfileResponseDto {
   isPhoneVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  constructor(partial: Partial<ProfileResponseDto>) {
+    this.id = partial.id ?? '';
+    this.firstName = partial.firstName ?? '';
+    this.lastName = partial.lastName ?? '';
+    this.email = partial.email ?? '';
+    this.phoneNumber = partial.phoneNumber;
+    this.profilePhotoUrl = partial.profilePhotoUrl;
+    this.role = partial.role ?? Role.WORKER;
+    this.userStatus = partial.userStatus ?? UserStatus.ACTIVE;
+    this.isEmailVerified = partial.isEmailVerified ?? false;
+    this.isPhoneVerified = partial.isPhoneVerified ?? false;
+    this.createdAt = partial.createdAt ?? new Date();
+    this.updatedAt = partial.updatedAt ?? new Date();
+  }
 }

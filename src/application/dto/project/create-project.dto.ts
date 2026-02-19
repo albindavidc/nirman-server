@@ -26,6 +26,12 @@ export class ProjectMemberDto {
   @IsOptional()
   @IsDateString()
   joinedAt?: string;
+
+  constructor(partial: Partial<ProjectMemberDto>) {
+    this.userId = partial.userId ?? '';
+    this.role = partial.role ?? 'Viewer';
+    this.joinedAt = partial.joinedAt;
+  }
 }
 
 export class CreateProjectDto {
@@ -87,4 +93,20 @@ export class CreateProjectDto {
   @ValidateNested({ each: true })
   @Type(() => ProjectMemberDto)
   members?: ProjectMemberDto[];
+
+  constructor(partial: Partial<CreateProjectDto>) {
+    this.name = partial.name ?? '';
+    this.managerIds = partial.managerIds;
+    this.description = partial.description;
+    this.icon = partial.icon;
+    this.status = partial.status;
+    this.progress = partial.progress;
+    this.budget = partial.budget;
+    this.spent = partial.spent;
+    this.startDate = partial.startDate;
+    this.dueDate = partial.dueDate;
+    this.latitude = partial.latitude;
+    this.longitude = partial.longitude;
+    this.members = partial.members;
+  }
 }

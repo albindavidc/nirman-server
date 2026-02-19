@@ -17,4 +17,11 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   profilePhotoUrl?: string;
+
+  constructor(partial: Partial<UpdateProfileDto>) {
+    this.firstName = partial.firstName;
+    this.lastName = partial.lastName;
+    this.phoneNumber = partial.phoneNumber;
+    this.profilePhotoUrl = partial.profilePhotoUrl;
+  }
 }

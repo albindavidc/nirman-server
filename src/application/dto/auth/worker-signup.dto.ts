@@ -13,4 +13,10 @@ export class WorkerSignupDto {
   @IsString()
   @IsNotEmpty()
   confirmPassword: string;
+
+  constructor(partial: Partial<WorkerSignupDto>) {
+    this.email = partial.email ?? '';
+    this.password = partial.password ?? '';
+    this.confirmPassword = partial.confirmPassword ?? '';
+  }
 }

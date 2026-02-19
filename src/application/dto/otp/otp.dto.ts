@@ -18,6 +18,12 @@ export class SendOtpDto {
 
   @IsOptional()
   isSignup?: boolean;
+
+  constructor(partial: Partial<SendOtpDto>) {
+    this.email = partial.email ?? '';
+    this.role = partial.role;
+    this.isSignup = partial.isSignup;
+  }
 }
 
 export class VerifyOtpDto {
@@ -29,4 +35,9 @@ export class VerifyOtpDto {
   @IsNotEmpty()
   @Length(6, 6)
   otp: string;
+
+  constructor(partial: Partial<VerifyOtpDto>) {
+    this.email = partial.email ?? '';
+    this.otp = partial.otp ?? '';
+  }
 }

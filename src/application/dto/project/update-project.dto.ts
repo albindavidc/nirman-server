@@ -57,4 +57,17 @@ export class UpdateProjectDto {
   @IsArray()
   @IsString({ each: true })
   managerIds?: string[];
+
+  constructor(partial: Partial<UpdateProjectDto>) {
+    this.name = partial.name;
+    this.description = partial.description;
+    this.icon = partial.icon;
+    this.status = partial.status;
+    this.progress = partial.progress;
+    this.budget = partial.budget;
+    this.spent = partial.spent;
+    this.startDate = partial.startDate;
+    this.dueDate = partial.dueDate;
+    this.managerIds = partial.managerIds;
+  }
 }
