@@ -1,8 +1,8 @@
 /**
- * Member Repository Interface
+ * Worker Repository Interface
  */
 
-export interface MemberWithProfessional {
+export interface WorkerWithProfessional {
   id: string;
   firstName: string;
   lastName: string;
@@ -21,7 +21,7 @@ export interface MemberWithProfessional {
   updatedAt: Date;
 }
 
-export interface CreateMemberData {
+export interface CreateWorkerData {
   firstName: string;
   lastName: string;
   email: string;
@@ -39,7 +39,7 @@ export interface CreateMemberData {
   };
 }
 
-export interface UpdateMemberData {
+export interface UpdateWorkerData {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
@@ -55,44 +55,44 @@ export interface UpdateMemberData {
   };
 }
 
-export interface IMemberRepository {
+export interface IWorkerRepository {
   /**
-   * Find a member by their ID
+   * Find a worker by their ID
    */
-  findById(id: string): Promise<MemberWithProfessional | null>;
+  findById(id: string): Promise<WorkerWithProfessional | null>;
 
   /**
-   * Find a member by their email
+   * Find a worker by their email
    */
-  findByEmail(email: string): Promise<MemberWithProfessional | null>;
+  findByEmail(email: string): Promise<WorkerWithProfessional | null>;
 
   /**
-   * Find all members with pagination and filters
+   * Find all workers with pagination and filters
    */
   findAllWithFilters(params: {
     page: number;
     limit: number;
     role?: string;
     search?: string;
-  }): Promise<{ members: MemberWithProfessional[]; total: number }>;
+  }): Promise<{ workers: WorkerWithProfessional[]; total: number }>;
 
   /**
-   * Create a new member
+   * Create a new worker
    */
-  create(data: CreateMemberData): Promise<MemberWithProfessional>;
+  create(data: CreateWorkerData): Promise<WorkerWithProfessional>;
 
   /**
-   * Update an existing member
+   * Update an existing worker
    */
-  update(id: string, data: UpdateMemberData): Promise<MemberWithProfessional>;
+  update(id: string, data: UpdateWorkerData): Promise<WorkerWithProfessional>;
 
   /**
-   * Update member status (active/blocked)
+   * Update worker status (active/blocked)
    */
-  updateStatus(id: string, status: string): Promise<MemberWithProfessional>;
+  updateStatus(id: string, status: string): Promise<WorkerWithProfessional>;
 }
 
 /**
- * Injection token for the Member repository
+ * Injection token for the Worker repository
  */
-export const MEMBER_REPOSITORY = Symbol('MEMBER_REPOSITORY');
+export const WORKER_REPOSITORY = Symbol('WORKER_REPOSITORY');

@@ -2,33 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '../../generated/client/client';
 import {
-  IMemberRepository,
-  MemberWithProfessional,
-  CreateMemberData,
-  UpdateMemberData,
-} from '../../domain/repositories/member-repository.interface';
-import { MemberWherePersistenceInput } from '../types/member.types';
-import { MemberMapper } from '../mappers/member.mapper';
+  IWorkerRepository,
+  WorkerWithProfessional,
+  CreateWorkerData,
+  UpdateWorkerData,
+} from '../../domain/repositories/worker-repository.interface';
+import { WorkerWherePersistenceInput } from '../types/worker.types';
+import { WorkerMapper } from '../mappers/worker.mapper';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 
 @Injectable()
-export class MemberRepository implements IMemberRepository {
+export class WorkerRepository implements IWorkerRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<MemberWithProfessional | null> {
+  async findById(id: string): Promise<WorkerWithProfessional | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { professional: true },
     });
-    return user ? MemberMapper.fromPrismaResult(user) : null;
+    return user ? WorkerMapper.fromPrismaResult(user) : null;
   }
 
-  async findByEmail(email: string): Promise<MemberWithProfessional | null> {
+  async findByEmail(email: string): Promise<WorkerWithProfessional | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
       include: { professional: true },
     });
-    return user ? MemberMapper.fromPrismaResult(user) : null;
+    return user ? WorkerMapper.fromPrismaResult(user) : null;
   }
 
   async findAllWithFilters(params: {
@@ -36,11 +36,11 @@ export class MemberRepository implements IMemberRepository {
     limit: number;
     role?: string;
     search?: string;
-  }): Promise<{ members: MemberWithProfessional[]; total: number }> {
+  }): Promise<{ workers: WorkerWithProfessional[]; total: number }> {
     const { page, limit, role, search } = params;
     const skip = (page - 1) * limit;
 
-    const where: MemberWherePersistenceInput = {
+    const where: WorkerWherePersistenceInput = {
       role: { in: [UserRole.WORKER, UserRole.SUPERVISOR] },
     };
 
@@ -56,9 +56,9 @@ export class MemberRepository implements IMemberRepository {
       ];
     }
 
-    const prismaWhere = MemberMapper.toPrismaWhereInput(where);
+    const prismaWhere = WorkerMapper.toPrismaWhereInput(where);
 
-    const [members, total] = await Promise.all([
+    const [workers, total] = await Promise.all([
       this.prisma.user.findMany({
         where: prismaWhere as Prisma.UserWhereInput,
         skip,
@@ -72,27 +72,27 @@ export class MemberRepository implements IMemberRepository {
     ]);
 
     return {
-      members: MemberMapper.fromPrismaResults(members),
+      workers: WorkerMapper.fromPrismaResults(workers),
       total,
     };
   }
 
-  async create(data: CreateMemberData): Promise<MemberWithProfessional> {
-    const prismaData = MemberMapper.toPrismaCreateInput(data);
+  async create(data: CreateWorkerData): Promise<WorkerWithProfessional> {
+    const prismaData = WorkerMapper.toPrismaCreateInput(data);
 
     const created = await this.prisma.user.create({
       data: prismaData as Prisma.UserCreateInput,
       include: { professional: true },
     });
 
-    return MemberMapper.fromPrismaResult(created);
+    return WorkerMapper.fromPrismaResult(created);
   }
 
   async update(
     id: string,
-    data: UpdateMemberData,
-  ): Promise<MemberWithProfessional> {
-    const prismaData = MemberMapper.toPrismaUpdateInput(data);
+    data: UpdateWorkerData,
+  ): Promise<WorkerWithProfessional> {
+    const prismaData = WorkerMapper.toPrismaUpdateInput(data);
 
     await this.prisma.user.update({
       where: { id },
@@ -106,13 +106,13 @@ export class MemberRepository implements IMemberRepository {
   async updateStatus(
     id: string,
     status: string,
-  ): Promise<MemberWithProfessional> {
+  ): Promise<WorkerWithProfessional> {
     const user = await this.prisma.user.update({
       where: { id },
       data: { user_status: status },
       include: { professional: true },
     });
 
-    return MemberMapper.fromPrismaResult(user);
+    return WorkerMapper.fromPrismaResult(user);
   }
 }

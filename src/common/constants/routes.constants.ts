@@ -14,13 +14,13 @@ export const AUTH_ROUTES = {
   SUPERVISOR_SIGNUP: 'supervisor/signup',
 };
 
-export const MEMBER_ROUTES = {
-  ROOT: `${API_PREFIX}/${API_VERSION}/members`,
-  GET_MEMBERS: '',
-  ADD_MEMBER: '',
-  EDIT_MEMBER: ':id',
-  BLOCK_MEMBER: ':id/block',
-  UNBLOCK_MEMBER: ':id/unblock',
+export const WORKER_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/workers`,
+  GET_WORKERS: '',
+  ADD_WORKER: '',
+  EDIT_WORKER: ':id',
+  BLOCK_WORKER: ':id/block',
+  UNBLOCK_WORKER: ':id/unblock',
 };
 
 export const PROFILE_ROUTES = {
@@ -47,6 +47,7 @@ export const VENDOR_ROUTES = {
   UNBLACKLIST: ':id/unblacklist',
   REJECT: ':id/reject',
   REQUEST_RECHECK: ':id/request-recheck',
+  BLACKLIST: ':id/blacklist',
 };
 
 export const VENDOR_SIGNUP_ROUTES = {
@@ -76,10 +77,10 @@ export const PROJECT_ROUTES = {
   CREATE_PHASE: ':id/phases',
   GET_PHASES: ':id/phases',
   UPDATE_PHASE: ':id/phases/:phaseId',
-  GET_MEMBERS: ':id/members',
-  ADD_MEMBERS: ':id/members',
-  REMOVE_MEMBER: ':id/members/:userId',
-  UPDATE_MEMBER: ':id/members/:userId',
+  GET_WORKERS: ':id/workers',
+  ADD_WORKERS: ':id/workers',
+  REMOVE_WORKER: ':id/workers/:userId',
+  UPDATE_WORKER: ':id/workers/:userId',
   // Phase Approvals
   GET_PHASE_APPROVAL: ':id/phases/:phaseId/approval',
   CREATE_PHASE_APPROVAL: ':id/phases/:phaseId/approval',

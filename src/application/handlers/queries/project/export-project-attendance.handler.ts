@@ -2,9 +2,9 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { ExportProjectAttendanceQuery } from '../../../../application/queries/project/export-project-attendance.query';
 import {
-  IProjectMemberRepository,
-  PROJECT_MEMBER_REPOSITORY,
-} from '../../../../domain/repositories/project-member-repository.interface';
+  IProjectWorkerRepository,
+  PROJECT_WORKER_REPOSITORY,
+} from '../../../../domain/repositories/project-worker-repository.interface';
 import {
   IAttendanceRepository,
   ATTENDANCE_REPOSITORY,
@@ -20,8 +20,8 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
   constructor(
     @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: IProjectRepository,
-    @Inject(PROJECT_MEMBER_REPOSITORY)
-    private readonly projectMemberRepository: IProjectMemberRepository,
+    @Inject(PROJECT_WORKER_REPOSITORY)
+    private readonly projectWorkerRepository: IProjectWorkerRepository,
     @Inject(ATTENDANCE_REPOSITORY)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
@@ -45,9 +45,9 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
       throw new Error('Project not found');
     }
 
-    // Fetch Project Members with user details
-    const members =
-      await this.projectMemberRepository.findByProjectId(projectId);
+    // Fetch Project Workers with user details
+    const workers =
+      await this.projectWorkerRepository.findByProjectId(projectId);
 
     // Fetch Attendance for the day
     const attendanceRecords =
@@ -61,15 +61,15 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
     const attendanceMap = new Map(attendanceRecords.map((a) => [a.userId, a]));
 
     // Prepare Data
-    const data = members.map((member, index) => {
-      const record = attendanceMap.get(member.userId);
+    const data = workers.map((worker, index) => {
+      const record = attendanceMap.get(worker.userId);
 
       return {
         slNo: index + 1,
-        name: member.user
-          ? `${member.user.firstName} ${member.user.lastName}`
+        name: worker.user
+          ? `${worker.user.firstName} ${worker.user.lastName}`
           : 'Unknown',
-        role: member.role.charAt(0).toUpperCase() + member.role.slice(1),
+        role: worker.role.charAt(0).toUpperCase() + worker.role.slice(1),
         site: record?.location || 'Main Building',
         checkIn: record?.checkIn
           ? record.checkIn.toLocaleTimeString([], {

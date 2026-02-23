@@ -1,6 +1,6 @@
 import { ProjectStatus } from '../../domain/enums/project-status.enum';
 
-export interface ProjectMemberPersistence {
+export interface ProjectWorkerPersistence {
   user_id: string;
   role: string;
   joined_at: Date;
@@ -44,7 +44,7 @@ interface ProjectBase {
 }
 
 export interface ProjectPersistence extends ProjectBase {
-  members?: ProjectMemberPersistence[];
+  members?: ProjectWorkerPersistence[];
   phases?: ProjectPhasePersistence[];
 }
 
@@ -69,7 +69,7 @@ export interface ProjectCreatePersistenceInput extends Omit<
   'id' | 'created_at' | 'updated_at' | 'deleted_at'
 > {
   members?: {
-    create: ProjectMemberPersistence[];
+    create: ProjectWorkerPersistence[];
   };
 }
 
@@ -77,6 +77,6 @@ export interface ProjectUpdatePersistenceInput extends Partial<
   Omit<ProjectBase, 'id' | 'created_at' | 'updated_at'>
 > {
   members?: {
-    set: ProjectMemberPersistence[];
+    set: ProjectWorkerPersistence[];
   };
 }

@@ -1,7 +1,6 @@
-export class UpdateProjectMemberCommand {
+export class RemoveProjectWorkerCommand {
   constructor(
     public readonly projectId: string,
     public readonly userId: string,
-    public readonly role: string,
   ) {}
 }

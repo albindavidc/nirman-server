@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 export class CheckInDto {
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  userId!: string;
 
   @IsString()
   @IsNotEmpty()
-  projectId: string;
+  projectId!: string;
 
   @IsString()
   @IsOptional()
@@ -20,12 +20,4 @@ export class CheckInDto {
   @IsNumber()
   @IsOptional()
   longitude?: number;
-
-  constructor(partial: Partial<CheckInDto>) {
-    this.userId = partial.userId ?? '';
-    this.projectId = partial.projectId ?? '';
-    this.location = partial.location;
-    this.latitude = partial.latitude;
-    this.longitude = partial.longitude;
-  }
 }

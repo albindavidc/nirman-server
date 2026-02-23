@@ -2,7 +2,7 @@ import { Project } from '../../domain/entities/project.entity';
 import {
   ProjectResponseDto,
   TeamMemberDto,
-  ProjectMemberResponseDto,
+  ProjectWorkerResponseDto,
 } from '../dto/project/project-response.dto';
 
 export class ProjectMapper {
@@ -24,9 +24,9 @@ export class ProjectMapper {
       dueDate: project.dueDate?.toISOString(),
       latitude: project.latitude,
       longitude: project.longitude,
-      members:
-        project.members?.map(
-          (m): ProjectMemberResponseDto => ({
+      workers:
+        project.workers?.map(
+          (m): ProjectWorkerResponseDto => ({
             userId: m.userId,
             role: m.role,
             joinedAt: m.joinedAt.toISOString(),

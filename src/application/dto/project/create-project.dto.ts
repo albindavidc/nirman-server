@@ -15,29 +15,23 @@ import { Type } from 'class-transformer';
 
 import { ProjectStatus } from '../../../domain/enums/project-status.enum';
 
-export class ProjectMemberDto {
+export class ProjectWorkerDto {
   @IsString()
-  userId: string;
+  userId!: string;
 
   @IsString()
   @IsIn(['Admin', 'Viewer'])
-  role: 'Admin' | 'Viewer';
+  role!: 'Admin' | 'Viewer';
 
   @IsOptional()
   @IsDateString()
   joinedAt?: string;
-
-  constructor(partial: Partial<ProjectMemberDto>) {
-    this.userId = partial.userId ?? '';
-    this.role = partial.role ?? 'Viewer';
-    this.joinedAt = partial.joinedAt;
-  }
 }
 
 export class CreateProjectDto {
   @IsString()
   @MinLength(2)
-  name: string;
+  name!: string;
 
   @IsArray()
   @IsOptional()
@@ -91,22 +85,6 @@ export class CreateProjectDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ProjectMemberDto)
-  members?: ProjectMemberDto[];
-
-  constructor(partial: Partial<CreateProjectDto>) {
-    this.name = partial.name ?? '';
-    this.managerIds = partial.managerIds;
-    this.description = partial.description;
-    this.icon = partial.icon;
-    this.status = partial.status;
-    this.progress = partial.progress;
-    this.budget = partial.budget;
-    this.spent = partial.spent;
-    this.startDate = partial.startDate;
-    this.dueDate = partial.dueDate;
-    this.latitude = partial.latitude;
-    this.longitude = partial.longitude;
-    this.members = partial.members;
-  }
+  @Type(() => ProjectWorkerDto)
+  workers?: ProjectWorkerDto[];
 }

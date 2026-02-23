@@ -1,5 +1,5 @@
-import { Role } from 'src/domain/enums/role.enum';
-import { UserStatus } from 'src/domain/enums/user-status.enum';
+import { Role } from '../../domain/enums/role.enum';
+import { UserStatus } from '../../domain/enums/user-status.enum';
 import { VendorPersistence } from './vendor.types';
 
 export interface UserProfessionalPersistence {

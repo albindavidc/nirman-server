@@ -13,26 +13,26 @@ export class CreateVendorByAdminDto {
   // User Details
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsNotEmpty()
-  password: string;
+  password!: string;
 
   @IsNotEmpty()
-  firstName: string;
+  firstName!: string;
 
   @IsNotEmpty()
-  lastName: string;
+  lastName!: string;
 
   @IsNotEmpty()
-  phone: string;
+  phone!: string;
 
   // Vendor Details
   @IsNotEmpty()
-  companyName: string;
+  companyName!: string;
 
   @IsNotEmpty()
-  registrationNumber: string;
+  registrationNumber!: string;
 
   @IsOptional()
   taxNumber?: string;
@@ -43,7 +43,7 @@ export class CreateVendorByAdminDto {
   yearsInBusiness?: number;
 
   @IsNotEmpty()
-  addressStreet: string;
+  addressStreet!: string;
 
   @IsOptional()
   addressCity?: string;
@@ -71,25 +71,4 @@ export class CreateVendorByAdminDto {
   @IsOptional()
   @IsEnum(VendorStatus)
   vendorStatus?: VendorStatus;
-
-  constructor(partial: Partial<CreateVendorByAdminDto>) {
-    this.email = partial.email ?? '';
-    this.password = partial.password ?? '';
-    this.firstName = partial.firstName ?? '';
-    this.lastName = partial.lastName ?? '';
-    this.phone = partial.phone ?? '';
-    this.companyName = partial.companyName ?? '';
-    this.registrationNumber = partial.registrationNumber ?? '';
-    this.taxNumber = partial.taxNumber;
-    this.yearsInBusiness = partial.yearsInBusiness;
-    this.addressStreet = partial.addressStreet ?? '';
-    this.addressCity = partial.addressCity;
-    this.addressState = partial.addressState;
-    this.addressZipCode = partial.addressZipCode;
-    this.productsServices = partial.productsServices;
-    this.websiteUrl = partial.websiteUrl;
-    this.contactEmail = partial.contactEmail;
-    this.contactPhone = partial.contactPhone;
-    this.vendorStatus = partial.vendorStatus;
-  }
 }

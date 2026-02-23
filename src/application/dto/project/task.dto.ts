@@ -8,12 +8,12 @@ import {
 
 export class CreateTaskDto {
   @IsString()
-  @IsNotEmpty()
-  phaseId: string;
+  @IsOptional()
+  phaseId?: string;
 
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
   @IsOptional()
@@ -48,19 +48,6 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
-
-  constructor(partial: Partial<CreateTaskDto>) {
-    this.phaseId = partial.phaseId ?? '';
-    this.name = partial.name ?? '';
-    this.description = partial.description;
-    this.assignedTo = partial.assignedTo;
-    this.plannedStartDate = partial.plannedStartDate;
-    this.plannedEndDate = partial.plannedEndDate;
-    this.priority = partial.priority;
-    this.status = partial.status;
-    this.notes = partial.notes;
-    this.color = partial.color;
-  }
 }
 
 export class UpdateTaskDto {
@@ -113,31 +100,16 @@ export class UpdateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
-
-  constructor(partial: Partial<UpdateTaskDto>) {
-    this.name = partial.name;
-    this.description = partial.description;
-    this.assignedTo = partial.assignedTo;
-    this.plannedStartDate = partial.plannedStartDate;
-    this.plannedEndDate = partial.plannedEndDate;
-    this.actualStartDate = partial.actualStartDate;
-    this.actualEndDate = partial.actualEndDate;
-    this.status = partial.status;
-    this.priority = partial.priority;
-    this.progress = partial.progress;
-    this.notes = partial.notes;
-    this.color = partial.color;
-  }
 }
 
 export class CreateTaskDependencyDto {
   @IsString()
   @IsNotEmpty()
-  successorTaskId: string;
+  successorTaskId!: string;
 
   @IsString()
   @IsNotEmpty()
-  predecessorTaskId: string;
+  predecessorTaskId!: string;
 
   @IsString()
   @IsOptional()
@@ -146,40 +118,33 @@ export class CreateTaskDependencyDto {
   @IsNumber()
   @IsOptional()
   lagTime?: number;
-
-  constructor(partial: Partial<CreateTaskDependencyDto>) {
-    this.successorTaskId = partial.successorTaskId ?? '';
-    this.predecessorTaskId = partial.predecessorTaskId ?? '';
-    this.type = partial.type;
-    this.lagTime = partial.lagTime;
-  }
 }
 
 export class TaskDto {
-  id: string;
-  phaseId: string;
-  name: string;
+  id!: string;
+  phaseId!: string;
+  name!: string;
   description?: string;
   assignedTo?: string;
   plannedStartDate?: Date;
   plannedEndDate?: Date;
   actualStartDate?: Date;
   actualEndDate?: Date;
-  status: string;
-  priority: string;
-  progress: number;
+  status!: string;
+  priority!: string;
+  progress!: number;
   notes?: string;
   color?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export class TaskDependencyDto {
-  id: string;
-  successorTaskId: string;
-  predecessorTaskId: string;
-  type: string;
-  lagTime: number;
-  createdAt: Date;
-  updatedAt: Date;
+  id!: string;
+  successorTaskId!: string;
+  predecessorTaskId!: string;
+  type!: string;
+  lagTime!: number;
+  createdAt!: Date;
+  updatedAt!: Date;
 }

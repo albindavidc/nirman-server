@@ -7,27 +7,27 @@ import {
   ProfessionalWithUser,
 } from '../../../../domain/repositories/professional-repository.interface';
 import {
-  IProjectMemberRepository,
-  PROJECT_MEMBER_REPOSITORY,
-} from '../../../../domain/repositories/project-member-repository.interface';
+  IProjectWorkerRepository,
+  PROJECT_WORKER_REPOSITORY,
+} from '../../../../domain/repositories/project-worker-repository.interface';
 
 @QueryHandler(GetProfessionalsQuery)
 export class GetProfessionalsHandler implements IQueryHandler<GetProfessionalsQuery> {
   constructor(
     @Inject(PROFESSIONAL_REPOSITORY)
     private readonly professionalRepository: IProfessionalRepository,
-    @Inject(PROJECT_MEMBER_REPOSITORY)
-    private readonly projectMemberRepository: IProjectMemberRepository,
+    @Inject(PROJECT_WORKER_REPOSITORY)
+    private readonly projectWorkerRepository: IProjectWorkerRepository,
   ) {}
 
   async execute(query: GetProfessionalsQuery): Promise<ProfessionalWithUser[]> {
     const { search, excludeProjectId } = query;
 
-    // Get existing project member IDs if excluding
+    // Get existing project worker IDs if excluding
     let excludeUserIds: string[] = [];
     if (excludeProjectId) {
       excludeUserIds =
-        await this.projectMemberRepository.getMemberIds(excludeProjectId);
+        await this.projectWorkerRepository.getWorkerIds(excludeProjectId);
     }
 
     return this.professionalRepository.findAllWithFilters({

@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 export class CheckOutDto {
   @IsString()
   @IsNotEmpty()
-  attendanceId: string;
+  attendanceId!: string;
 
   @IsString()
   @IsOptional()
@@ -12,10 +12,4 @@ export class CheckOutDto {
   @IsString()
   @IsOptional()
   notes?: string;
-
-  constructor(partial: Partial<CheckOutDto>) {
-    this.attendanceId = partial.attendanceId ?? '';
-    this.location = partial.location;
-    this.notes = partial.notes;
-  }
 }

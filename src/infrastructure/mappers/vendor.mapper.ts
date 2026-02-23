@@ -2,14 +2,14 @@ import {
   VendorCreatePersistenceInput,
   VendorUpdatePersistenceInput,
 } from '../types/vendor.types';
-import { Vendor } from 'src/domain/entities/vendor.entity';
-import { CreateVendorCompanyDto } from 'src/application/dto/vendor/create-vendor-company.dto';
-import { VendorStatus as DomainVendorStatus } from 'src/domain/enums/vendor-status.enum';
+import { Vendor } from '../../domain/entities/vendor.entity';
+import { CreateVendorCompanyDto } from '../../application/dto/vendor/create-vendor-company.dto';
+import { VendorStatus as DomainVendorStatus } from '../../domain/enums/vendor-status.enum';
 import {
   VendorPersistence,
   VendorWherePersistenceInput,
-} from 'src/infrastructure/types/vendor.types';
-import { VendorResponseDto } from 'src/application/dto/vendor/vendor-response.dto';
+} from '../types/vendor.types';
+import { VendorResponseDto } from '../../application/dto/vendor/vendor-response.dto';
 
 export class VendorMapper {
   static dtoToEntity(dto: CreateVendorCompanyDto): Vendor {

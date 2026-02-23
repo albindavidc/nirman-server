@@ -3,9 +3,9 @@ import { Inject } from '@nestjs/common';
 import { GetProjectAttendanceQuery } from '../../../../application/queries/project/get-project-attendance.query';
 import { AttendanceResponseDto } from '../../../../application/dto/project/attendance-response.dto';
 import {
-  IProjectMemberRepository,
-  PROJECT_MEMBER_REPOSITORY,
-} from '../../../../domain/repositories/project-member-repository.interface';
+  IProjectWorkerRepository,
+  PROJECT_WORKER_REPOSITORY,
+} from '../../../../domain/repositories/project-worker-repository.interface';
 import {
   IAttendanceRepository,
   ATTENDANCE_REPOSITORY,
@@ -14,8 +14,8 @@ import {
 @QueryHandler(GetProjectAttendanceQuery)
 export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAttendanceQuery> {
   constructor(
-    @Inject(PROJECT_MEMBER_REPOSITORY)
-    private readonly projectMemberRepository: IProjectMemberRepository,
+    @Inject(PROJECT_WORKER_REPOSITORY)
+    private readonly projectWorkerRepository: IProjectWorkerRepository,
     @Inject(ATTENDANCE_REPOSITORY)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
@@ -32,11 +32,11 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
     const endOfDay = new Date(searchDate);
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Fetch Project Members with user details
-    const members =
-      await this.projectMemberRepository.findByProjectId(projectId);
+    // Fetch Project Workers with user details
+    const workers =
+      await this.projectWorkerRepository.findByProjectId(projectId);
 
-    if (members.length === 0) {
+    if (workers.length === 0) {
       return [];
     }
 
@@ -52,16 +52,16 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
     const attendanceMap = new Map(attendanceRecords.map((a) => [a.userId, a]));
 
     // Combine and Map to DTO
-    return members.map((member) => {
-      const record = attendanceMap.get(member.userId);
+    return workers.map((worker) => {
+      const record = attendanceMap.get(worker.userId);
 
       return {
-        id: record?.id ?? `pending-${member.userId}`,
-        workerId: member.userId,
-        workerName: member.user
-          ? `${member.user.firstName} ${member.user.lastName}`
+        id: record?.id ?? `pending-${worker.userId}`,
+        workerId: worker.userId,
+        workerName: worker.user
+          ? `${worker.user.firstName} ${worker.user.lastName}`
           : 'Unknown',
-        workerRole: member.role,
+        workerRole: worker.role,
         date: searchDate.toISOString(),
         checkIn: record?.checkIn?.toISOString(),
         checkOut: record?.checkOut?.toISOString(),

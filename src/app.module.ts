@@ -20,11 +20,12 @@ import { AuthModule } from './presentation/modules/auth.module';
 import { VendorManagementModule } from './presentation/modules/vendor.module';
 import { ProfileModule } from './presentation/modules/profile.module';
 import { UploadModule } from './presentation/modules/upload.module';
-import { MemberModule } from './presentation/modules/member.module';
+import { WorkerModule } from './presentation/modules/worker.module';
 import { ProjectModule } from './presentation/modules/project.module';
 import { MaterialModule } from './presentation/modules/material.module';
 import { AttendanceModule } from './presentation/modules/attendance.module';
 import { TaskModule } from './presentation/modules/task.module';
+import { ExportProjectAttendanceExcelQueryTs } from './application/queries/project/export-project-attendance-excel.query.ts';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { TaskModule } from './presentation/modules/task.module';
     VendorManagementModule,
     ProfileModule,
     UploadModule,
-    MemberModule,
+    WorkerModule,
     ProjectModule,
     MaterialModule,
     AttendanceModule,
@@ -54,6 +55,7 @@ import { TaskModule } from './presentation/modules/task.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    ExportProjectAttendanceExcelQueryTs,
   ],
 })
 export class AppModule {}

@@ -2,7 +2,7 @@ import { BaseEntity } from './base.entity';
 import { ProjectStatus } from '../enums/project-status.enum';
 import { ProjectPhase } from './project-phase.entity';
 
-import { ProjectMember } from '../types';
+import { ProjectWorker } from '../types';
 
 export class Project extends BaseEntity {
   name: string;
@@ -17,7 +17,7 @@ export class Project extends BaseEntity {
   dueDate?: Date;
   latitude?: number;
   longitude?: number;
-  members: ProjectMember[];
+  workers: ProjectWorker[];
   phases: ProjectPhase[];
 
   constructor(props: Partial<Project>) {
@@ -37,7 +37,7 @@ export class Project extends BaseEntity {
     this.dueDate = props.dueDate;
     this.latitude = props.latitude;
     this.longitude = props.longitude;
-    this.members = props.members ?? [];
+    this.workers = props.workers ?? [];
     this.phases = props.phases ?? [];
   }
 }

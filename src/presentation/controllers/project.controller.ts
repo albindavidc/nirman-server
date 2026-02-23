@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -19,23 +20,23 @@ import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { GetProjectsQueryDto } from '../../application/dto/project/get-projects.dto';
 import { CreateProjectDto } from '../../application/dto/project/create-project.dto';
 import { UpdateProjectDto } from '../../application/dto/project/update-project.dto';
-import { AddProjectMemberDto } from '../../application/dto/project/add-project-member.dto';
+import { AddProjectWorkerDto } from '../../application/dto/project/add-project-worker.dto';
 import { GetProjectsQuery } from '../../application/queries/project/get-projects.query';
 import { GetProjectByIdQuery } from '../../application/queries/project/get-project-by-id.query';
 import { GetProjectAttendanceQuery } from '../../application/queries/project/get-project-attendance.query';
 import { ExportProjectAttendanceQuery } from '../../application/queries/project/export-project-attendance.query';
 import { GetProfessionalsQuery } from '../../application/queries/project/get-professionals.query';
-import { GetProjectMembersQuery } from '../../application/queries/project/get-project-members.query';
+import { GetProjectWorkersQuery } from '../../application/queries/project/get-project-workers.query';
 import { GetProjectStatsQuery } from '../../application/queries/project/get-project-stats.query';
 import { CreateProjectCommand } from '../../application/commands/project/create-project.command';
 import { UpdateProjectCommand } from '../../application/commands/project/update-project.command';
 import { DeleteProjectCommand } from '../../application/commands/project/delete-project.command';
-import { AddProjectMemberCommand } from '../../application/commands/project/add-project-member.command';
-import { RemoveProjectMemberCommand } from '../../application/commands/project/remove-project-member.command';
-import { UpdateProjectMemberCommand } from '../../application/commands/project/update-project-member.command';
+import { AddProjectWorkerCommand } from '../../application/commands/project/add-project-worker.command';
+import { RemoveProjectWorkerCommand } from '../../application/commands/project/remove-project-worker.command';
+import { UpdateProjectWorkerCommand } from '../../application/commands/project/update-project-worker.command';
 import { ProjectResponseDto } from '../../application/dto/project/project-response.dto';
 import { CreateProjectPhaseDto } from '../../application/dto/project/phase/create-project-phase.dto';
-import { UpdateProjectMemberDto } from '../../application/dto/project/update-project-member.dto';
+import { UpdateProjectWorkerDto } from '../../application/dto/project/update-project-worker.dto';
 import { ProjectPhaseDto } from '../../application/dto/project/phase/project-phase.dto';
 import { CreateProjectPhaseCommand } from '../../application/commands/project/create-project-phase.command';
 import { UpdateProjectPhaseCommand } from '../../application/commands/project/update-project-phase.command';
@@ -43,7 +44,7 @@ import { GetProjectPhasesQuery } from '../../application/queries/project/get-pro
 import { AttendanceResponseDto } from '../../application/dto/project/attendance-response.dto';
 import { ProjectStatsDto } from '../../application/dto/project/project-stats.dto';
 import { ProfessionalResponseDto } from '../../application/dto/project/professional-response.dto';
-import { ProjectMemberResponseDto } from '../../application/dto/project/project-member-response.dto';
+import { ProjectWorkerResponseDto } from '../../application/dto/project/project-worker-response.dto';
 
 import { CreatePhaseApprovalDto } from '../../application/dto/phase-approval/create-phase-approval.dto';
 import {
@@ -184,49 +185,49 @@ export class ProjectController {
     );
   }
 
-  // Project Members Endpoints
-  @Get(PROJECT_ROUTES.GET_MEMBERS)
-  async getProjectMembers(
+  // Project Workers Endpoints
+  @Get(PROJECT_ROUTES.GET_WORKERS)
+  async getProjectWorkers(
     @Param('id') projectId: string,
-  ): Promise<ProjectMemberResponseDto[]> {
-    return this.queryBus.execute(new GetProjectMembersQuery(projectId));
+  ): Promise<ProjectWorkerResponseDto[]> {
+    return this.queryBus.execute(new GetProjectWorkersQuery(projectId));
   }
 
-  @Post(PROJECT_ROUTES.ADD_MEMBERS)
+  @Post(PROJECT_ROUTES.ADD_WORKERS)
   @HttpCode(HttpStatus.CREATED)
-  async addProjectMembers(
+  async addProjectWorkers(
     @Param('id') projectId: string,
-    @Body() addMemberDto: AddProjectMemberDto,
+    @Body() addWorkerDto: AddProjectWorkerDto,
   ): Promise<void> {
     return this.commandBus.execute(
-      new AddProjectMemberCommand(
+      new AddProjectWorkerCommand(
         projectId,
-        addMemberDto.userIds,
-        addMemberDto.role,
+        addWorkerDto.userIds,
+        addWorkerDto.role,
       ),
     );
   }
 
-  @Patch(PROJECT_ROUTES.UPDATE_MEMBER)
+  @Patch(PROJECT_ROUTES.UPDATE_WORKER)
   @HttpCode(HttpStatus.OK)
-  async updateProjectMember(
+  async updateProjectWorker(
     @Param('id') projectId: string,
     @Param('userId') userId: string,
-    @Body() updateDto: UpdateProjectMemberDto,
+    @Body() updateDto: UpdateProjectWorkerDto,
   ): Promise<void> {
     return this.commandBus.execute(
-      new UpdateProjectMemberCommand(projectId, userId, updateDto.role),
+      new UpdateProjectWorkerCommand(projectId, userId, updateDto.role),
     );
   }
 
-  @Delete(PROJECT_ROUTES.REMOVE_MEMBER)
+  @Delete(PROJECT_ROUTES.REMOVE_WORKER)
   @HttpCode(HttpStatus.OK)
-  async removeProjectMember(
+  async removeProjectWorker(
     @Param('id') projectId: string,
     @Param('userId') userId: string,
   ): Promise<void> {
     return this.commandBus.execute(
-      new RemoveProjectMemberCommand(projectId, userId),
+      new RemoveProjectWorkerCommand(projectId, userId),
     );
   }
 
@@ -243,8 +244,13 @@ export class ProjectController {
   async createPhaseApproval(
     @Param('phaseId') phaseId: string,
     @Body() dto: CreatePhaseApprovalDto,
-    @User('id') userId: string,
+    @User('userId') userId: string,
   ): Promise<PhaseApprovalResponseDto> {
+    if (!dto) {
+      throw new BadRequestException('Request body is empty');
+    }
+    console.log('Received Approval Request:', { phaseId, dto, userId });
+
     return this.commandBus.execute(
       new CreatePhaseApprovalCommand(
         phaseId,
@@ -262,7 +268,7 @@ export class ProjectController {
   async requestPhaseApproval(
     @Param('phaseId') phaseId: string,
     @Body() dto: RequestPhaseApprovalDto,
-    @User('id') userId: string,
+    @User('userId') userId: string,
   ): Promise<PhaseApprovalResponseDto> {
     return this.commandBus.execute(
       new RequestPhaseApprovalCommand(

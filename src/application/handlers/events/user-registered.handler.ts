@@ -8,9 +8,6 @@ import {
 
 /**
  * User Registered Event Handler
- *
- * Handles the UserRegisteredEvent by sending a welcome email to the new user.
- * Follows Clean Architecture by depending on the IEmailService interface.
  */
 @EventsHandler(UserRegisteredEvent)
 export class UserRegisteredHandler implements IEventHandler<UserRegisteredEvent> {

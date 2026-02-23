@@ -1,5 +1,5 @@
 import { Project } from '../../domain/entities/project.entity';
-import { ProjectMember } from '../../domain/types';
+import { ProjectWorker } from '../../domain/types';
 import { ProjectPhase } from '../../domain/entities/project-phase.entity';
 import { ProjectStatus as DomainProjectStatus } from '../../domain/enums/project-status.enum';
 import {
@@ -159,9 +159,9 @@ export class ProjectMapper {
       dueDate: prismaProject.due_date ?? undefined,
       latitude: prismaProject.latitude ?? undefined,
       longitude: prismaProject.longitude ?? undefined,
-      members:
+      workers:
         prismaProject.members?.map(
-          (m): ProjectMember => ({
+          (m): ProjectWorker => ({
             userId: m.user_id,
             role: m.role,
             joinedAt: m.joined_at,
@@ -209,8 +209,8 @@ export class ProjectMapper {
     if (entity.spent !== undefined) data.spent = entity.spent;
     if (entity.startDate !== undefined) data.start_date = entity.startDate;
     if (entity.dueDate !== undefined) data.due_date = entity.dueDate;
-    if (entity.members !== undefined) {
-      data.members = entity.members.map((m) => ({
+    if (entity.workers !== undefined) {
+      data.members = entity.workers.map((m) => ({
         user_id: m.userId,
         role: m.role,
         joined_at: m.joinedAt,

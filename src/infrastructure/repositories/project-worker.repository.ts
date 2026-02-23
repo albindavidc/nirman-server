@@ -1,17 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  IProjectMemberRepository,
-  ProjectMemberData,
-  ProjectMemberWithUser,
-  AddMemberData,
-} from '../../domain/repositories/project-member-repository.interface';
+  IProjectWorkerRepository,
+  ProjectWorkerData,
+  ProjectWorkerWithUser,
+  AddWorkerData,
+} from '../../domain/repositories/project-worker-repository.interface';
 
 @Injectable()
-export class ProjectMemberRepository implements IProjectMemberRepository {
+export class ProjectWorkerRepository implements IProjectWorkerRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByProjectId(projectId: string): Promise<ProjectMemberWithUser[]> {
+  async findByProjectId(projectId: string): Promise<ProjectWorkerWithUser[]> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
     });
@@ -24,7 +24,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       return [];
     }
 
-    // Get user details for all members
+    // Get user details for all workers
     const userIds = project.members.map((m) => m.user_id);
     const users = await this.prisma.user.findMany({
       where: { id: { in: userIds } },
@@ -33,7 +33,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       },
     });
 
-    // Map users to member response
+    // Map users to worker response
     return project.members.map((member) => {
       const user = users.find((u) => u.id === member.user_id);
       return {
@@ -57,10 +57,10 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     });
   }
 
-  async addMembers(
+  async addWorkers(
     projectId: string,
-    members: AddMemberData[],
-  ): Promise<{ addedCount: number; members: ProjectMemberData[] }> {
+    workers: AddWorkerData[],
+  ): Promise<{ addedCount: number; workers: ProjectWorkerData[] }> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
     });
@@ -69,16 +69,16 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       throw new NotFoundException(`Project with ID ${projectId} not found`);
     }
 
-    // Get existing member IDs to avoid duplicates
-    const existingMemberIds = project.members.map((m) => m.user_id);
-    const newMembers = members.filter(
-      (m) => !existingMemberIds.includes(m.userId),
+    // Get existing worker IDs to avoid duplicates
+    const existingWorkerIds = project.members.map((m) => m.user_id);
+    const newWorkers = workers.filter(
+      (m) => !existingWorkerIds.includes(m.userId),
     );
 
-    if (newMembers.length === 0) {
+    if (newWorkers.length === 0) {
       return {
         addedCount: 0,
-        members: project.members.map((m) => ({
+        workers: project.members.map((m) => ({
           userId: m.user_id,
           role: m.role,
           joinedAt: m.joined_at,
@@ -87,27 +87,27 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       };
     }
 
-    // Create new member entries
-    const newMemberEntries = newMembers.map((member) => ({
-      user_id: member.userId,
-      role: member.role,
+    // Create new worker entries
+    const newWorkerEntries = newWorkers.map((worker) => ({
+      user_id: worker.userId,
+      role: worker.role,
       joined_at: new Date(),
       is_creator: false,
     }));
 
-    // Update project with new members
+    // Update project with new workers
     const updatedProject = await this.prisma.project.update({
       where: { id: projectId },
       data: {
         members: {
-          push: newMemberEntries,
+          push: newWorkerEntries,
         },
       },
     });
 
     return {
-      addedCount: newMembers.length,
-      members: updatedProject.members.map((m) => ({
+      addedCount: newWorkers.length,
+      workers: updatedProject.members.map((m) => ({
         userId: m.user_id,
         role: m.role,
         joinedAt: m.joined_at,
@@ -116,10 +116,10 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     };
   }
 
-  async removeMember(
+  async removeWorker(
     projectId: string,
     userId: string,
-  ): Promise<ProjectMemberData[]> {
+  ): Promise<ProjectWorkerData[]> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
     });
@@ -128,13 +128,13 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       throw new NotFoundException(`Project with ID ${projectId} not found`);
     }
 
-    // Check if user is a member
-    const memberIndex = project.members.findIndex((m) => m.user_id === userId);
-    if (memberIndex === -1) {
-      throw new NotFoundException('User is not a member of this project');
+    // Check if user is a worker
+    const workerIndex = project.members.findIndex((m) => m.user_id === userId);
+    if (workerIndex === -1) {
+      throw new NotFoundException('User is not a worker of this project');
     }
 
-    // Remove member from array
+    // Remove worker from array
     const updatedMembers = project.members.filter((m) => m.user_id !== userId);
 
     // Update project
@@ -153,7 +153,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     }));
   }
 
-  async updateMemberRole(
+  async updateWorkerRole(
     projectId: string,
     userId: string,
     role: string,
@@ -166,15 +166,15 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
       throw new NotFoundException('Project not found');
     }
 
-    const memberIndex = project.members.findIndex((m) => m.user_id === userId);
-    if (memberIndex === -1) {
-      throw new NotFoundException('Member not found in project');
+    const workerIndex = project.members.findIndex((m) => m.user_id === userId);
+    if (workerIndex === -1) {
+      throw new NotFoundException('Worker not found in project');
     }
 
-    // Update the member role
+    // Update the worker role
     const updatedMembers = [...project.members];
-    updatedMembers[memberIndex] = {
-      ...updatedMembers[memberIndex],
+    updatedMembers[workerIndex] = {
+      ...updatedMembers[workerIndex],
       role,
     };
 
@@ -186,7 +186,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     });
   }
 
-  async isMember(projectId: string, userId: string): Promise<boolean> {
+  async isWorker(projectId: string, userId: string): Promise<boolean> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
     });
@@ -198,7 +198,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     return project.members.some((m) => m.user_id === userId);
   }
 
-  async getMemberIds(projectId: string): Promise<string[]> {
+  async getWorkerIds(projectId: string): Promise<string[]> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
     });

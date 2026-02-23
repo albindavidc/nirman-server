@@ -1,10 +1,10 @@
-import { User } from 'src/domain/entities/user.entity';
-import { Vendor } from 'src/domain/entities/vendor.entity';
-import { VendorStatus } from 'src/domain/enums/vendor-status.enum';
-import { CreateVendorUserDto } from 'src/application/dto/vendor/create-vendor-user.dto';
-import { Role } from 'src/domain/enums/role.enum';
-import { UserPersistence } from 'src/infrastructure/types/user.types';
-import { UserStatus } from 'src/domain/enums/user-status.enum';
+import { User } from '../../domain/entities/user.entity';
+import { Vendor } from '../../domain/entities/vendor.entity';
+import { VendorStatus } from '../../domain/enums/vendor-status.enum';
+import { CreateVendorUserDto } from '../../application/dto/vendor/create-vendor-user.dto';
+import { Role } from '../../domain/enums/role.enum';
+import { UserPersistence } from '../types/user.types';
+import { UserStatus } from '../../domain/enums/user-status.enum';
 
 /**
  * Type-safe mapper for User entity <-> Prisma persistence conversion.

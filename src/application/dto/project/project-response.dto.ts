@@ -5,7 +5,7 @@ export interface TeamMemberDto {
   avatarUrl?: string;
 }
 
-export interface ProjectMemberResponseDto {
+export interface ProjectWorkerResponseDto {
   userId: string;
   role: string;
   joinedAt: string;
@@ -37,7 +37,7 @@ export interface ProjectResponseDto {
   latitude?: number;
   longitude?: number;
   phases: ProjectPhaseDto[];
-  members: ProjectMemberResponseDto[];
+  workers: ProjectWorkerResponseDto[];
   teamMembers: TeamMemberDto[];
   createdAt: string;
   updatedAt: string;

@@ -161,9 +161,11 @@ export class PhaseApprovalRepository implements IPhaseApprovalRepository {
   async create(data: CreatePhaseApprovalData): Promise<PhaseApprovalResult> {
     const approval = (await this.prisma.phaseApproval.create({
       data: {
-        phase_id: data.phaseId,
-        approved_by: data.approvedBy,
-        requested_by: data.requestedBy,
+        phase: { connect: { id: data.phaseId } },
+        approver: data.approvedBy
+          ? { connect: { id: data.approvedBy } }
+          : undefined,
+        requester: { connect: { id: data.requestedBy } },
         approval_status: data.approvalStatus,
         comments: data.comments,
         media: data.media,

@@ -1,4 +1,4 @@
-export class AddProjectMemberCommand {
+export class AddProjectWorkerCommand {
   constructor(
     public readonly projectId: string,
     public readonly userIds: string[],

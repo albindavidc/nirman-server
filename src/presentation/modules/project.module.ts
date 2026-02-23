@@ -5,7 +5,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { ProjectRepository } from '../../infrastructure/repositories/project.repository';
 import { ProjectPhaseRepository } from '../../infrastructure/repositories/project-phase.repository';
-import { ProjectMemberRepository } from '../../infrastructure/repositories/project-member.repository';
+import { ProjectWorkerRepository } from '../../infrastructure/repositories/project-worker.repository';
 import { PhaseApprovalRepository } from '../../infrastructure/repositories/phase-approval.repository';
 import { AttendanceRepository } from '../../infrastructure/repositories/attendance.repository';
 import { ProfessionalRepository } from '../../infrastructure/repositories/professional.repository';
@@ -13,7 +13,7 @@ import { ProfessionalRepository } from '../../infrastructure/repositories/profes
 // Domain interfaces
 import { PROJECT_REPOSITORY } from '../../domain/repositories/project-repository.interface';
 import { PROJECT_PHASE_REPOSITORY } from '../../domain/repositories/project-phase-repository.interface';
-import { PROJECT_MEMBER_REPOSITORY } from '../../domain/repositories/project-member-repository.interface';
+import { PROJECT_WORKER_REPOSITORY } from '../../domain/repositories/project-worker-repository.interface';
 import { PHASE_APPROVAL_REPOSITORY } from '../../domain/repositories/phase-approval-repository.interface';
 import { ATTENDANCE_REPOSITORY } from '../../domain/repositories/attendance-repository.interface';
 import { PROFESSIONAL_REPOSITORY } from '../../domain/repositories/professional-repository.interface';
@@ -26,7 +26,7 @@ import { GetProjectsHandler } from '../../application/handlers/queries/project/g
 import { GetProjectByIdHandler } from '../../application/handlers/queries/project/get-project-by-id.handler';
 import { GetProjectAttendanceHandler } from '../../application/handlers/queries/project/get-project-attendance.handler';
 import { GetProfessionalsHandler } from '../../application/handlers/queries/project/get-professionals.handler';
-import { GetProjectMembersHandler } from '../../application/handlers/queries/project/get-project-members.handler';
+import { GetProjectWorkersHandler } from '../../application/handlers/queries/project/get-project-workers.handler';
 import { GetProjectPhasesHandler } from '../../application/handlers/queries/project/get-project-phases.handler';
 import { GetProjectStatsHandler } from '../../application/handlers/queries/project/get-project-stats.handler';
 import { ExportProjectAttendanceHandler } from '../../application/handlers/queries/project/export-project-attendance.handler';
@@ -35,9 +35,9 @@ import { ExportProjectAttendanceHandler } from '../../application/handlers/queri
 import { CreateProjectHandler } from '../../application/handlers/commands/project/create-project.handler';
 import { UpdateProjectHandler } from '../../application/handlers/commands/project/update-project.handler';
 import { DeleteProjectHandler } from '../../application/handlers/commands/project/delete-project.handler';
-import { AddProjectMemberHandler } from '../../application/handlers/commands/project/add-project-member.handler';
-import { RemoveProjectMemberHandler } from '../../application/handlers/commands/project/remove-project-member.handler';
-import { UpdateProjectMemberHandler } from '../../application/handlers/commands/project/update-project-member.handler';
+import { AddProjectWorkerHandler } from '../../application/handlers/commands/project/add-project-worker.handler';
+import { RemoveProjectWorkerHandler } from '../../application/handlers/commands/project/remove-project-worker.handler';
+import { UpdateProjectWorkerHandler } from '../../application/handlers/commands/project/update-project-worker.handler';
 import { CreateProjectPhaseHandler } from '../../application/handlers/commands/project/create-project-phase.handler';
 import { UpdateProjectPhaseHandler } from '../../application/handlers/commands/project/update-project-phase.handler';
 
@@ -56,7 +56,7 @@ const QueryHandlers = [
   GetProjectAttendanceHandler,
   GetProjectPhasesHandler,
   GetProfessionalsHandler,
-  GetProjectMembersHandler,
+  GetProjectWorkersHandler,
   ExportProjectAttendanceHandler,
   GetPhaseForApprovalHandler,
   GetProjectStatsHandler,
@@ -70,9 +70,9 @@ const CommandHandlers = [
   DeleteProjectHandler,
   CreateProjectPhaseHandler,
   UpdateProjectPhaseHandler,
-  AddProjectMemberHandler,
-  RemoveProjectMemberHandler,
-  UpdateProjectMemberHandler,
+  AddProjectWorkerHandler,
+  RemoveProjectWorkerHandler,
+  UpdateProjectWorkerHandler,
   CreatePhaseApprovalHandler,
   RequestPhaseApprovalHandler,
 ];
@@ -84,7 +84,7 @@ const CommandHandlers = [
     // Repository bindings
     { provide: PROJECT_REPOSITORY, useClass: ProjectRepository },
     { provide: PROJECT_PHASE_REPOSITORY, useClass: ProjectPhaseRepository },
-    { provide: PROJECT_MEMBER_REPOSITORY, useClass: ProjectMemberRepository },
+    { provide: PROJECT_WORKER_REPOSITORY, useClass: ProjectWorkerRepository },
     { provide: PHASE_APPROVAL_REPOSITORY, useClass: PhaseApprovalRepository },
     { provide: ATTENDANCE_REPOSITORY, useClass: AttendanceRepository },
     { provide: PROFESSIONAL_REPOSITORY, useClass: ProfessionalRepository },

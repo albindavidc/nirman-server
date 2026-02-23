@@ -9,7 +9,7 @@ import {
 export class SendOtpDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
@@ -18,26 +18,15 @@ export class SendOtpDto {
 
   @IsOptional()
   isSignup?: boolean;
-
-  constructor(partial: Partial<SendOtpDto>) {
-    this.email = partial.email ?? '';
-    this.role = partial.role;
-    this.isSignup = partial.isSignup;
-  }
 }
 
 export class VerifyOtpDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
   @Length(6, 6)
-  otp: string;
-
-  constructor(partial: Partial<VerifyOtpDto>) {
-    this.email = partial.email ?? '';
-    this.otp = partial.otp ?? '';
-  }
+  otp!: string;
 }

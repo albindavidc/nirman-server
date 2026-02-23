@@ -1,74 +1,98 @@
-export class MaterialRequestItemDto {
-  materialId: string;
-  materialName: string;
-  quantity: number;
-  unit: string;
+import { Type } from 'class-transformer';
+import {
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
+  IsDateString,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
-  constructor(partial: Partial<MaterialRequestItemDto>) {
-    this.materialId = partial.materialId ?? '';
-    this.materialName = partial.materialName ?? '';
-    this.quantity = partial.quantity ?? 0;
-    this.unit = partial.unit ?? '';
-  }
+export class MaterialRequestItemDto {
+  materialId!: string;
+  materialName!: string;
+  quantity!: number;
+  unit!: string;
 }
 
 export class MaterialRequestDto {
-  id: string;
-  requestNumber: string;
-  projectId: string;
-  requestedBy: string;
-  items: MaterialRequestItemDto[];
-  priority: string;
+  id!: string;
+  requestNumber!: string;
+  projectId!: string;
+  requestedBy!: string;
+  items!: MaterialRequestItemDto[];
+  priority!: string;
   purpose?: string;
   deliveryLocation?: string;
-  requiredDate: Date;
-  status: string;
+  requiredDate!: Date;
+  status!: string;
   approvedBy?: string;
   approvedAt?: Date;
   approvalComments?: string;
   rejectionReason?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
+}
 
-  constructor(partial: Partial<MaterialRequestDto>) {
-    this.id = partial.id ?? '';
-    this.requestNumber = partial.requestNumber ?? '';
-    this.projectId = partial.projectId ?? '';
-    this.requestedBy = partial.requestedBy ?? '';
-    this.items = partial.items ?? [];
-    this.priority = partial.priority ?? '';
-    this.purpose = partial.purpose;
-    this.deliveryLocation = partial.deliveryLocation;
-    this.requiredDate = partial.requiredDate ?? new Date();
-    this.status = partial.status ?? '';
-    this.approvedBy = partial.approvedBy;
-    this.approvedAt = partial.approvedAt;
-    this.approvalComments = partial.approvalComments;
-    this.rejectionReason = partial.rejectionReason;
-    this.createdAt = partial.createdAt ?? new Date();
-    this.updatedAt = partial.updatedAt ?? new Date();
-  }
+export class MaterialItemDto {
+  @IsUUID('4')
+  @IsNotEmpty()
+  materialId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  materialName!: string;
+
+  @IsNumber({ maxDecimalPlaces: 3 })
+  @Min(0.001)
+  @Type(() => Number)
+  quantity!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  unit!: string;
+}
+
+export enum MaterialRequestPriority {
+  LOW = 'Low',
+  MEDIUM = 'Medium',
+  HIGH = 'High',
+  URGENT = 'Urgent',
 }
 
 export class CreateMaterialRequestDto {
-  projectId: string;
-  items: {
-    materialId: string;
-    materialName: string;
-    quantity: number;
-    unit: string;
-  }[];
-  priority?: string;
-  purpose?: string;
-  deliveryLocation?: string;
-  requiredDate: Date;
+  @IsUUID('4')
+  @IsNotEmpty()
+  projectId!: string;
 
-  constructor(partial: Partial<CreateMaterialRequestDto>) {
-    this.projectId = partial.projectId ?? '';
-    this.items = partial.items ?? [];
-    this.priority = partial.priority;
-    this.purpose = partial.purpose;
-    this.deliveryLocation = partial.deliveryLocation;
-    this.requiredDate = partial.requiredDate ?? new Date();
-  }
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayUnique((item: MaterialItemDto) => item.materialId)
+  @ValidateNested({ each: true })
+  @Type(() => MaterialItemDto)
+  items!: MaterialItemDto[];
+
+  @IsIn(Object.values(MaterialRequestPriority))
+  @IsNotEmpty()
+  priority!: MaterialRequestPriority;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  purpose?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  deliveryLocation?: string;
+
+  @IsDateString()
+  @IsNotEmpty()
+  requiredDate!: string;
 }

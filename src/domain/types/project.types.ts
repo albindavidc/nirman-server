@@ -1,4 +1,4 @@
-export interface ProjectMember {
+export interface ProjectWorker {
   userId: string;
   role:
     | 'Admin'

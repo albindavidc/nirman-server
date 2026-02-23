@@ -11,66 +11,49 @@ import { VendorStatus } from '../../../domain/enums/vendor-status.enum';
 
 export class CreateVendorCompanyDto {
   @IsNotEmpty()
-  userId: string;
+  userId!: string;
 
   @IsNotEmpty()
-  companyName: string;
+  companyName!: string;
 
   @IsNotEmpty()
-  registrationNumber: string;
+  registrationNumber!: string;
 
   @IsOptional()
-  taxNumber: string;
+  taxNumber?: string;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  yearsInBusiness: number;
+  yearsInBusiness?: number;
 
   @IsOptional()
-  addressStreet: string;
+  addressStreet?: string;
 
   @IsOptional()
-  addressCity: string;
+  addressCity?: string;
 
   @IsOptional()
-  addressState: string;
+  addressState?: string;
 
   @IsOptional()
-  addressZipCode: string;
+  addressZipCode?: string;
 
   @IsArray()
   @IsOptional()
-  productsServices: string[];
+  productsServices?: string[];
 
   @IsOptional()
-  websiteUrl: string;
+  websiteUrl?: string;
 
   @IsOptional()
   @IsEmail()
-  contactEmail: string;
+  contactEmail?: string;
 
   @IsOptional()
-  contactPhone: string;
+  contactPhone?: string;
 
   @IsOptional()
   @IsEnum(VendorStatus)
-  vendorStatus: VendorStatus;
-
-  constructor(partial: Partial<CreateVendorCompanyDto>) {
-    this.userId = partial.userId ?? '';
-    this.companyName = partial.companyName ?? '';
-    this.registrationNumber = partial.registrationNumber ?? '';
-    this.taxNumber = partial.taxNumber ?? '';
-    this.yearsInBusiness = partial.yearsInBusiness ?? 0;
-    this.addressStreet = partial.addressStreet ?? '';
-    this.addressCity = partial.addressCity ?? '';
-    this.addressState = partial.addressState ?? '';
-    this.addressZipCode = partial.addressZipCode ?? '';
-    this.productsServices = partial.productsServices ?? [];
-    this.websiteUrl = partial.websiteUrl ?? '';
-    this.contactEmail = partial.contactEmail ?? '';
-    this.contactPhone = partial.contactPhone ?? '';
-    this.vendorStatus = partial.vendorStatus ?? VendorStatus.PENDING;
-  }
+  vendorStatus?: VendorStatus;
 }

@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 /**
  * Abstract base repository class that provides common functionality

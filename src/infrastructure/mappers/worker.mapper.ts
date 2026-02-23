@@ -1,27 +1,27 @@
 import {
-  MemberWithProfessional,
-  CreateMemberData,
-  UpdateMemberData,
-} from 'src/domain/repositories/member-repository.interface';
+  WorkerWithProfessional,
+  CreateWorkerData,
+  UpdateWorkerData,
+} from '../../domain/repositories/worker-repository.interface';
 import {
-  MemberPersistence,
-  MemberWherePersistenceInput,
-  MemberCreatePersistenceInput,
-  MemberUpdatePersistenceInput,
-} from '../types/member.types';
+  WorkerPersistence,
+  WorkerWherePersistenceInput,
+  WorkerCreatePersistenceInput,
+  WorkerUpdatePersistenceInput,
+} from '../types/worker.types';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 
 /**
- * Type-safe mapper for Member entity <-> Prisma persistence conversion.
+ * Type-safe mapper for Worker entity <-> Prisma persistence conversion.
  */
-export class MemberMapper {
+export class WorkerMapper {
   /**
    * Converts a Prisma result to domain entity.
    */
   static fromPrismaResult<T extends Record<string, unknown>>(
     result: T,
-  ): MemberWithProfessional {
-    return this.persistenceToEntity(result as unknown as MemberPersistence);
+  ): WorkerWithProfessional {
+    return this.persistenceToEntity(result as unknown as WorkerPersistence);
   }
 
   /**
@@ -29,7 +29,7 @@ export class MemberMapper {
    */
   static fromPrismaResults<T extends Record<string, unknown>>(
     results: T[],
-  ): MemberWithProfessional[] {
+  ): WorkerWithProfessional[] {
     return results.map((r) => this.fromPrismaResult(r));
   }
 
@@ -37,8 +37,8 @@ export class MemberMapper {
    * Converts create input to Prisma-compatible format.
    */
   static toPrismaCreateInput(
-    data: CreateMemberData,
-  ): MemberCreatePersistenceInput {
+    data: CreateWorkerData,
+  ): WorkerCreatePersistenceInput {
     return {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -67,9 +67,9 @@ export class MemberMapper {
    * Converts update input to Prisma-compatible format.
    */
   static toPrismaUpdateInput(
-    data: UpdateMemberData,
-  ): MemberUpdatePersistenceInput {
-    const updateData: MemberUpdatePersistenceInput = {};
+    data: UpdateWorkerData,
+  ): WorkerUpdatePersistenceInput {
+    const updateData: WorkerUpdatePersistenceInput = {};
 
     if (data.firstName !== undefined) updateData.first_name = data.firstName;
     if (data.lastName !== undefined) updateData.last_name = data.lastName;
@@ -123,9 +123,9 @@ export class MemberMapper {
    * Converts where input to Prisma-compatible format.
    */
   static toPrismaWhereInput(
-    where: MemberWherePersistenceInput,
-  ): MemberWherePersistenceInput {
-    const prismaWhere: MemberWherePersistenceInput = {};
+    where: WorkerWherePersistenceInput,
+  ): WorkerWherePersistenceInput {
+    const prismaWhere: WorkerWherePersistenceInput = {};
 
     if (where.role) {
       if (typeof where.role === 'object' && 'in' in where.role) {
@@ -143,8 +143,8 @@ export class MemberMapper {
   }
 
   static persistenceToEntity(
-    persistence: MemberPersistence,
-  ): MemberWithProfessional {
+    persistence: WorkerPersistence,
+  ): WorkerWithProfessional {
     return {
       id: persistence.id,
       firstName: persistence.first_name,

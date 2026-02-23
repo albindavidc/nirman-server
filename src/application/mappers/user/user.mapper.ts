@@ -1,7 +1,7 @@
-import { User } from 'src/domain/entities/user.entity';
-import { CreateVendorUserDto } from 'src/application/dto/vendor/create-vendor-user.dto';
-import { Role } from 'src/domain/enums/role.enum';
-import { UserStatus } from 'src/domain/enums/user-status.enum';
+import { User } from '../../../domain/entities/user.entity';
+import { CreateVendorUserDto } from '../../dto/vendor/create-vendor-user.dto';
+import { Role } from '../../../domain/enums/role.enum';
+import { UserStatus } from '../../../domain/enums/user-status.enum';
 
 export class UserMapper {
   static dtoToEntity(

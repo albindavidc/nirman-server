@@ -1,7 +1,7 @@
-import { Vendor } from 'src/domain/entities/vendor.entity';
-import { CreateVendorCompanyDto } from 'src/application/dto/vendor/create-vendor-company.dto';
+import { Vendor } from '../../../domain/entities/vendor.entity';
+import { CreateVendorCompanyDto } from '../../dto/vendor/create-vendor-company.dto';
 
-import { VendorResponseDto } from 'src/application/dto/vendor/vendor-response.dto';
+import { VendorResponseDto } from '../../dto/vendor/vendor-response.dto';
 
 export class VendorMapper {
   static dtoToEntity(dto: CreateVendorCompanyDto): Vendor {

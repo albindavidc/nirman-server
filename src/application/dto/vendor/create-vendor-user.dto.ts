@@ -9,16 +9,16 @@ import {
 
 export class CreateVendorUserDto {
   @IsNotEmpty()
-  firstName: string;
+  firstName!: string;
 
   @IsNotEmpty()
-  lastName: string;
+  lastName!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @Matches(/^\d{10}$/, { message: 'Phone number must be a 10-digit number' })
-  phoneNumber: string;
+  phoneNumber!: string;
 
   @IsStrongPassword({
     minLength: 8,
@@ -28,10 +28,10 @@ export class CreateVendorUserDto {
     minSymbols: 1,
   })
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @IsNotEmpty()
-  confirmPassword: string;
+  confirmPassword!: string;
 
   @Transform(
     ({ value, obj }: { value: string; obj: CreateVendorUserDto }) =>
@@ -39,14 +39,5 @@ export class CreateVendorUserDto {
   )
   get isPasswordMatch(): boolean {
     return true;
-  }
-
-  constructor(partial: Partial<CreateVendorUserDto>) {
-    this.firstName = partial.firstName ?? '';
-    this.lastName = partial.lastName ?? '';
-    this.email = partial.email ?? '';
-    this.phoneNumber = partial.phoneNumber ?? '';
-    this.password = partial.password ?? '';
-    this.confirmPassword = partial.confirmPassword ?? '';
   }
 }

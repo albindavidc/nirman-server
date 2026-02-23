@@ -9,7 +9,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Prisma } from 'src/generated/client/client';
+import { Prisma } from '../../generated/client/client';
 import { ApiErrorResponse } from '../interfaces/api-error-response.interface';
 
 @Catch()

@@ -1,4 +1,4 @@
-import { PrismaClient } from 'src/generated/client/client';
+import { PrismaClient } from '../../generated/client/client';
 import {
   Injectable,
   OnModuleInit,

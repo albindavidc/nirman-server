@@ -1,28 +1,28 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
-import { AddProjectMemberCommand } from '../../../commands/project/add-project-member.command';
+import { AddProjectWorkerCommand } from '../../../commands/project/add-project-worker.command';
 import {
-  IProjectMemberRepository,
-  PROJECT_MEMBER_REPOSITORY,
-} from '../../../../domain/repositories/project-member-repository.interface';
+  IProjectWorkerRepository,
+  PROJECT_WORKER_REPOSITORY,
+} from '../../../../domain/repositories/project-worker-repository.interface';
 import {
   IProfessionalRepository,
   PROFESSIONAL_REPOSITORY,
 } from '../../../../domain/repositories/professional-repository.interface';
 
-@CommandHandler(AddProjectMemberCommand)
-export class AddProjectMemberHandler implements ICommandHandler<AddProjectMemberCommand> {
+@CommandHandler(AddProjectWorkerCommand)
+export class AddProjectWorkerHandler implements ICommandHandler<AddProjectWorkerCommand> {
   constructor(
-    @Inject(PROJECT_MEMBER_REPOSITORY)
-    private readonly projectMemberRepository: IProjectMemberRepository,
+    @Inject(PROJECT_WORKER_REPOSITORY)
+    private readonly projectWorkerRepository: IProjectWorkerRepository,
     @Inject(PROFESSIONAL_REPOSITORY)
     private readonly professionalRepository: IProfessionalRepository,
   ) {}
 
-  async execute(command: AddProjectMemberCommand): Promise<{
+  async execute(command: AddProjectWorkerCommand): Promise<{
     message: string;
     addedCount: number;
-    members: Array<{
+    workers: Array<{
       userId: string;
       role: string;
       joinedAt: Date;
@@ -41,22 +41,27 @@ export class AddProjectMemberHandler implements ICommandHandler<AddProjectMember
       );
     }
 
-    // Add members to project
-    const result = await this.projectMemberRepository.addMembers(
+    // Add workers to project
+    const result = await this.projectWorkerRepository.addWorkers(
       projectId,
       userIds.map((userId) => ({ userId, role })),
     );
 
     if (result.addedCount === 0) {
       throw new BadRequestException(
-        'All selected professionals are already members of this project.',
+        'All selected professionals are already workers of this project.',
       );
     }
 
     return {
-      message: `${result.addedCount} member(s) added successfully`,
+      message: `${result.addedCount} worker(s) added successfully`,
       addedCount: result.addedCount,
-      members: result.members,
+      workers: result.workers.map((w) => ({
+        userId: w.userId,
+        role: w.role,
+        joinedAt: w.joinedAt,
+        isCreator: w.isCreator,
+      })),
     };
   }
 }

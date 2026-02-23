@@ -20,6 +20,7 @@ import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
 import { CreateVendorByAdminCommand } from '../../application/commands/vendor/create-vendor-by-admin.command';
 import { UnblacklistVendorCommand } from '../../application/commands/vendor/unblacklist-vendor.command';
+import { BlacklistVendorCommand } from '../../application/commands/vendor/blacklist-vendor.command';
 import { RejectVendorCommand } from '../../application/commands/vendor/reject-vendor.command';
 import { RequestRecheckCommand } from '../../application/commands/vendor/request-recheck.command';
 import { CreateVendorByAdminDto } from '../../application/dto/vendor/create-vendor-by-admin.dto';
@@ -99,6 +100,12 @@ export class VendorManagementController {
   @HttpCode(HttpStatus.OK)
   async unblacklistVendor(@Param('id') id: string): Promise<VendorResponseDto> {
     return this.commandBus.execute(new UnblacklistVendorCommand(id));
+  }
+
+  @Patch(VENDOR_ROUTES.BLACKLIST)
+  @HttpCode(HttpStatus.OK)
+  async blacklistVendor(@Param('id') id: string): Promise<VendorResponseDto> {
+    return this.commandBus.execute(new BlacklistVendorCommand(id));
   }
 
   @Patch(VENDOR_ROUTES.REJECT)

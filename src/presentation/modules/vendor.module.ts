@@ -23,6 +23,7 @@ import { UpdateVendorHandler } from '../../application/handlers/commands/vendor/
 import { UnblacklistVendorHandler } from '../../application/handlers/commands/vendor/unblacklist-vendor.handler';
 import { RejectVendorHandler } from '../../application/handlers/commands/vendor/reject-vendor.handler';
 import { RequestRecheckHandler } from '../../application/handlers/commands/vendor/request-recheck.handler';
+import { BlacklistVendorHandler } from '../../application/handlers/commands/vendor/blacklist-vendor.handler';
 
 const QueryHandlers = [GetVendorsHandler, GetVendorByIdHandler];
 const CommandHandlers = [
@@ -31,6 +32,7 @@ const CommandHandlers = [
   UnblacklistVendorHandler,
   RejectVendorHandler,
   RequestRecheckHandler,
+  BlacklistVendorHandler,
 ];
 
 @Module({
