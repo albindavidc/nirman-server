@@ -1,14 +1,9 @@
-import { AggregateRoot } from '@nestjs/cqrs';
 import { Role } from '../enums/role.enum';
 import { UserStatus } from '../enums/user-status.enum';
 import { Vendor } from './vendor.entity';
+import { BaseEntity } from './base.entity';
 
-export class User extends AggregateRoot {
-  constructor(partial: Partial<User>) {
-    super();
-    Object.assign(this, partial);
-  }
-
+export class User extends BaseEntity {
   id: string;
   firstName: string;
   lastName: string;
@@ -39,7 +34,23 @@ export class User extends AggregateRoot {
     updatedAt: Date;
   };
   vendor?: Vendor;
-  // Note: Using 'any' or specific Entity types if available to avoid circular deps.
-  // Ideally should import { Professional } and { Vendor } but circular imports are tricky in TS.
-  // Given strict architecture, maybe better to use Interfaces or just 'any' for the property if it's just for transport.
+
+  constructor(props: Partial<User>) {
+    super();
+    this.id = props.id ?? '';
+    this.createdAt = props.createdAt ?? new Date();
+    this.updatedAt = props.updatedAt ?? new Date();
+    this.firstName = props.firstName!;
+    this.lastName = props.lastName!;
+    this.email = props.email!;
+    this.phoneNumber = props.phoneNumber;
+    this.isPhoneVerified = props.isPhoneVerified ?? false;
+    this.isEmailVerified = props.isEmailVerified ?? false;
+    this.dateOfBirth = props.dateOfBirth;
+    this.profilePhotoUrl = props.profilePhotoUrl;
+    this.passwordHash = props.passwordHash!;
+    this.role = props.role!;
+    this.userStatus = props.userStatus!;
+    this.vendor = props.vendor;
+  }
 }

@@ -30,14 +30,14 @@ export class MaterialRequestDto {
   priority!: string;
   purpose?: string;
   deliveryLocation?: string;
-  requiredDate!: Date;
+  requiredDate?: Date;
   status!: string;
   approvedBy?: string;
   approvedAt?: Date;
   approvalComments?: string;
   rejectionReason?: string;
-  createdAt!: Date;
-  updatedAt!: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class MaterialItemDto {
@@ -94,5 +94,5 @@ export class CreateMaterialRequestDto {
 
   @IsDateString()
   @IsNotEmpty()
-  requiredDate!: string;
+  requiredDate!: Date;
 }

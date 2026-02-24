@@ -91,14 +91,14 @@ export class UserRepository
 
     // Clean undefined fields
 
-    Object.keys(prismaData).forEach(
-      (key) => prismaData[key] === undefined && delete prismaData[key],
+    const cleanData = Object.fromEntries(
+      Object.entries(prismaData).filter((entry) => entry[1] !== undefined),
     );
 
     await this.prisma.user.update({
       where: { id },
 
-      data: prismaData as unknown as Parameters<
+      data: cleanData as unknown as Parameters<
         PrismaService['user']['update']
       >[0]['data'],
     });
