@@ -1,10 +1,10 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { GetMyAttendanceStatsQuery } from '../../../queries/attendance/get-my-attendance-stats.query';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
   ATTENDANCE_REPOSITORY,
   IAttendanceRepository,
 } from '../../../../domain/repositories/attendance-repository.interface';
+import { GetMyAttendanceStatsQuery } from '../../../queries/attendance/get-my-today-attendance.query';
 
 export interface AttendanceStats {
   hoursThisWeek: number;

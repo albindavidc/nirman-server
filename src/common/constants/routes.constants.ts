@@ -120,8 +120,12 @@ export const ATTENDANCE_ROUTES = {
   ROOT: `${API_PREFIX}/${API_VERSION}/projects/:projectId/attendance`,
   CHECK_IN: 'check-in',
   CHECK_OUT: 'check-out',
-  GET_MY_HISTORY: 'me/history',
+  VERIFY: ':id/verify',
+  GET_MY_ATTENDANCE: 'me',
+  GET_MY_SUMMARY: 'me/summary',
   GET_MY_STATS: 'me/stats',
+  GET_MY_HISTORY: 'me/history',
+
   GET_PROJECT_ATTENDANCE: '',
   GET_PROJECT_STATS: 'stats',
 };

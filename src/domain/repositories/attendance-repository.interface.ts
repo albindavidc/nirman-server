@@ -2,53 +2,80 @@
  * Attendance Repository Interface
  */
 
-export interface AttendanceRecord {
-  id: string;
-  userId: string;
-  projectId: string;
-  date: Date;
-  checkIn: Date | null;
-  checkOut: Date | null;
-  status: string;
-  location: string | null;
-  workHours: number | null;
-  method: string;
-  supervisorNotes: string | null;
-  isVerified: boolean;
-  verifiedBy: string | null;
-  verifiedAt: Date | null;
+import { AttendanceEntity } from '../entities/attendance.entity';
+
+export interface AttendanceFilter {
+  projectId?: string;
+  startDate?: Date;
+  endDate?: Date;
+  status?: string;
+  page?: number;
+  limit?: number;
 }
 
-export interface IAttendanceRepository {
-  findByProjectAndDateRange(
-    projectId: string,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<AttendanceRecord[]>;
-
-  findById(id: string): Promise<AttendanceRecord | null>;
-
-  findByUserProjectDate(
-    userId: string,
-    projectId: string,
-    date: Date,
-  ): Promise<AttendanceRecord | null>;
-
-  findByUserAndDateRange(
-    userId: string,
-    projectId: string,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<AttendanceRecord[]>;
-
-  create(data: Partial<AttendanceRecord>): Promise<AttendanceRecord>;
-  update(
-    id: string,
-    data: Partial<AttendanceRecord>,
-  ): Promise<AttendanceRecord>;
+export interface PaginatedAttendance {
+  data: AttendanceEntity[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
-/**
- * Injection token for the Attendance repository
- */
-export const ATTENDANCE_REPOSITORY = Symbol('ATTENDANCE_REPOSITORY');
+export interface AttendanceSummary {
+  weeklyHours: number;
+  monthlyHours: number;
+  attendanceRate: number;
+  lateArrivals: number;
+}
+
+export abstract class IAttendanceRepository {
+  abstract findById(id: string): Promise<AttendanceEntity | null>;
+
+  abstract findTodayByUser(
+    userId: string,
+    projectId: string,
+  ): Promise<AttendanceEntity | null>;
+
+  abstract findByUserPaginated(
+    userId: string,
+    filters: AttendanceFilter,
+  ): Promise<PaginatedAttendance>;
+
+  abstract getSummaryByUser(
+    userId: string,
+    projectId: string,
+  ): Promise<AttendanceSummary>;
+
+  abstract save(attendance: AttendanceEntity): Promise<AttendanceEntity>;
+  abstract update(attendance: AttendanceEntity): Promise<AttendanceEntity>;
+
+  abstract existsTodayForUser(
+    userId: string,
+    projectId: string,
+  ): Promise<boolean>;
+
+  //   findByProject_Date_Range(
+  //     projectId: string,
+  //     startDate: Date,
+  //     endDate: Date,
+  //   ): Promise<AttendanceEntity[]>;
+
+  //   findByUserProjectDate(
+  //     userId: string,
+  //     projectId: string,
+  //     date: Date,
+  //   ): Promise<AttendanceEntity | null>;
+
+  //   findByUserProjectDateRange(
+  //     userId: string,
+  //     projectId: string,
+  //     startDate: Date,
+  //     endDate: Date,
+  //   ): Promise<AttendanceEntity[]>;
+
+  //   create(data: Partial<AttendanceEntity>): Promise<AttendanceEntity>;
+  //   update(
+  //     id: string,
+  //     data: Partial<AttendanceEntity>,
+  //   ): Promise<AttendanceEntity>;
+}

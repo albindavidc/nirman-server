@@ -1,28 +1,31 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { VerifyAttendanceCommand } from '../../../commands/attendance/attendance.commands';
-import {
-  ATTENDANCE_REPOSITORY,
-  IAttendanceRepository,
-  AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 
 @CommandHandler(VerifyAttendanceCommand)
 export class VerifyAttendanceHandler implements ICommandHandler<VerifyAttendanceCommand> {
   constructor(
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(command: VerifyAttendanceCommand): Promise<AttendanceRecord> {
-    const { attendanceId, supervisorId, isVerified, supervisorNotes } = command;
+  async execute(
+    command: VerifyAttendanceCommand,
+  ): Promise<AttendanceResponseDto> {
+    const { attendanceId, supervisorId, supervisorNotes } = command;
 
-    return this.attendanceRepository.update(attendanceId, {
-      isVerified,
-      verifiedBy: supervisorId,
-      verifiedAt: new Date(),
-      supervisorNotes,
-      status: isVerified ? 'Verified' : 'Rejected', // Update status based on verification
-    });
+    const attendance = await this.attendanceRepository.findById(attendanceId);
+
+    if (!attendance) {
+      throw new Error('Attendance record not found');
+    }
+
+    attendance.verify(supervisorId, supervisorNotes);
+    const updated = await this.attendanceRepository.update(attendance);
+
+    return AttendanceMapper.toResponseDto(updated);
   }
 }

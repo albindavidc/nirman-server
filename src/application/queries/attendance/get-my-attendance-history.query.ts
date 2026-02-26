@@ -1,10 +1,15 @@
 import { IQuery } from '@nestjs/cqrs';
 
+export interface GetHistoryQueryParams {
+  userId: string;
+  projectId?: string;
+  startDate?: Date;
+  endDate?: Date;
+  status?: string;
+  page?: number;
+  limit?: number;
+}
+
 export class GetMyAttendanceHistoryQuery implements IQuery {
-  constructor(
-    public readonly userId: string,
-    public readonly projectId: string,
-    public readonly limit: number = 10,
-    public readonly offset: number = 0,
-  ) {}
+  constructor(public readonly params: GetHistoryQueryParams) {}
 }

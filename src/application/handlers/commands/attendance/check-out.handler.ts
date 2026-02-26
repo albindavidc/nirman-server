@@ -1,45 +1,38 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { CheckOutCommand } from '../../../commands/attendance/check-out.command';
-import {
-  ATTENDANCE_REPOSITORY,
-  IAttendanceRepository,
-  AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 
 @CommandHandler(CheckOutCommand)
 export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
   constructor(
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(command: CheckOutCommand): Promise<AttendanceRecord> {
-    const { dto } = command;
+  async execute(command: CheckOutCommand): Promise<AttendanceResponseDto> {
+    const { userId, attendanceId, location, supervisorNotes } = command;
 
-    const record = await this.attendanceRepository.findById(dto.attendanceId);
-    if (!record) {
+    const entity = await this.attendanceRepository.findById(attendanceId);
+
+    if (!entity) {
       throw new Error('Attendance record not found');
     }
 
-    if (record.checkOut) {
+    if (entity.userId !== userId) {
+      throw new Error('User ID does not match attendance record');
+    }
+
+    if (entity.checkOut) {
       throw new Error('User already checked out');
     }
 
-    const checkOutTime = new Date();
-    // Calculate work hours
-    let workHours = 0;
-    if (record.checkIn) {
-      const diffMs = checkOutTime.getTime() - record.checkIn.getTime();
-      workHours = Number((diffMs / (1000 * 60 * 60)).toFixed(2));
-    }
+    entity.recordCheckOut(location, supervisorNotes);
 
-    return this.attendanceRepository.update(dto.attendanceId, {
-      checkOut: checkOutTime,
-      workHours: workHours,
-      location: dto.location || record.location || undefined, // Keep existing location if not provided
-      supervisorNotes: dto.notes,
-      status: 'Present',
-    });
+    const update = await this.attendanceRepository.update(entity);
+
+    return AttendanceMapper.toResponseDto(update);
   }
 }

@@ -1,4 +1,10 @@
 export class WorkHours {
+  static fromNumber(workHours: number): WorkHours | null {
+    if (workHours < 0) {
+      return null;
+    }
+    return new WorkHours(workHours);
+  }
   private constructor(public readonly value: number) {
     if (value < 0) {
       throw new Error('Work hours cannot be negative');

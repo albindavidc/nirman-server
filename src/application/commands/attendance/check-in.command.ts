@@ -1,6 +1,11 @@
 import { ICommand } from '@nestjs/cqrs';
-import { CheckInDto } from '../../dto/attendance/check-in.dto';
 
 export class CheckInCommand implements ICommand {
-  constructor(public readonly dto: CheckInDto) {}
+  constructor(
+    public readonly userId: string,
+    public readonly projectId: string,
+    public readonly location?: string,
+    public readonly method?: string,
+    public readonly supervisorNotes?: string,
+  ) {}
 }

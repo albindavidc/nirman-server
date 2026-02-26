@@ -99,24 +99,24 @@ model PhaseApproval {
 
 model Attendance {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  project_id  String    @db.ObjectId
-  user_id     String    @db.ObjectId
+  projectId  String    @db.ObjectId @map("project_id")
+  userId     String    @db.ObjectId @map("user_id")
   date        DateTime
-  check_in    DateTime?
-  check_out   DateTime?
+  checkIn    DateTime? @map("check_in")
+  checkOut   DateTime? @map("check_out")
   status      String
   location    String?
-  work_hours  Float?
+  workHours  Float? @map("work_hours")
 
-  method           String    @default("Manual") // 'QR Code', 'Manual', 'Geofence'
-  supervisor_notes String?
-  is_verified      Boolean   @default(false)
-  verified_by      String?   @db.ObjectId
-  verified_at      DateTime?
+  method           String    @default("Manual") // 'QR Code', 'Manual'
+  supervisorNotes String? @map("supervisor_notes")
+  isVerified      Boolean   @default(false) @map("is_verified")
+  verifiedBy      String?   @db.ObjectId @map("verified_by")
+  verifiedAt      DateTime? @map("verified_at")
 
-  project Project @relation(fields: [project_id], references: [id])
-  user    User    @relation(fields: [user_id], references: [id])
-  verifier User?   @relation("AttendanceVerifier", fields: [verified_by], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  verifier User?   @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
 
   @@map("attendance")
 }

@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CheckOutDto {
+export class CheckOutRequestDto {
   @IsString()
   @IsNotEmpty()
   attendanceId!: string;
@@ -11,5 +11,5 @@ export class CheckOutDto {
 
   @IsString()
   @IsOptional()
-  notes?: string;
+  supervisorNotes?: string;
 }

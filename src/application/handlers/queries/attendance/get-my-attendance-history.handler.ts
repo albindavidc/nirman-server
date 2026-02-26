@@ -1,38 +1,39 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { GetMyAttendanceHistoryQuery } from '../../../queries/attendance/get-my-attendance-history.query';
-import {
-  ATTENDANCE_REPOSITORY,
-  IAttendanceRepository,
-  AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
+import { PaginatedAttendanceDto } from '../../../dto/attendance/attendance-response.dto';
 
 @QueryHandler(GetMyAttendanceHistoryQuery)
 export class GetMyAttendanceHistoryHandler implements IQueryHandler<GetMyAttendanceHistoryQuery> {
   constructor(
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
   async execute(
     query: GetMyAttendanceHistoryQuery,
-  ): Promise<AttendanceRecord[]> {
-    // For now, we fetch a range. In a real app we might want specific pagination in repo.
-    // Using a large range for "limit" simulation or just fetching last 30 days.
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30); // Last 30 days
+  ): Promise<PaginatedAttendanceDto> {
+    const { userId, ...filters } = query.params;
 
-    const records = await this.attendanceRepository.findByUserAndDateRange(
-      query.userId,
-      query.projectId,
-      startDate,
-      endDate,
-    );
+    const result = await this.attendanceRepository.findByUserPaginated(userId, {
+      projectId: filters.projectId,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      status: filters.status,
+      page: filters.page ?? 1,
+      limit: filters.limit ?? 10,
+    });
 
-    // Sort desc
-    records.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-    return records.slice(query.offset, query.offset + query.limit);
+    return {
+      data: result.data.map((entity) => AttendanceMapper.toResponseDto(entity)),
+      meta: {
+        totalItems: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages,
+      },
+    };
   }
 }

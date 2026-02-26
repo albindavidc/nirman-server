@@ -1,10 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetProjectAttendanceQuery } from '../../../queries/attendance/get-project-attendance.query';
 import { Inject } from '@nestjs/common';
-import {
-  IAttendanceRepository,
-  AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
 
 @QueryHandler(GetProjectAttendanceQuery)
 export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAttendanceQuery> {
@@ -13,7 +11,9 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(query: GetProjectAttendanceQuery): Promise<AttendanceRecord[]> {
+  async execute(
+    query: GetProjectAttendanceQuery,
+  ): Promise<AttendanceResponseDto[]> {
     const { projectId, date } = query;
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);

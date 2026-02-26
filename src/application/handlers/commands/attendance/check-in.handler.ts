@@ -1,46 +1,43 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { CheckInCommand } from '../../../commands/attendance/check-in.command';
-import {
-  ATTENDANCE_REPOSITORY,
-  IAttendanceRepository,
-  AttendanceRecord,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMethod } from '../../../../domain/value-objects/attendance-method.vo';
+import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
+import { AttendanceEntity } from '../../../../domain/entities/attendance.entity';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {
   constructor(
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(command: CheckInCommand): Promise<AttendanceRecord> {
-    const { dto } = command;
-    const today = new Date();
+  async execute(command: CheckInCommand): Promise<AttendanceResponseDto> {
+    const { userId, projectId, location, method, supervisorNotes } = command;
 
-    // Check if already checked in
-    const existingRecord =
-      await this.attendanceRepository.findByUserProjectDate(
-        dto.userId,
-        dto.projectId,
-        today,
-      );
+    const alreadyCheckIn = await this.attendanceRepository.existsTodayForUser(
+      userId,
+      projectId,
+    );
 
-    if (existingRecord) {
+    if (alreadyCheckIn) {
       throw new Error('User already checked in for today');
     }
 
-    // Create new attendance record
-    return this.attendanceRepository.create({
-      userId: dto.userId,
-      projectId: dto.projectId,
-      date: today,
-      checkIn: new Date(),
-      status: 'Present',
-      location: dto.location,
-      method: 'Manual', // Or derive from context
-      workHours: 0,
-      isVerified: false,
+    const attendance = AttendanceEntity.recordCheckIn({
+      userId,
+      projectId,
+      location,
+      method: method
+        ? AttendanceMethod.fromString(method)
+        : AttendanceMethod.MANUAL,
+      supervisorNotes,
     });
+
+    const saved = await this.attendanceRepository.save(attendance);
+
+    return AttendanceMapper.toResponseDto(saved);
   }
 }
