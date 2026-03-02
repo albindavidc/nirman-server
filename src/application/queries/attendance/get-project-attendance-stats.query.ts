@@ -1,6 +1,6 @@
 import { IQuery } from '@nestjs/cqrs';
 
-export class GetProjectAttendanceQuery implements IQuery {
+export class GetProjectAttendanceStatsQuery implements IQuery {
   constructor(
     public readonly projectId: string,
     public readonly date: Date,

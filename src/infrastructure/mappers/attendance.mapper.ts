@@ -1,8 +1,11 @@
 import { AttendanceResponseDto } from '../../application/dto/attendance/attendance-response.dto';
+import { AttendanceResponseDto as ProjectAttendanceResponseDto } from '../../application/dto/project/attendance-response.dto';
+import { ProjectWorkerWithUser } from '../../domain/repositories/project-worker-repository.interface';
 import { AttendanceEntity } from '../../domain/entities/attendance.entity';
 import { AttendanceMethod } from '../../domain/value-objects/attendance-method.vo';
 import { AttendanceStatus } from '../../domain/value-objects/attendance.vo';
 import { WorkHours } from '../../domain/value-objects/work-hours.vo';
+
 export interface AttendancePersistenceModel {
   id: string | null;
   userId: string;
@@ -88,6 +91,46 @@ export class AttendanceMapper {
     dto.verifiedBy = entity.verifiedBy ?? null;
     dto.verifiedAt = entity.verifiedAt ?? null;
     return dto;
+  }
+
+  static toProjectAttendanceDto(
+    worker: ProjectWorkerWithUser,
+    record: AttendanceEntity | undefined,
+    searchDate: Date,
+  ): ProjectAttendanceResponseDto {
+    return {
+      id: record?.id ?? `pending-${worker.userId}`,
+      workerId: worker.userId,
+      workerName: worker.user
+        ? `${worker.user.firstName} ${worker.user.lastName}`
+        : 'Unknown',
+      workerRole: worker.role,
+      date: searchDate.toISOString(),
+      checkIn: record?.checkIn?.toISOString(),
+      checkOut: record?.checkOut?.toISOString(),
+      status: record?.status.value ?? 'absent',
+      location: record?.location ?? undefined,
+      workHours: record?.workHours ? record.workHours.value : undefined,
+      method: record?.method?.value ?? 'MANUAL',
+      supervisorNotes: record?.supervisorNotes,
+      isVerified: record?.isVerified ?? false,
+      verifiedBy: record?.verifiedBy,
+      verifiedAt: record?.verifiedAt?.toISOString(),
+    };
+  }
+
+  static toProjectAttendanceDtoList(
+    workers: ProjectWorkerWithUser[],
+    attendanceMap: Map<string, AttendanceEntity>,
+    searchDate: Date,
+  ): ProjectAttendanceResponseDto[] {
+    return workers.map((worker) =>
+      this.toProjectAttendanceDto(
+        worker,
+        attendanceMap.get(worker.userId),
+        searchDate,
+      ),
+    );
   }
 
   // static fromPrismaResult(result: AttendancePersistence): AttendanceEntity {

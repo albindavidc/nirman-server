@@ -13,13 +13,22 @@ import {
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ATTENDANCE_ROUTES } from '../../common/constants/routes.constants';
 import { CheckInRequestDto } from '../../application/dto/attendance/check-in-request.dto';
+import { CheckOutRequestDto } from '../../application/dto/attendance/check-out-request.dto';
 import { CheckInCommand } from '../../application/commands/attendance/check-in.command';
-import { AttendanceResponseDto } from '../../application/dto/attendance/attendance-response.dto';
+import { CheckOutCommand } from '../../application/commands/attendance/check-out.command';
+import {
+  AttendanceResponseDto,
+  ProjectAttendanceStatsDto,
+} from '../../application/dto/attendance/attendance-response.dto';
 import { VerifyAttendanceRequestDto } from '../../application/dto/attendance/attendance-verify-request.dto';
 import { VerifyAttendanceCommand } from '../../application/commands/attendance/attendance.commands';
 import { GetMyTodayAttendanceQuery } from '../../application/queries/attendance/get-my-today-attendance.query';
-import { GetAttendanceHistoryRequestDto } from '../../application/dto/attendance/attendance-history-request.dto';
 import { GetMyAttendanceHistoryQuery } from '../../application/queries/attendance/get-my-attendance-history.query';
+import { GetMyAttendanceSummaryQuery } from '../../application/queries/attendance/get-my-attendance-summary.query';
+import { GetAttendanceHistoryRequestDto } from '../../application/dto/attendance/attendance-history-request.dto';
+import { GetProjectAttendanceQuery } from '../../application/queries/attendance/get-project-attendance.query';
+import { GetProjectAttendanceStatsQuery } from '../../application/queries/attendance/get-project-attendance-stats.query';
+
 interface AuthenticatedRequest extends Request {
   user: {
     userId: string;
@@ -54,14 +63,13 @@ export class AttendanceController {
   @HttpCode(HttpStatus.OK)
   async checkOut(
     @Request() req: AuthenticatedRequest,
-    @Body() dto: CheckInRequestDto,
+    @Body() dto: CheckOutRequestDto,
   ): Promise<AttendanceResponseDto> {
-    return this.commandBus.execute<CheckInCommand, AttendanceResponseDto>(
-      new CheckInCommand(
+    return this.commandBus.execute<CheckOutCommand, AttendanceResponseDto>(
+      new CheckOutCommand(
         req.user.userId,
-        dto.projectId,
+        dto.attendanceId,
         dto.location,
-        dto.method,
         dto.supervisorNotes,
       ),
     );
@@ -97,9 +105,9 @@ export class AttendanceController {
     @Query('projectId') projectId: string,
   ) {
     return this.queryBus.execute<
-      GetMyTodayAttendanceQuery,
+      GetMyAttendanceSummaryQuery,
       AttendanceResponseDto
-    >(new GetMyTodayAttendanceQuery(req.user.userId, projectId));
+    >(new GetMyAttendanceSummaryQuery(req.user.userId, projectId));
   }
 
   @Get(ATTENDANCE_ROUTES.GET_MY_HISTORY)
@@ -123,63 +131,26 @@ export class AttendanceController {
     );
   }
 
-  // @Post(ATTENDANCE_ROUTES.CHECK_IN)
-  // async checkIn(
-  //   @Param('projectId') projectId: string,
-  //   @Body() dto: CheckInDto,
-  // ): Promise<AttendanceRecordDto> {
-  //   // Override/Enforce userId from token if available, for now trusting DTO or should ideally set it here
-  //   // dto.userId = req.user.id;
-  //   // And projectId
-  //   dto.projectId = projectId;
+  @Get(ATTENDANCE_ROUTES.GET_PROJECT_ATTENDANCE)
+  async getProjectAttendance(
+    @Param('projectId') projectId: string,
+    @Query('date') date: string,
+  ): Promise<AttendanceResponseDto[]> {
+    return this.queryBus.execute(
+      new GetProjectAttendanceQuery(
+        projectId,
+        date ? new Date(date) : new Date(),
+      ),
+    );
+  }
 
-  //   return this.commandBus.execute(new CheckInCommand(dto));
-  // }
-
-  // @Post(ATTENDANCE_ROUTES.CHECK_OUT)
-  // async checkOut(@Body() dto: CheckOutDto): Promise<AttendanceRecordDto> {
-  //   return this.commandBus.execute(new CheckOutCommand(dto));
-  // }
-
-  // @Get(ATTENDANCE_ROUTES.GET_MY_HISTORY)
-  // async getMyHistory(
-  //   @Param('projectId') projectId: string,
-  //   @Query('userId') userId: string, // Should be from token
-  //   @Query('limit') limit: number,
-  //   @Query('offset') offset: number,
-  // ): Promise<AttendanceRecordDto[]> {
-  //   return this.queryBus.execute(
-  //     new GetMyAttendanceHistoryQuery(userId, projectId, limit, offset),
-  //   );
-  // }
-
-  // @Get(ATTENDANCE_ROUTES.GET_MY_STATS)
-  // async getMyStats(
-  //   @Param('projectId') projectId: string,
-  //   @Query('userId') userId: string, // Should be from token
-  // ): Promise<AttendanceStatsDto> {
-  //   return this.queryBus.execute(
-  //     new GetMyAttendanceStatsQuery(userId, projectId),
-  //   );
-  // }
-
-  // @Get(ATTENDANCE_ROUTES.GET_PROJECT_ATTENDANCE)
-  // async getProjectAttendance(
-  //   @Param('projectId') projectId: string,
-  //   @Query('date') date: string,
-  // ): Promise<AttendanceRecordDto[]> {
-  //   return this.queryBus.execute(
-  //     new GetProjectAttendanceQuery(projectId, new Date(date)),
-  //   );
-  // }
-
-  // @Get(ATTENDANCE_ROUTES.GET_PROJECT_STATS)
-  // async getProjectStats(
-  //   @Param('projectId') projectId: string,
-  //   @Query('date') date: string,
-  // ): Promise<ProjectAttendanceStatsDto> {
-  //   return this.queryBus.execute(
-  //     new GetProjectAttendanceStatsQuery(projectId, new Date(date)),
-  //   );
-  // }
+  @Get(ATTENDANCE_ROUTES.GET_PROJECT_STATS)
+  async getProjectStats(
+    @Param('projectId') projectId: string,
+    @Query('date') date: string,
+  ): Promise<ProjectAttendanceStatsDto> {
+    return this.queryBus.execute(
+      new GetProjectAttendanceStatsQuery(projectId, new Date(date)),
+    );
+  }
 }

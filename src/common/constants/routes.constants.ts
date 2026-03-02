@@ -117,7 +117,7 @@ export const TASK_ROUTES = {
 };
 
 export const ATTENDANCE_ROUTES = {
-  ROOT: `${API_PREFIX}/${API_VERSION}/projects/:projectId/attendance`,
+  ROOT: `${API_PREFIX}/${API_VERSION}/attendance`,
   CHECK_IN: 'check-in',
   CHECK_OUT: 'check-out',
   VERIFY: ':id/verify',
@@ -126,6 +126,6 @@ export const ATTENDANCE_ROUTES = {
   GET_MY_STATS: 'me/stats',
   GET_MY_HISTORY: 'me/history',
 
-  GET_PROJECT_ATTENDANCE: '',
-  GET_PROJECT_STATS: 'stats',
+  GET_PROJECT_ATTENDANCE: 'project/:projectId',
+  GET_PROJECT_STATS: 'project/:projectId/stats',
 };

@@ -5,10 +5,7 @@ import {
   IProjectWorkerRepository,
   PROJECT_WORKER_REPOSITORY,
 } from '../../../../domain/repositories/project-worker-repository.interface';
-import {
-  IAttendanceRepository,
-  ATTENDANCE_REPOSITORY,
-} from '../../../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
 import {
   IProjectRepository,
   PROJECT_REPOSITORY,
@@ -22,7 +19,7 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
     private readonly projectRepository: IProjectRepository,
     @Inject(PROJECT_WORKER_REPOSITORY)
     private readonly projectWorkerRepository: IProjectWorkerRepository,
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
@@ -83,11 +80,11 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
               minute: '2-digit',
             })
           : '-',
-        hours: record?.workHours ? `${record.workHours}h` : '-',
+        hours: record?.workHours ? `${record.workHours.value}h` : '-',
         status: record?.status
-          ? record.status
+          ? record.status.value
               .replace('_', ' ')
-              .replace(/\b\w/g, (l) => l.toUpperCase())
+              .replace(/\b\w/g, (l: string) => l.toUpperCase())
           : 'Absent',
       };
     });
@@ -137,7 +134,6 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
 
     // Table Header
     doc.rect(30, tableTop, 535, rowHeight).fill('#333333');
-
     doc.fillColor('#E9C16C').fontSize(9).font('Helvetica-Bold');
 
     doc.text('SL', colX.sl, tableTop + 10);

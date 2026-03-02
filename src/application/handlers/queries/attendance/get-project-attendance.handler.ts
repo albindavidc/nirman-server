@@ -2,12 +2,13 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetProjectAttendanceQuery } from '../../../queries/attendance/get-project-attendance.query';
 import { Inject } from '@nestjs/common';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
 
 @QueryHandler(GetProjectAttendanceQuery)
 export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAttendanceQuery> {
   constructor(
-    @Inject('IAttendanceRepository')
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
@@ -20,10 +21,11 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return this.attendanceRepository.findByProjectAndDateRange(
+    const records = await this.attendanceRepository.findByProjectAndDateRange(
       projectId,
       startOfDay,
       endOfDay,
     );
+    return records.map((record) => AttendanceMapper.toResponseDto(record));
   }
 }

@@ -54,11 +54,18 @@ export abstract class IAttendanceRepository {
     projectId: string,
   ): Promise<boolean>;
 
-  //   findByProject_Date_Range(
-  //     projectId: string,
-  //     startDate: Date,
-  //     endDate: Date,
-  //   ): Promise<AttendanceEntity[]>;
+  abstract findByProjectAndDateRange(
+    projectId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AttendanceEntity[]>;
+
+  abstract findByUserProjectAndDateRange(
+    userId: string,
+    projectId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AttendanceEntity[]>;
 
   //   findByUserProjectDate(
   //     userId: string,

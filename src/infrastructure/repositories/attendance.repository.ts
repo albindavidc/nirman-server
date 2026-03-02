@@ -20,8 +20,10 @@ export class AttendanceRepository implements IAttendanceRepository {
   private defaultIncludes() {
     return {
       project: { select: { id: true, name: true } },
-      user: { select: { id: true, name: true, email: true } },
-      verifier: { select: { id: true, name: true } },
+      user: {
+        select: { id: true, first_name: true, last_name: true, email: true },
+      },
+      verifier: { select: { id: true, first_name: true, last_name: true } },
     };
   }
 
@@ -223,111 +225,59 @@ export class AttendanceRepository implements IAttendanceRepository {
 
   async update(entity: AttendanceEntity): Promise<AttendanceEntity> {
     const data = AttendanceMapper.toPersistence(entity);
+    const { id, ...updateData } = data;
     const record = await this.prisma.attendance.update({
-      where: { id: entity.id! },
-      data,
+      where: { id: id! },
+      data: updateData,
       include: this.defaultIncludes(),
     });
     return AttendanceMapper.toDomain(record);
   }
 
-  // async findByProjectAndDateRange(
-  //   projectId: string,
-  //   startDate: Date,
-  //   endDate: Date,
-  // ): Promise<AttendanceRecord[]> {
-  //   const records = await this.prisma.attendance.findMany({
-  //     where: {
-  //       project_id: projectId,
-  //       date: {
-  //         gte: startDate,
-  //         lte: endDate,
-  //       },
-  //     },
-  //     include: {
-  //       user: true,
-  //     },
-  //   });
+  async findByProjectAndDateRange(
+    projectId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AttendanceEntity[]> {
+    const records = await this.prisma.attendance.findMany({
+      where: {
+        projectId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: this.defaultIncludes(),
+    });
 
-  //   return AttendanceMapper.fromPrismaResults(
-  //     records as unknown as AttendancePersistence[],
-  //   );
-  // }
+    return records.map((record) => AttendanceMapper.toDomain(record));
+  }
 
-  // async findById(id: string): Promise<AttendanceRecord | null> {
-  //   const record = await this.prisma.attendance.findUnique({
-  //     where: { id },
-  //     include: {
-  //       user: true,
-  //     },
-  //   });
+  async findByUserProjectAndDateRange(
+    userId: string,
+    projectId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AttendanceEntity[]> {
+    const records = await this.prisma.attendance.findMany({
+      where: {
+        userId: userId,
+        projectId: projectId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      include: {
+        user: true,
+      },
+    });
 
-  //   if (!record) {
-  //     return null;
-  //   }
-
-  //   return AttendanceMapper.fromPrismaResult(
-  //     record as unknown as AttendancePersistence,
-  //   );
-  // }
-
-  // async findByUserProjectDate(
-  //   userId: string,
-  //   projectId: string,
-  //   date: Date,
-  // ): Promise<AttendanceRecord | null> {
-  //   const startOfDay = new Date(date);
-  //   startOfDay.setHours(0, 0, 0, 0);
-  //   const endOfDay = new Date(date);
-  //   endOfDay.setHours(23, 59, 59, 999);
-
-  //   const record = await this.prisma.attendance.findFirst({
-  //     where: {
-  //       user_id: userId,
-  //       project_id: projectId,
-  //       date: {
-  //         gte: startOfDay,
-  //         lte: endOfDay,
-  //       },
-  //     },
-  //   });
-
-  //   if (!record) {
-  //     return null;
-  //   }
-
-  //   return AttendanceMapper.fromPrismaResult(
-  //     record as unknown as AttendancePersistence,
-  //   );
-  // }
-
-  // async findByUserAndDateRange(
-  //   userId: string,
-  //   projectId: string,
-  //   startDate: Date,
-  //   endDate: Date,
-  // ): Promise<AttendanceRecord[]> {
-  //   const records = await this.prisma.attendance.findMany({
-  //     where: {
-  //       user_id: userId,
-  //       project_id: projectId,
-  //       date: {
-  //         gte: startDate,
-  //         lte: endDate,
-  //       },
-  //     },
-  //     orderBy: {
-  //       date: 'desc',
-  //     },
-  //     include: {
-  //       user: true,
-  //     },
-  //   });
-
-  //   return AttendanceMapper.fromPrismaResults(
-  //     records as unknown as AttendancePersistence[],
-  //   );
-  // }
+    return records.map((record) => AttendanceMapper.toDomain(record));
+  }
 
   // async create(data: Partial<AttendanceRecord>): Promise<AttendanceRecord> {
   //   const prismaData = AttendanceMapper.toPrismaCreateInput(data);

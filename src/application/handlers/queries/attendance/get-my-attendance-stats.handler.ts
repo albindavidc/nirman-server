@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
-  ATTENDANCE_REPOSITORY,
+  AttendanceSummary,
   IAttendanceRepository,
 } from '../../../../domain/repositories/attendance-repository.interface';
-import { GetMyAttendanceStatsQuery } from '../../../queries/attendance/get-my-today-attendance.query';
+import { GetMyAttendanceStatsQuery } from '../../../queries/attendance/get-my-attendance-stats.query';
 
 export interface AttendanceStats {
   hoursThisWeek: number;
@@ -14,49 +14,45 @@ export interface AttendanceStats {
 }
 
 @QueryHandler(GetMyAttendanceStatsQuery)
-export class GetMyAttendanceStatsHandler implements IQueryHandler<GetMyAttendanceStatsQuery> {
+export class GetMyAttendanceStatsHandler implements IQueryHandler<
+  GetMyAttendanceStatsQuery,
+  AttendanceSummary
+> {
   constructor(
-    @Inject(ATTENDANCE_REPOSITORY)
+    @Inject(IAttendanceRepository)
     private readonly attendanceRepository: IAttendanceRepository,
   ) {}
 
-  async execute(query: GetMyAttendanceStatsQuery): Promise<AttendanceStats> {
+  async execute(query: GetMyAttendanceStatsQuery): Promise<AttendanceSummary> {
     const today = new Date();
 
-    // Start of Month
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    // Start of Week (assuming Sunday start, or Monday depending on locale, let's use Monday)
     const startOfWeek = new Date(today);
     const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
     startOfWeek.setDate(diff);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    // Fetch records for the month (covers week too usually, unless week crosses month boundary)
-    // Safer to fetch from whichever is earlier.
     const statsStartDate =
       startOfMonth < startOfWeek ? startOfMonth : startOfWeek;
 
-    const records = await this.attendanceRepository.findByUserAndDateRange(
-      query.userId,
-      query.projectId,
-      statsStartDate,
-      today,
-    );
+    const records =
+      await this.attendanceRepository.findByUserProjectAndDateRange(
+        query.userId,
+        query.projectId || '',
+        statsStartDate,
+        today,
+      );
 
     let hoursThisWeek = 0;
     let hoursThisMonth = 0;
     let lateArrivals = 0;
     let presentDays = 0;
 
-    // For attendance rate, we need to know "expected" working days.
-    // This is hard without a schedule. We can approximate or just use present / (days elapsed in month - weekends).
-    // Let's assume standard Mo-Fri work week for calculation.
-
     records.forEach((record) => {
       const recordDate = new Date(record.date);
-      const hours = record.workHours || 0;
+      const hours = record.workHours?.value || 0;
 
       if (recordDate >= startOfWeek) {
         hoursThisWeek += hours;
@@ -66,8 +62,6 @@ export class GetMyAttendanceStatsHandler implements IQueryHandler<GetMyAttendanc
         presentDays++;
       }
 
-      // Late arrival logic? Maybe check_in > 9:00 AM?
-      // Hardcoded 9 AM for now as per "08:45 AM" example suggests 9 is starts.
       if (record.checkIn) {
         const checkInTime = new Date(record.checkIn);
         if (
@@ -79,9 +73,7 @@ export class GetMyAttendanceStatsHandler implements IQueryHandler<GetMyAttendanc
       }
     });
 
-    // Calculate Attendance Rate (Simplified: Present / Working Days so far in month)
     const daysInMonthSoFar = today.getDate();
-    // Rough estimate of working days: 5/7 of days.
     const workingDays = Math.max(1, Math.floor((daysInMonthSoFar * 5) / 7));
     const attendanceRate = Math.min(
       100,
@@ -89,8 +81,8 @@ export class GetMyAttendanceStatsHandler implements IQueryHandler<GetMyAttendanc
     );
 
     return {
-      hoursThisWeek: Number(hoursThisWeek.toFixed(1)),
-      hoursThisMonth: Number(hoursThisMonth.toFixed(1)),
+      weeklyHours: Number(hoursThisWeek.toFixed(1)),
+      monthlyHours: Number(hoursThisMonth.toFixed(1)),
       attendanceRate,
       lateArrivals,
     };

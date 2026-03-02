@@ -81,9 +81,9 @@ export class PaginatedAttendanceDto {
 //   lateArrivals!: number;
 // }
 
-// export class ProjectAttendanceStatsDto {
-//   attendanceRate!: number;
-//   presentToday!: number;
-//   lateArrivals!: number;
-//   absent!: number;
-// }
+export class ProjectAttendanceStatsDto {
+  attendanceRate!: number;
+  presentToday!: number;
+  lateArrivals!: number;
+  absent!: number;
+}

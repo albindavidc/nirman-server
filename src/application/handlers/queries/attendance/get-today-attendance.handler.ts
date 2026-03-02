@@ -2,13 +2,13 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
 import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
-import { GetTodayAttendanceQuery } from '../../../queries/attendance/get-my-today-attendance.query';
+import { GetMyTodayAttendanceQuery } from '../../../queries/attendance/get-my-today-attendance.query';
 
-@QueryHandler(GetTodayAttendanceQuery)
-export class GetTodayAttendanceHandler implements IQueryHandler<GetTodayAttendanceQuery> {
+@QueryHandler(GetMyTodayAttendanceQuery)
+export class GetTodayAttendanceHandler implements IQueryHandler<GetMyTodayAttendanceQuery> {
   constructor(private readonly attendanceRepository: IAttendanceRepository) {}
   async execute(
-    query: GetTodayAttendanceQuery,
+    query: GetMyTodayAttendanceQuery,
   ): Promise<AttendanceResponseDto | null> {
     const record = await this.attendanceRepository.findTodayByUser(
       query.userId,

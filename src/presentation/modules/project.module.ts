@@ -15,7 +15,7 @@ import { PROJECT_REPOSITORY } from '../../domain/repositories/project-repository
 import { PROJECT_PHASE_REPOSITORY } from '../../domain/repositories/project-phase-repository.interface';
 import { PROJECT_WORKER_REPOSITORY } from '../../domain/repositories/project-worker-repository.interface';
 import { PHASE_APPROVAL_REPOSITORY } from '../../domain/repositories/phase-approval-repository.interface';
-import { ATTENDANCE_REPOSITORY } from '../../domain/repositories/attendance-repository.interface';
+import { IAttendanceRepository } from '../../domain/repositories/attendance-repository.interface';
 import { PROFESSIONAL_REPOSITORY } from '../../domain/repositories/professional-repository.interface';
 
 // Controllers
@@ -86,7 +86,7 @@ const CommandHandlers = [
     { provide: PROJECT_PHASE_REPOSITORY, useClass: ProjectPhaseRepository },
     { provide: PROJECT_WORKER_REPOSITORY, useClass: ProjectWorkerRepository },
     { provide: PHASE_APPROVAL_REPOSITORY, useClass: PhaseApprovalRepository },
-    { provide: ATTENDANCE_REPOSITORY, useClass: AttendanceRepository },
+    { provide: IAttendanceRepository, useClass: AttendanceRepository },
     { provide: PROFESSIONAL_REPOSITORY, useClass: ProfessionalRepository },
     // Handlers
     ...QueryHandlers,
