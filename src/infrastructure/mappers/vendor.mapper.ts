@@ -27,7 +27,7 @@ export class VendorMapper {
       websiteUrl: dto.websiteUrl,
       contactEmail: dto.contactEmail,
       contactPhone: dto.contactPhone,
-      vendorStatus: dto.vendorStatus,
+      vendorStatus: dto.vendorStatus ?? DomainVendorStatus.PENDING,
     });
   }
 
@@ -189,8 +189,10 @@ export class VendorMapper {
       websiteUrl: persistence.website_url ?? '',
       contactEmail: persistence.contact_email ?? '',
       contactPhone: persistence.contact_phone ?? '',
-      vendorStatus: persistence.vendor_status as unknown as DomainVendorStatus,
+      vendorStatus: persistence.vendor_status,
       rejectionReason: persistence.rejection_reason ?? undefined,
+      createdAt: persistence.created_at,
+      updatedAt: persistence.updated_at,
       user: persistence.user
         ? {
             id: persistence.user.id,

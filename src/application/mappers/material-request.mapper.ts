@@ -19,7 +19,7 @@ export class MaterialRequestMapper {
   static toDomain(persistence: PrismaMaterialRequest): MaterialRequest {
     const items = persistence.items as unknown as PersistenceItem[];
 
-    return new MaterialRequest(
+    const request = new MaterialRequest(
       persistence.id,
       persistence.request_number,
       persistence.project_id,
@@ -45,6 +45,7 @@ export class MaterialRequestMapper {
       persistence.created_at,
       persistence.updated_at,
     );
+    return request;
   }
 
   static toDto(domain: MaterialRequest): MaterialRequestDto {

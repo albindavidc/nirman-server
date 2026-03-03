@@ -19,7 +19,7 @@ export class CreateMaterialRequestHandler implements ICommandHandler<CreateMater
     const { userId, dto } = command;
 
     const request = new MaterialRequest(
-      '',
+      '', // ID handled by DB
       `REQ-${Date.now()}`,
       dto.projectId,
       userId,

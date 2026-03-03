@@ -1,6 +1,9 @@
 import { User } from '../../domain/entities/user.entity';
 
-export type RepoUser = Pick<User, 'id' | 'email' | 'role'> & {
+export type RepoUser = {
+  id: User['id'];
+  email: User['email'];
+  role: User['role'];
   first_name: User['firstName'];
   last_name: User['lastName'];
   phone_number: User['phoneNumber'];

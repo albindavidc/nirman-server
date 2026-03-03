@@ -24,18 +24,6 @@ export class UpdateMaterialStockHandler implements ICommandHandler<UpdateMateria
     // Update stock using domain entity method
     material.updateStock(dto.quantity, dto.type);
 
-    // Status update logic
-    if (material.currentStock === 0) {
-      material.status = 'out_of_stock';
-    } else if (
-      material.reorderLevel &&
-      material.currentStock <= material.reorderLevel
-    ) {
-      material.status = 'low_stock';
-    } else {
-      material.status = 'in_stock';
-    }
-
     await this.materialRepository.update(material);
 
     // Create transaction record

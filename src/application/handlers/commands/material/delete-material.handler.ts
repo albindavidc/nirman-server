@@ -18,7 +18,7 @@ export class DeleteMaterialHandler implements ICommandHandler<DeleteMaterialComm
       throw new NotFoundException(`Material with ID ${materialId} not found`);
     }
 
-    material.status = 'archived';
+    material.markAsArchived();
 
     const updatedMaterial = await this.materialRepository.update(material);
 

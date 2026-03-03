@@ -25,23 +25,50 @@ export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand>
     }
 
     // Map modifications
-    if (data.companyName) vendor.companyName = data.companyName;
-    if (data.contactEmail) vendor.contactEmail = data.contactEmail;
-    if (data.contactPhone) vendor.contactPhone = data.contactPhone;
-    if (data.addressCity) vendor.addressCity = data.addressCity;
-    // Add other fields as needed based on data object
-    if (data.registrationNumber)
-      vendor.registrationNumber = data.registrationNumber;
-    if (data.taxNumber) vendor.taxNumber = data.taxNumber;
-    if (data.addressStreet) vendor.addressStreet = data.addressStreet;
-    if (data.addressState) vendor.addressState = data.addressState;
-    if (data.addressZipCode) vendor.addressZipCode = data.addressZipCode;
-    if (data.websiteUrl) vendor.websiteUrl = data.websiteUrl;
-    if (data.yearsInBusiness !== undefined)
-      vendor.yearsInBusiness = data.yearsInBusiness;
-    if (data.productsServices) vendor.productsService = data.productsServices;
-    if (data.vendorStatus)
-      vendor.vendorStatus = data.vendorStatus as VendorStatus;
+    if (
+      data.companyName !== undefined ||
+      data.registrationNumber !== undefined ||
+      data.taxNumber !== undefined ||
+      data.yearsInBusiness !== undefined ||
+      data.websiteUrl !== undefined
+    ) {
+      vendor.updateCompanyDetails(
+        data.companyName ?? vendor.companyName,
+        data.registrationNumber ?? vendor.registrationNumber,
+        data.taxNumber ?? vendor.taxNumber,
+        data.yearsInBusiness ?? vendor.yearsInBusiness,
+        data.websiteUrl ?? vendor.websiteUrl,
+      );
+    }
+
+    if (
+      data.addressCity !== undefined ||
+      data.addressStreet !== undefined ||
+      data.addressState !== undefined ||
+      data.addressZipCode !== undefined
+    ) {
+      vendor.updateAddress(
+        data.addressStreet ?? vendor.addressStreet,
+        data.addressCity ?? vendor.addressCity,
+        data.addressState ?? vendor.addressState,
+        data.addressZipCode ?? vendor.addressZipCode,
+      );
+    }
+
+    if (data.contactEmail !== undefined || data.contactPhone !== undefined) {
+      vendor.updateContactInfo(
+        data.contactEmail ?? vendor.contactEmail,
+        data.contactPhone ?? vendor.contactPhone,
+      );
+    }
+
+    if (data.productsServices !== undefined) {
+      vendor.setProductsOrServices(data.productsServices);
+    }
+
+    if (data.vendorStatus !== undefined) {
+      vendor.updateStatus(data.vendorStatus as VendorStatus);
+    }
 
     const updatedVendor = await this.vendorRepository.update(vendorId, vendor);
 

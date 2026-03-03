@@ -14,22 +14,29 @@ export class UpdateMaterialHandler implements ICommandHandler<UpdateMaterialComm
       throw new NotFoundException('Material not found');
     }
 
-    // Update fields
+    // Update fields using entity methods
     const { dto } = command;
-    if (dto.name !== undefined) material.name = dto.name;
-    if (dto.category !== undefined) material.category = dto.category;
-    if (dto.unit !== undefined) material.unit = dto.unit;
-    if (dto.description !== undefined) material.description = dto.description;
-    if (dto.specifications !== undefined)
-      material.specifications = dto.specifications;
-    if (dto.reorderLevel !== undefined)
-      material.reorderLevel = dto.reorderLevel;
-    if (dto.unitPrice !== undefined) material.unitPrice = dto.unitPrice;
-    if (dto.storageLocation !== undefined)
-      material.storageLocation = dto.storageLocation;
-    if (dto.preferredSupplierId !== undefined)
-      material.preferredSupplierId = dto.preferredSupplierId;
-    if (dto.status !== undefined) material.status = dto.status;
+
+    // Pass existing values if dto properties are undefined
+    material.updateDetails(
+      dto.name ?? material.name,
+      dto.category ?? material.category,
+      dto.description !== undefined ? dto.description : material.description,
+      dto.specifications !== undefined
+        ? dto.specifications
+        : material.specifications,
+      dto.unitPrice !== undefined ? dto.unitPrice : material.unitPrice,
+      dto.reorderLevel !== undefined ? dto.reorderLevel : material.reorderLevel,
+      dto.storageLocation !== undefined
+        ? dto.storageLocation
+        : material.storageLocation,
+      dto.preferredSupplierId !== undefined
+        ? dto.preferredSupplierId
+        : material.preferredSupplierId,
+    );
+
+    if (dto.unit !== undefined) material.changeUnit(dto.unit);
+    if (dto.status !== undefined) material.changeStatus(dto.status);
 
     const updatedMaterial = await this.repository.update(material);
 

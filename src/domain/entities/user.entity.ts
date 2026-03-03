@@ -1,7 +1,7 @@
 import { Role } from '../enums/role.enum';
 import { UserStatus } from '../enums/user-status.enum';
 import { Vendor } from './vendor.entity';
-import { BaseEntity } from './base.entity';
+import { AggregateRoot } from '@nestjs/cqrs';
 
 export interface UserProps {
   id?: string;
@@ -34,7 +34,11 @@ export interface UserProps {
   vendor?: Vendor;
 }
 
-export class User extends BaseEntity {
+export class User extends AggregateRoot {
+  private readonly _id: string;
+  private _createdAt: Date;
+  private _updatedAt: Date;
+
   private _firstName: string;
   private _lastName: string;
   private _email: string;
@@ -46,16 +50,14 @@ export class User extends BaseEntity {
   private _passwordHash: string;
   private _role: Role;
   private _userStatus: UserStatus;
-
-  // Relations
   private _professional?: UserProps['professional'];
   private _vendor?: Vendor;
 
   constructor(props: UserProps) {
     super();
-    this.id = props.id ?? '';
-    this.createdAt = props.createdAt ?? new Date();
-    this.updatedAt = props.updatedAt ?? new Date();
+    this._id = props.id ?? '';
+    this._createdAt = props.createdAt ?? new Date();
+    this._updatedAt = props.updatedAt ?? new Date();
     this._firstName = props.firstName;
     this._lastName = props.lastName;
     this._email = props.email;
@@ -72,6 +74,15 @@ export class User extends BaseEntity {
   }
 
   // Getters
+  get id(): string {
+    return this._id;
+  }
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
   get firstName(): string {
     return this._firstName;
   }
@@ -112,7 +123,6 @@ export class User extends BaseEntity {
     return this._vendor;
   }
 
-  // Setters / Behavior Methods
   updateProfile(data: {
     firstName?: string;
     lastName?: string;
@@ -124,36 +134,36 @@ export class User extends BaseEntity {
     if (data.lastName) this._lastName = data.lastName;
     if (data.phoneNumber) {
       this._phoneNumber = data.phoneNumber;
-      this._isPhoneVerified = false; // Reset verification on change
+      this._isPhoneVerified = false;
     }
     if (data.dateOfBirth !== undefined) this._dateOfBirth = data.dateOfBirth;
     if (data.profilePhotoUrl !== undefined)
       this._profilePhotoUrl = data.profilePhotoUrl;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 
   verifyEmail(): void {
     this._isEmailVerified = true;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 
   verifyPhone(): void {
     this._isPhoneVerified = true;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 
   updateStatus(status: UserStatus): void {
     this._userStatus = status;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 
   updatePassword(newHash: string): void {
     this._passwordHash = newHash;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 
   changeRole(newRole: Role): void {
     this._role = newRole;
-    this.updatedAt = new Date();
+    this._updatedAt = new Date();
   }
 }
