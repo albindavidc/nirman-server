@@ -4,7 +4,7 @@ import { Prisma } from '../../generated/client/client';
 import { IProjectRepository } from '../../domain/repositories/project-repository.interface';
 import { BaseRepository } from './base.repository';
 import { Project } from '../../domain/entities/project.entity';
-import { ProjectMapper } from '../mappers/project.mapper';
+import { ProjectMapper } from '../../application/mappers/project.mapper';
 import { ProjectWherePersistenceInput } from '../types/project.types';
 import { ProjectStatus } from '../../domain/enums/project-status.enum';
 

@@ -5,7 +5,7 @@ import { IVendorRepository } from '../../domain/repositories/vendor-repository.i
 import { BaseRepository } from './base.repository';
 import { Vendor } from '../../domain/entities/vendor.entity';
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
-import { VendorMapper } from '../mappers/vendor.mapper';
+import { VendorMapper } from '../../application/mappers/vendor.mapper';
 import { VendorWherePersistenceInput } from '../types/vendor.types';
 
 @Injectable()

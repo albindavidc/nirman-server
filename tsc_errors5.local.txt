@@ -1,6 +1,0 @@
-src/infrastructure/repositories/user.repository.ts(22,30): error TS2339: Property 'fromPrismaResult' does not exist on type 'typeof UserMapper'.
-src/infrastructure/repositories/user.repository.ts(30,30): error TS2339: Property 'fromPrismaResult' does not exist on type 'typeof UserMapper'.
-src/infrastructure/repositories/user.repository.ts(38,30): error TS2339: Property 'fromPrismaResult' does not exist on type 'typeof UserMapper'.
-src/infrastructure/repositories/user.repository.ts(46,23): error TS2339: Property 'fromPrismaResults' does not exist on type 'typeof UserMapper'.
-src/infrastructure/repositories/user.repository.ts(70,35): error TS2339: Property 'toPrismaCreateInput' does not exist on type 'typeof UserMapper'.
-src/infrastructure/repositories/user.repository.ts(84,35): error TS2339: Property 'toPrismaUpdateInput' does not exist on type 'typeof UserMapper'.

@@ -6,7 +6,7 @@ import {
 import { Inject, NotFoundException } from '@nestjs/common';
 import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import { VendorResponseDto } from '../../../dto/vendor/vendor-response.dto';
-import { VendorMapper } from '../../../../infrastructure/mappers/vendor.mapper';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
 import { BlacklistVendorCommand } from '../../../commands/vendor/blacklist-vendor.command';
 
 @CommandHandler(BlacklistVendorCommand)
@@ -29,6 +29,6 @@ export class BlacklistVendorHandler implements ICommandHandler<BlacklistVendorCo
       vendorStatus: VendorStatus.BLACKLISTED,
     });
 
-    return VendorMapper.domainToResponse(updatedVendor);
+    return VendorMapper.toResponse(updatedVendor);
   }
 }

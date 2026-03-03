@@ -15,7 +15,7 @@ export class VerifyAttendanceHandler implements ICommandHandler<VerifyAttendance
   async execute(
     command: VerifyAttendanceCommand,
   ): Promise<AttendanceResponseDto> {
-    const { attendanceId, supervisorId, supervisorNotes } = command;
+    const { attendanceId, supervisorId, isVerified, supervisorNotes } = command;
 
     const attendance = await this.attendanceRepository.findById(attendanceId);
 
@@ -23,7 +23,7 @@ export class VerifyAttendanceHandler implements ICommandHandler<VerifyAttendance
       throw new Error('Attendance record not found');
     }
 
-    attendance.verify(supervisorId, supervisorNotes);
+    attendance.verify(supervisorId, isVerified, supervisorNotes);
     const updated = await this.attendanceRepository.update(attendance);
 
     return AttendanceMapper.toResponseDto(updated);

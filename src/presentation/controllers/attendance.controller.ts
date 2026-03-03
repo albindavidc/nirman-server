@@ -77,15 +77,18 @@ export class AttendanceController {
 
   @Patch(ATTENDANCE_ROUTES.VERIFY)
   @HttpCode(HttpStatus.OK)
-  async verify(
-    @Param('id') id: string,
-    @Request() req: AuthenticatedRequest,
-    @Body() dto: VerifyAttendanceRequestDto,
-  ) {
+  async verify(@Body() dto: VerifyAttendanceRequestDto) {
     return this.commandBus.execute<
       VerifyAttendanceCommand,
       AttendanceResponseDto
-    >(new VerifyAttendanceCommand(id, req.user.userId, dto.supervisorNotes));
+    >(
+      new VerifyAttendanceCommand(
+        dto.attendanceId,
+        dto.supervisorId,
+        dto.isVerified,
+        dto.supervisorNotes,
+      ),
+    );
   }
 
   @Get(ATTENDANCE_ROUTES.GET_MY_ATTENDANCE)

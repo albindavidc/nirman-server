@@ -7,7 +7,7 @@ import {
 import { Inject, NotFoundException } from '@nestjs/common';
 import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import { VendorResponseDto } from '../../../dto/vendor/vendor-response.dto';
-import { VendorMapper } from '../../../../infrastructure/mappers/vendor.mapper';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
 
 @CommandHandler(RequestRecheckCommand)
 export class RequestRecheckHandler implements ICommandHandler<RequestRecheckCommand> {
@@ -30,6 +30,6 @@ export class RequestRecheckHandler implements ICommandHandler<RequestRecheckComm
       rejectionReason: null,
     });
 
-    return VendorMapper.domainToResponse(updatedVendor);
+    return VendorMapper.toResponse(updatedVendor);
   }
 }

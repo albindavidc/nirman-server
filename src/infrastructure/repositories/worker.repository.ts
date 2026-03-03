@@ -8,7 +8,7 @@ import {
   UpdateWorkerData,
 } from '../../domain/repositories/worker-repository.interface';
 import { WorkerWherePersistenceInput } from '../types/worker.types';
-import { WorkerMapper } from '../mappers/worker.mapper';
+import { WorkerMapper } from '../../application/mappers/worker.mapper';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 
 @Injectable()

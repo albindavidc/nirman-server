@@ -8,7 +8,7 @@ import {
   WorkerWherePersistenceInput,
   WorkerCreatePersistenceInput,
   WorkerUpdatePersistenceInput,
-} from '../types/worker.types';
+} from '../../infrastructure/types/worker.types';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 
 /**

@@ -107,8 +107,8 @@ export class AttendanceEntity {
     }
   }
 
-  verify(supervisorId: string, notes?: string): void {
-    this._isVerified = true;
+  verify(supervisorId: string, isVerified: boolean, notes?: string): void {
+    this._isVerified = isVerified;
     this._verifiedBy = supervisorId;
     this._verifiedAt = new Date();
     if (notes !== undefined) this._supervisorNotes = notes;
