@@ -1,9 +1,9 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { GetMyAttendanceHistoryQuery } from '../../../queries/attendance/get-my-attendance-history.query';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
-import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 import { PaginatedAttendanceDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMapper } from '../../../mappers/attendance.mapper';
+import { GetMyAttendanceHistoryQuery } from '../../../queries/attendance/get-my-attendance-history.query';
 
 @QueryHandler(GetMyAttendanceHistoryQuery)
 export class GetMyAttendanceHistoryHandler implements IQueryHandler<GetMyAttendanceHistoryQuery> {

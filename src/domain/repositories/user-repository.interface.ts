@@ -10,8 +10,8 @@ export interface IUserRepository {
   count(): Promise<number>;
 
   // Mutation methods
-  create(data: Partial<User>): Promise<User>;
-  update(id: string, data: Partial<User>): Promise<User>;
+  create(data: User): Promise<User>;
+  update(id: string, data: User): Promise<User>;
   updatePassword(email: string, passwordHash: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

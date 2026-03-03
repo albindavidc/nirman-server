@@ -1,11 +1,11 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { CreateVendorCompanyCommand } from '../../../commands/vendor/create-vendor-company.command';
-import { VendorMapper } from '../../../mappers/vendor/vendor.mapper';
 import {
   IVendorRepository,
   VENDOR_REPOSITORY,
 } from '../../../../domain/repositories/vendor-repository.interface';
+import { CreateVendorCompanyCommand } from '../../../commands/vendor/create-vendor-company.command';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
 
 @CommandHandler(CreateVendorCompanyCommand)
 export class CreateVendorCompanyHandler implements ICommandHandler<CreateVendorCompanyCommand> {

@@ -47,9 +47,8 @@ export class SupervisorSignupHandler implements ICommandHandler<SupervisorSignup
 
     // Update user status to ACTIVE
     if (user.id) {
-      await this.userRepository.update(user.id, {
-        userStatus: UserStatus.ACTIVE,
-      });
+      user.updateStatus(UserStatus.ACTIVE);
+      await this.userRepository.update(user.id, user);
     }
 
     return { success: true, message: 'Account activated successfully' };

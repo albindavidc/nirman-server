@@ -1,42 +1,44 @@
 import { User } from '../../domain/entities/user.entity';
 import { Vendor } from '../../domain/entities/vendor.entity';
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
-import { CreateVendorUserDto } from '../../application/dto/vendor/create-vendor-user.dto';
+import { CreateVendorUserDto } from '../dto/vendor/create-vendor-user.dto';
 import { Role } from '../../domain/enums/role.enum';
-import { UserPersistence } from '../types/user.types';
 import { UserStatus } from '../../domain/enums/user-status.enum';
+import { UserPersistence } from '../interfaces/user.persistence.interface';
 
 /**
- * Type-safe mapper for User entity <-> Prisma persistence conversion.
+ * Type-safe mapper for User entity <-> Application DTOs and standard Persistence DTOs.
  */
 export class UserMapper {
   /**
-   * Converts a Prisma result to domain entity.
+   * Converts a persistence result to domain entity.
    */
-  static fromPrismaResult<T extends Record<string, unknown>>(result: T): User {
+  static fromPersistenceResult<T extends Record<string, unknown>>(
+    result: T,
+  ): User {
     return this.persistenceToEntity(result as unknown as UserPersistence);
   }
 
   /**
-   * Converts a Prisma result array to domain entities.
+   * Converts a persistence result array to domain entities.
    */
-  static fromPrismaResults<T extends Record<string, unknown>>(
+  static fromPersistenceResults<T extends Record<string, unknown>>(
     results: T[],
   ): User[] {
-    return results.map((r) => this.fromPrismaResult(r));
+    return results.map((r) => this.fromPersistenceResult(r));
   }
 
   /**
-   * Converts create input to Prisma-compatible format.
+   * Converts domain entity to persistence create input format.
    */
-  static toPrismaCreateInput(data: Partial<User>): Partial<UserPersistence> {
+  static toPersistenceCreateInput(data: User): Partial<UserPersistence> {
     return this.entityToPersistence(data);
   }
 
   /**
-   * Converts update input to Prisma-compatible format.
+   * Converts domain entity to persistence update input format.
    */
-  static toPrismaUpdateInput(data: Partial<User>): Partial<UserPersistence> {
+  static toPersistenceUpdateInput(data: User): Partial<UserPersistence> {
     return this.entityToPersistence(data);
   }
 
@@ -45,15 +47,16 @@ export class UserMapper {
       CreateVendorUserDto,
       'firstName' | 'lastName' | 'email' | 'phoneNumber' | 'password'
     >,
-  ): Partial<User> {
-    return {
+  ): User {
+    return new User({
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
       phoneNumber: dto.phoneNumber,
       passwordHash: dto.password,
       role: Role.VENDOR,
-    };
+      userStatus: UserStatus.ACTIVE,
+    });
   }
 
   static entityToDto(entity: User): {
@@ -72,15 +75,27 @@ export class UserMapper {
     userStatus: UserStatus;
     vendor?: Vendor;
   } {
-    const { passwordHash, ...dto } = entity;
-    void passwordHash; // Intentionally excluded from response
-    return dto;
-  }
-
-  static entityToPersistence(entity: Partial<User>): Partial<UserPersistence> {
     return {
       id: entity.id,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      email: entity.email,
+      phoneNumber: entity.phoneNumber,
+      isEmailVerified: entity.isEmailVerified,
+      isPhoneVerified: entity.isPhoneVerified,
+      dateOfBirth: entity.dateOfBirth,
+      profilePhotoUrl: entity.profilePhotoUrl,
+      role: entity.role,
+      userStatus: entity.userStatus,
+      vendor: entity.vendor,
+    };
+  }
 
+  static entityToPersistence(entity: User): Partial<UserPersistence> {
+    return {
+      id: entity.id,
       first_name: entity.firstName,
       last_name: entity.lastName,
       email: entity.email,

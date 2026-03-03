@@ -1,13 +1,13 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
-import { UpdateVendorCommand } from '../../../commands/vendor/update-vendor.command';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import {
   IVendorRepository,
   VENDOR_REPOSITORY,
 } from '../../../../domain/repositories/vendor-repository.interface';
-import { VendorMapper } from '../../../mappers/vendor/vendor.mapper';
+import { UpdateVendorCommand } from '../../../commands/vendor/update-vendor.command';
 import { VendorResponseDto } from '../../../dto/vendor/vendor-response.dto';
-import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
 
 @CommandHandler(UpdateVendorCommand)
 export class UpdateVendorHandler implements ICommandHandler<UpdateVendorCommand> {

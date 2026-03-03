@@ -1,14 +1,14 @@
-import { CreateVendorUserCommand } from '../../../commands/vendor/create-vendor-user.command';
+import { BadRequestException, ConflictException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import * as argon2 from 'argon2';
+import { UserRegisteredEvent } from '../../../../domain/events/user-registered.event';
 import {
   IUserRepository,
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
-import { BadRequestException, ConflictException, Inject } from '@nestjs/common';
-import * as argon2 from 'argon2';
-import { UserMapper } from '../../../mappers/user/user.mapper';
 import { Prisma } from '../../../../generated/client/client';
-import { UserRegisteredEvent } from '../../../../domain/events/user-registered.event';
+import { CreateVendorUserCommand } from '../../../commands/vendor/create-vendor-user.command';
+import { UserMapper } from '../../../mappers/user.mapper';
 
 @CommandHandler(CreateVendorUserCommand)
 export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUserCommand> {

@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { VerifyAttendanceCommand } from '../../../commands/attendance/attendance.commands';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { VerifyAttendanceCommand } from '../../../commands/attendance/attendance.commands';
 import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
-import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
+import { AttendanceMapper } from '../../../mappers/attendance.mapper';
 
 @CommandHandler(VerifyAttendanceCommand)
 export class VerifyAttendanceHandler implements ICommandHandler<VerifyAttendanceCommand> {

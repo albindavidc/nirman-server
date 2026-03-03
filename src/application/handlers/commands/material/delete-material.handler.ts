@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DeleteMaterialCommand } from '../../../commands/material/delete-material.command';
 import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
 import { MaterialDto } from '../../../dto/material/material.dto';
-import { MaterialMapper } from '../../../../infrastructure/mappers/material.mapper';
+import { MaterialMapper } from '../../../mappers/material.mapper';
 import { NotFoundException } from '@nestjs/common';
 
 @CommandHandler(DeleteMaterialCommand)

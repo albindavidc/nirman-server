@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../domain/repositories/user-repository.interface';
 import { BaseRepository } from './base.repository';
 import { User } from '../../domain/entities/user.entity';
-import { UserMapper } from '../mappers/user.mapper';
+import { UserMapper } from '../../application/mappers/user.mapper';
 
 @Injectable()
 export class UserRepository
@@ -19,7 +19,7 @@ export class UserRepository
       where: { id, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.fromPrismaResult(user) : null;
+    return user ? UserMapper.fromPersistenceResult(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -27,7 +27,7 @@ export class UserRepository
       where: { email, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.fromPrismaResult(user) : null;
+    return user ? UserMapper.fromPersistenceResult(user) : null;
   }
 
   async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
@@ -35,7 +35,7 @@ export class UserRepository
       where: { phone_number: phoneNumber, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.fromPrismaResult(user) : null;
+    return user ? UserMapper.fromPersistenceResult(user) : null;
   }
 
   async findAll(): Promise<User[]> {
@@ -43,7 +43,7 @@ export class UserRepository
       where: { is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return UserMapper.fromPrismaResults(users);
+    return UserMapper.fromPersistenceResults(users);
   }
 
   async exists(id: string): Promise<boolean> {
@@ -59,7 +59,7 @@ export class UserRepository
     });
   }
 
-  async create(data: Partial<User>): Promise<User> {
+  async create(data: User): Promise<User> {
     const persistenceData = UserMapper.entityToPersistence(data);
 
     // Remove relation keys as we handle them through connect if needed
@@ -67,7 +67,7 @@ export class UserRepository
     delete createDataRaw.vendor;
     delete createDataRaw.professional;
 
-    const prismaData = UserMapper.toPrismaCreateInput({ ...data });
+    const prismaData = UserMapper.toPersistenceCreateInput(data);
     delete prismaData.vendor;
     delete prismaData.professional;
 
@@ -80,8 +80,8 @@ export class UserRepository
     return (await this.findById(created.id))!;
   }
 
-  async update(id: string, data: Partial<User>): Promise<User> {
-    const prismaData = UserMapper.toPrismaUpdateInput(data);
+  async update(id: string, data: User): Promise<User> {
+    const prismaData = UserMapper.toPersistenceUpdateInput(data);
 
     delete prismaData.vendor;
 

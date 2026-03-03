@@ -1,10 +1,10 @@
-import { AttendanceResponseDto } from '../../application/dto/attendance/attendance-response.dto';
-import { AttendanceResponseDto as ProjectAttendanceResponseDto } from '../../application/dto/project/attendance-response.dto';
-import { ProjectWorkerWithUser } from '../../domain/repositories/project-worker-repository.interface';
 import { AttendanceEntity } from '../../domain/entities/attendance.entity';
+import { ProjectWorkerWithUser } from '../../domain/repositories/project-worker-repository.interface';
 import { AttendanceMethod } from '../../domain/value-objects/attendance-method.vo';
 import { AttendanceStatus } from '../../domain/value-objects/attendance.vo';
 import { WorkHours } from '../../domain/value-objects/work-hours.vo';
+import { AttendanceResponseDto } from '../dto/attendance/attendance-response.dto';
+import { AttendanceResponseDto as ProjectAttendanceResponseDto } from '../dto/project/attendance-response.dto';
 
 export interface AttendancePersistenceModel {
   id: string | null;

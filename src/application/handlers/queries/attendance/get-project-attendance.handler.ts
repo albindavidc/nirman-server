@@ -1,9 +1,9 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetProjectAttendanceQuery } from '../../../queries/attendance/get-project-attendance.query';
 import { Inject } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
-import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
 import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMapper } from '../../../mappers/attendance.mapper';
+import { GetProjectAttendanceQuery } from '../../../queries/attendance/get-project-attendance.query';
 
 @QueryHandler(GetProjectAttendanceQuery)
 export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAttendanceQuery> {

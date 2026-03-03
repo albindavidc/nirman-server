@@ -1,5 +1,5 @@
-import { User } from '../../../domain/entities/user.entity';
-import { ProfileResponseDto } from '../../dto/profile/profile.response.dto';
+import { User } from '../../domain/entities/user.entity';
+import { ProfileResponseDto } from '../dto/profile/profile.response.dto';
 
 export class ProfileMapper {
   static toResponse(user: User): ProfileResponseDto {

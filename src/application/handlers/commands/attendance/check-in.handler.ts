@@ -1,11 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { CheckInCommand } from '../../../commands/attendance/check-in.command';
-import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
-import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
-import { AttendanceMethod } from '../../../../domain/value-objects/attendance-method.vo';
-import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AttendanceEntity } from '../../../../domain/entities/attendance.entity';
+import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { AttendanceMethod } from '../../../../domain/value-objects/attendance-method.vo';
+import { CheckInCommand } from '../../../commands/attendance/check-in.command';
+import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
+import { AttendanceMapper } from '../../../mappers/attendance.mapper';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {

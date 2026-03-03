@@ -1,19 +1,18 @@
+import { ConflictException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, ConflictException } from '@nestjs/common';
-import { CreateVendorByAdminCommand } from '../../../commands/vendor/create-vendor-by-admin.command';
-import {
-  IVendorRepository,
-  VENDOR_REPOSITORY,
-} from '../../../../domain/repositories/vendor-repository.interface';
+import * as argon2 from 'argon2';
+import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
 import {
   IUserRepository,
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
-import { UserMapper } from '../../../mappers/user/user.mapper';
-import { VendorMapper } from '../../../mappers/vendor/vendor.mapper';
-import * as argon2 from 'argon2';
-import { Role } from '../../../../domain/enums/role.enum';
-import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
+import {
+  IVendorRepository,
+  VENDOR_REPOSITORY,
+} from '../../../../domain/repositories/vendor-repository.interface';
+import { CreateVendorByAdminCommand } from '../../../commands/vendor/create-vendor-by-admin.command';
+import { UserMapper } from '../../../mappers/user.mapper';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
 
 @CommandHandler(CreateVendorByAdminCommand)
 export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorByAdminCommand> {
@@ -42,8 +41,6 @@ export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorB
       phoneNumber: dto.phone,
       password: hashedPassword,
     });
-    userEntity.role = Role.VENDOR;
-
     const createdUser = await this.userRepository.create(userEntity);
 
     const vendorEntity = VendorMapper.dtoToEntity({

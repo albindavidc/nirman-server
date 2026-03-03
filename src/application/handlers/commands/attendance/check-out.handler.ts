@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { CheckOutCommand } from '../../../commands/attendance/check-out.command';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { CheckOutCommand } from '../../../commands/attendance/check-out.command';
 import { AttendanceResponseDto } from '../../../dto/attendance/attendance-response.dto';
-import { AttendanceMapper } from '../../../../infrastructure/mappers/attendance.mapper';
+import { AttendanceMapper } from '../../../mappers/attendance.mapper';
 
 @CommandHandler(CheckOutCommand)
 export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {

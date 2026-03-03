@@ -13,6 +13,7 @@ import {
 } from '../../../../domain/repositories/user-repository.interface';
 import { Role } from '../../../../domain/enums/role.enum';
 import { UserStatus } from '../../../../domain/enums/user-status.enum';
+import { User } from '../../../../domain/entities/user.entity';
 
 @CommandHandler(SendOtpCommand)
 export class SendOtpHandler implements ICommandHandler<SendOtpCommand> {
@@ -37,7 +38,7 @@ export class SendOtpHandler implements ICommandHandler<SendOtpCommand> {
         // Create new user with pending status
         // We need to cast role string to enum or validate it. Assuming it's valid for now or handled by service
         // Defaulting properties for new worker
-        await this.userRepository.create({
+        const newUser = new User({
           email,
           role: dto.role as Role,
           userStatus: UserStatus.INACTIVE, // or PENDING logic if exists
@@ -47,6 +48,7 @@ export class SendOtpHandler implements ICommandHandler<SendOtpCommand> {
           lastName: '',
           passwordHash: 'temp', // Temporary placeholder
         });
+        await this.userRepository.create(newUser);
       }
     }
 

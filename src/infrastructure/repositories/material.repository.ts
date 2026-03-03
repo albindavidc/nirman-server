@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '../../generated/client/client';
 import { Material } from '../../domain/entities/material.entity';
-import { MaterialMapper } from '../mappers/material.mapper';
+import { MaterialMapper } from '../../application/mappers/material.mapper';
 import { MaterialPersistence } from '../types/material.types';
 
 @Injectable()

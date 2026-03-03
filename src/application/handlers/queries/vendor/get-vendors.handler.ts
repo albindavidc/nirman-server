@@ -1,11 +1,11 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetVendorsQuery } from '../../../queries/vendor/get-vendors.query';
-import { VendorMapper } from '../../../mappers/vendor/vendor.mapper';
 import { Inject } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
   IVendorRepository,
   VENDOR_REPOSITORY,
 } from '../../../../domain/repositories/vendor-repository.interface';
+import { VendorMapper } from '../../../mappers/vendor.mapper';
+import { GetVendorsQuery } from '../../../queries/vendor/get-vendors.query';
 
 @QueryHandler(GetVendorsQuery)
 export class GetVendorsHandler implements IQueryHandler<GetVendorsQuery> {

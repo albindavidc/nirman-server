@@ -1,13 +1,13 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
-import { UpdateProfileCommand } from '../../../commands/profile/update-profile.command';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   IUserRepository,
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
-import { ProfileResponseDto } from '../../../dto/profile/profile.response.dto';
-import { UserMapper } from '../../../mappers/user/user.mapper';
 import { S3Service } from '../../../../infrastructure/services/s3/s3.service';
+import { UpdateProfileCommand } from '../../../commands/profile/update-profile.command';
+import { ProfileResponseDto } from '../../../dto/profile/profile.response.dto';
+import { UserMapper } from '../../../mappers/user.mapper';
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {
@@ -25,6 +25,8 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    let finalProfilePhotoUrl: string | undefined = undefined;
 
     // Handle Profile Photo Update
     if (profilePhotoUrl && user.profilePhotoUrl !== profilePhotoUrl) {
@@ -47,17 +49,20 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
       // This ensures we don't store expiring URLs
       const newKey = this.s3Service.extractKeyFromUrl(profilePhotoUrl);
       if (newKey) {
-        user.profilePhotoUrl = newKey;
+        finalProfilePhotoUrl = newKey;
       } else {
         // Fallback: if it's not an S3 URL, just store as is (e.g. if we support other URLs later)
-        user.profilePhotoUrl = profilePhotoUrl;
+        finalProfilePhotoUrl = profilePhotoUrl;
       }
     }
 
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (phoneNumber) user.phoneNumber = phoneNumber;
-    // Note: profilePhotoUrl is already updated above
+    user.updateProfile({
+      firstName,
+      lastName,
+      phoneNumber,
+      profilePhotoUrl:
+        finalProfilePhotoUrl !== undefined ? finalProfilePhotoUrl : undefined,
+    });
 
     const updatedUser = await this.userRepository.update(userId, user);
 

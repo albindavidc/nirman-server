@@ -1,0 +1,10 @@
+src/application/handlers/commands/material/delete-material.handler.ts(5,32): error TS2307: Cannot find module '../../../../infrastructure/mappers/material.mapper' or its corresponding type declarations.
+src/application/handlers/commands/profile/update-profile.handler.ts(50,14): error TS2540: Cannot assign to 'profilePhotoUrl' because it is a read-only property.
+src/application/handlers/commands/profile/update-profile.handler.ts(53,14): error TS2540: Cannot assign to 'profilePhotoUrl' because it is a read-only property.
+src/application/handlers/commands/profile/update-profile.handler.ts(57,25): error TS2540: Cannot assign to 'firstName' because it is a read-only property.
+src/application/handlers/commands/profile/update-profile.handler.ts(58,24): error TS2540: Cannot assign to 'lastName' because it is a read-only property.
+src/application/handlers/commands/profile/update-profile.handler.ts(59,27): error TS2540: Cannot assign to 'phoneNumber' because it is a read-only property.
+src/application/handlers/commands/vendor/create-vendor-by-admin.handler.ts(16,30): error TS2307: Cannot find module '../../../mappers/vendor/vendor.mapper' or its corresponding type declarations.
+src/application/handlers/commands/vendor/create-vendor-by-admin.handler.ts(45,16): error TS2540: Cannot assign to 'role' because it is a read-only property.
+src/infrastructure/mappers/user.mapper.ts(77,5): error TS2740: Type '{ id: string; createdAt: Date; updatedAt: Date; [IS_AUTO_COMMIT_ENABLED]: boolean; }' is missing the following properties from type '{ id: string; createdAt: Date; updatedAt: Date; firstName: string; lastName: string; email: string; phoneNumber?: string | undefined; isEmailVerified: boolean; isPhoneVerified: boolean; ... 4 more ...; vendor?: Vendor | undefined; }': firstName, lastName, email, isEmailVerified, and 3 more.
+src/infrastructure/repositories/material.repository.ts(5,32): error TS2307: Cannot find module '../mappers/material.mapper' or its corresponding type declarations.

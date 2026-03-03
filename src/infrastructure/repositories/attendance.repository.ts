@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { AttendanceMapper } from '../../application/mappers/attendance.mapper';
+import { AttendanceEntity } from '../../domain/entities/attendance.entity';
 import {
   AttendanceFilter,
   AttendanceSummary,
   IAttendanceRepository,
   PaginatedAttendance,
 } from '../../domain/repositories/attendance-repository.interface';
-import { AttendanceMapper } from '../mappers/attendance.mapper';
-import { AttendanceEntity } from '../../domain/entities/attendance.entity';
 import { Prisma } from '../../generated/client/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AttendanceRepository implements IAttendanceRepository {
