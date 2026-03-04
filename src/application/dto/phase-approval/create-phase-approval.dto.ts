@@ -2,10 +2,11 @@ import {
   IsString,
   IsOptional,
   IsArray,
-  IsIn,
+  IsEnum,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApprovalStatus } from '../../../domain/enums/approval-status.enum';
 
 class MediaItemDto {
   @IsString()
@@ -16,9 +17,8 @@ class MediaItemDto {
 }
 
 export class CreatePhaseApprovalDto {
-  @IsString()
-  @IsIn(['approved', 'rejected'])
-  approvalStatus!: string;
+  @IsEnum(ApprovalStatus)
+  approvalStatus!: ApprovalStatus;
 
   @IsOptional()
   @IsString()

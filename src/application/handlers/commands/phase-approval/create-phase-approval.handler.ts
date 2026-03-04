@@ -11,6 +11,7 @@ import {
   IProjectPhaseRepository,
   PROJECT_PHASE_REPOSITORY,
 } from '../../../../domain/repositories/project-phase-repository.interface';
+import { ApprovalStatus } from '../../../../domain/enums/approval-status.enum';
 
 @CommandHandler(CreatePhaseApprovalCommand)
 export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseApprovalCommand> {
@@ -41,7 +42,10 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
     // 3. Check if latest approval is already decided
     const latestApproval =
       await this.phaseApprovalRepository.findLatestByPhaseId(command.phaseId);
-    if (latestApproval && latestApproval.approvalStatus !== 'pending') {
+    if (
+      latestApproval &&
+      latestApproval.approvalStatus !== ApprovalStatus.PENDING
+    ) {
       throw new BadRequestException(
         `Phase approval has already been ${latestApproval.approvalStatus}`,
       );
@@ -58,13 +62,13 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
     });
 
     // 5. Update phase status and related fields based on decision
-    if (command.approvalStatus === 'approved') {
+    if (command.approvalStatus === ApprovalStatus.APPROVED) {
       await this.projectPhaseRepository.update(command.phaseId, {
         status: 'Completed',
         progress: 100,
         actualEndDate: new Date(),
       });
-    } else if (command.approvalStatus === 'rejected') {
+    } else if (command.approvalStatus === ApprovalStatus.REJECTED) {
       await this.projectPhaseRepository.update(command.phaseId, {
         status: 'In Progress',
       });

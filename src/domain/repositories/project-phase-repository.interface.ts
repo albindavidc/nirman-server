@@ -1,4 +1,5 @@
 import { ProjectPhase } from '../entities/project-phase.entity';
+import { ApprovalStatus } from '../enums/approval-status.enum';
 
 /**
  * Project Phase Repository Interface
@@ -31,7 +32,7 @@ export interface PhaseWithApprovals {
     approverName: string | null;
     requestedBy: string;
     requesterName: string;
-    approvalStatus: string;
+    approvalStatus: ApprovalStatus;
     comments: string | null;
     media: Array<{ type: string; url: string }>;
     approvedAt: Date | null;

@@ -12,6 +12,7 @@ import {
   PROJECT_PHASE_REPOSITORY,
 } from '../../../../domain/repositories/project-phase-repository.interface';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ApprovalStatus } from '../../../../domain/enums/approval-status.enum';
 
 @CommandHandler(RequestPhaseApprovalCommand)
 export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhaseApprovalCommand> {
@@ -44,7 +45,7 @@ export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhase
     const approval = await this.phaseApprovalRepository.create({
       phaseId: command.phaseId,
       requestedBy: command.requestedBy,
-      approvalStatus: 'pending',
+      approvalStatus: ApprovalStatus.PENDING,
       comments: command.comments,
       media: command.media,
       approvedBy: command.approverId || undefined,

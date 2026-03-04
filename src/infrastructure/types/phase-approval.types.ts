@@ -1,4 +1,5 @@
 import { User } from '../../domain/entities/user.entity';
+import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 export type RepoUser = {
   first_name: User['firstName'];
@@ -12,7 +13,7 @@ export interface PhaseApprovalWithUsers {
   approver: RepoUser | null;
   requested_by: string;
   requester: RepoUser;
-  approval_status: string;
+  approval_status: ApprovalStatus;
   comments: string | null;
   media: unknown;
   approved_at: Date | null;

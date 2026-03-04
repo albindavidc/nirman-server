@@ -3,13 +3,13 @@ model Professional {
   user_id            String @unique @db.ObjectId
   professional_title String
 
-  experience_years         Int
-  skills                   String[]
+  experience_years Int
+  skills           String[]
 
-  address_street  String
-  address_city    String
-  address_state   String
-  address_zip_code     String
+  address_street   String
+  address_city     String
+  address_state    String
+  address_zip_code String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

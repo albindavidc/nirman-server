@@ -1,4 +1,5 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+import { ApprovalStatus } from '../enums/approval-status.enum';
 
 export interface MediaItem {
   type: string;
@@ -11,7 +12,7 @@ export class PhaseApproval extends AggregateRoot {
     private readonly _phaseId: string,
     private readonly _requestedBy: string,
     private _approvedBy: string | null,
-    private _approvalStatus: string,
+    private _approvalStatus: ApprovalStatus,
     private _comments: string | null,
     private _media: MediaItem[],
     private _approvedAt: Date | null,
@@ -37,7 +38,7 @@ export class PhaseApproval extends AggregateRoot {
     return this._approvedBy;
   }
 
-  get approvalStatus(): string {
+  get approvalStatus(): ApprovalStatus {
     return this._approvalStatus;
   }
 
@@ -62,7 +63,7 @@ export class PhaseApproval extends AggregateRoot {
   }
 
   approve(approvedBy: string, comments: string | null): void {
-    this._approvalStatus = 'approved';
+    this._approvalStatus = ApprovalStatus.APPROVED;
     this._approvedBy = approvedBy;
     this._approvedAt = new Date();
     this._comments = comments;
@@ -70,7 +71,7 @@ export class PhaseApproval extends AggregateRoot {
   }
 
   reject(rejectedBy: string, comments: string | null): void {
-    this._approvalStatus = 'rejected';
+    this._approvalStatus = ApprovalStatus.REJECTED;
     this._approvedBy = rejectedBy; // Can reuse approvedBy for the decision maker
     this._approvedAt = new Date();
     this._comments = comments;

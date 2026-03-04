@@ -3,28 +3,28 @@ model Vendor {
   user_id String @unique @db.ObjectId
 
   company_name        String
-  registration_number String @unique
+  registration_number String  @unique
   tax_number          String?
-  years_in_business Int?
+  years_in_business   Int?
 
-  address_street  String?
-  address_city    String?
-  address_state   String?
-  address_zip_code     String?
+  address_street   String?
+  address_city     String?
+  address_state    String?
+  address_zip_code String?
 
   products_services String[]
-  website_url           String?
+  website_url       String?
   contact_email     String?
   contact_phone     String?
-  vendor_status VendorStatus @default(pending)
-  rejection_reason String?
+  vendor_status     VendorStatus @default(pending)
+  rejection_reason  String?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  is_deleted Boolean  @default(false)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  is_deleted Boolean   @default(false)
   deleted_at DateTime?
 
-  user User @relation(fields: [user_id], references: [id])
+  user               User       @relation(fields: [user_id], references: [id])
   supplied_materials Material[]
 
   @@index([company_name])

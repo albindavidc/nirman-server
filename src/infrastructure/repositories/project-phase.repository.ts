@@ -13,6 +13,7 @@ import {
   PhaseWithApprovalsResult,
   ProjectPhaseRecord,
 } from '../types/project-phase.types';
+import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 @Injectable()
 export class ProjectPhaseRepository implements IProjectPhaseRepository {
@@ -84,7 +85,7 @@ export class ProjectPhaseRepository implements IProjectPhaseRepository {
           : null,
         requestedBy: a.requested_by,
         requesterName: `${a.requester.first_name} ${a.requester.last_name}`,
-        approvalStatus: a.approval_status,
+        approvalStatus: a.approval_status as unknown as ApprovalStatus,
         comments: a.comments,
         media: (a.media as Array<{ type: string; url: string }>) ?? [],
         approvedAt: a.approved_at,

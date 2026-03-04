@@ -1,3 +1,5 @@
+import { ApprovalStatus } from '../../../domain/enums/approval-status.enum';
+
 export interface MediaItemResponse {
   type: string;
   url: string;
@@ -12,7 +14,7 @@ export interface PhaseApprovalResponseDto {
   approverName: string | null;
   requestedBy: string;
   requesterName: string;
-  approvalStatus: string;
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: MediaItemResponse[];
   approvedAt: string | null;

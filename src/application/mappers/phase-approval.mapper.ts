@@ -4,13 +4,14 @@ import {
 } from '../../domain/entities/phase-approval.entity';
 import { PhaseApprovalResponseDto } from '../dto/phase-approval/phase-approval-response.dto';
 import { PhaseApprovalResult } from '../../domain/repositories/phase-approval-repository.interface';
+import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 type PrismaPhaseApproval = {
   id: string;
   phase_id: string;
   approved_by: string | null;
   requested_by: string;
-  approval_status: string;
+  approval_status: ApprovalStatus;
   comments: string | null;
   media: { type: string; url: string }[];
   approved_at: Date | null;
@@ -91,7 +92,7 @@ export class PhaseApprovalMapper {
     approverName: string | null;
     requestedBy: string;
     requesterName: string;
-    approvalStatus: string;
+    approvalStatus: ApprovalStatus;
     comments: string | null;
     media: Array<{ type: string; url: string }>;
     approvedAt: Date | null;

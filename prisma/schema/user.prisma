@@ -1,33 +1,33 @@
 model User {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
   first_name        String
   last_name         String
-  email             String   @unique
+  email             String    @unique
   phone_number      String?   @unique
-  is_phone_verified Boolean  @default(false)
-  is_email_verified Boolean  @default(true)
+  is_phone_verified Boolean   @default(false)
+  is_email_verified Boolean   @default(true)
   date_of_birth     DateTime?
 
   password_hash     String
   profile_photo_url String?
 
   role        UserRole
-  user_status String @default("active")
+  user_status String   @default("active")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  is_deleted Boolean  @default(false)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  is_deleted Boolean   @default(false)
   deleted_at DateTime?
 
   professional Professional?
   vendor       Vendor?
   attendance   Attendance[]
-  
+
   // Material Relations
-  created_materials Material[]
+  created_materials   Material[]
   requested_materials MaterialRequest[] @relation("RequestedMaterials")
   approved_materials  MaterialRequest[] @relation("ApprovedMaterials")
-  
+
   // Phase Approval Relations
   phase_approval_requests PhaseApproval[] @relation("RequesterRelation")
   phase_approvals_granted PhaseApproval[] @relation("ApproverRelation")

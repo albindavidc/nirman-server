@@ -42,13 +42,14 @@ export class SupervisorSignupHandler implements ICommandHandler<SupervisorSignup
     // Hash password
     const passwordHash = await argon2.hash(password);
 
-    // Update user password
-    await this.userRepository.updatePassword(email, passwordHash);
-
-    // Update user status to ACTIVE
+    // Update user password and status in memory, then persist the changes.
     if (user.id) {
+      user.updatePassword(passwordHash);
       user.updateStatus(UserStatus.ACTIVE);
       await this.userRepository.update(user.id, user);
+    } else {
+      // Fallback if ID is inexplicably empty
+      await this.userRepository.updatePassword(email, passwordHash);
     }
 
     return { success: true, message: 'Account activated successfully' };

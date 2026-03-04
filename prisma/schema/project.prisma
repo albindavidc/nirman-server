@@ -5,6 +5,12 @@ enum ProjectStatus {
   on_hold
 }
 
+enum ApprovalStatus {
+  pending
+  approved
+  rejected
+}
+
 type ProjectMember {
   user_id    String
   role       String
@@ -31,42 +37,42 @@ model Project {
 
   members ProjectMember[]
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  is_deleted Boolean  @default(false)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  is_deleted Boolean   @default(false)
   deleted_at DateTime?
 
-  phases      ProjectPhase[]
-  attendance  Attendance[]
-  materials   Material[]
+  phases            ProjectPhase[]
+  attendance        Attendance[]
+  materials         Material[]
   material_requests MaterialRequest[]
-  
+
   @@index([name])
   @@index([status])
   @@map("projects")
 }
 
 model ProjectPhase {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  project_id        String    @db.ObjectId
-  name              String
-  description       String?
-  progress          Int       @default(0)
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  project_id         String    @db.ObjectId
+  name               String
+  description        String?
+  progress           Int       @default(0)
   planned_start_date DateTime?
   planned_end_date   DateTime?
   actual_start_date  DateTime?
   actual_end_date    DateTime?
-  status            String    @default("Not Started")
-  sequence          Int
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  status             String    @default("Not Started")
+  sequence           Int
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
 
-  project           Project   @relation(fields: [project_id], references: [id])
-  approvals         PhaseApproval[]
-  tasks             Task[]
+  project   Project         @relation(fields: [project_id], references: [id])
+  approvals PhaseApproval[]
+  tasks     Task[]
 
-  @@map("project_phases")
   @@index([project_id])
+  @@map("project_phases")
 }
 
 type MediaItem {
@@ -75,100 +81,100 @@ type MediaItem {
 }
 
 model PhaseApproval {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id        String      @db.ObjectId
-  approved_by     String?     @db.ObjectId // Optional, initially null
-  requested_by    String      @db.ObjectId // The user requesting approval
-  approval_status String      // pending, approved, rejected
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id        String         @db.ObjectId
+  approved_by     String?        @db.ObjectId
+  requested_by    String         @db.ObjectId
+  approval_status ApprovalStatus @default(pending)
   comments        String?
   media           MediaItem[]
   approved_at     DateTime?
-  requested_at    DateTime    @default(now())
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @updatedAt
+  requested_at    DateTime       @default(now())
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
 
-  phase           ProjectPhase @relation(fields: [phase_id], references: [id])
-  approver        User?        @relation("ApproverRelation", fields: [approved_by], references: [id])
-  requester       User         @relation("RequesterRelation", fields: [requested_by], references: [id])
+  phase     ProjectPhase @relation(fields: [phase_id], references: [id])
+  approver  User?        @relation("ApproverRelation", fields: [approved_by], references: [id])
+  requester User         @relation("RequesterRelation", fields: [requested_by], references: [id])
 
-  @@map("phase_approvals")
   @@index([phase_id])
   @@index([approved_by])
   @@index([requested_by])
+  @@map("phase_approvals")
 }
 
 model Attendance {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  projectId  String    @db.ObjectId @map("project_id")
-  userId     String    @db.ObjectId @map("user_id")
-  date        DateTime
-  checkIn    DateTime? @map("check_in")
-  checkOut   DateTime? @map("check_out")
-  status      String
-  location    String?
-  workHours  Float? @map("work_hours")
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  projectId String    @map("project_id") @db.ObjectId
+  userId    String    @map("user_id") @db.ObjectId
+  date      DateTime
+  checkIn   DateTime? @map("check_in")
+  checkOut  DateTime? @map("check_out")
+  status    String
+  location  String?
+  workHours Float?    @map("work_hours")
 
-  method           String    @default("Manual") // 'QR Code', 'Manual'
-  supervisorNotes String? @map("supervisor_notes")
+  method          String    @default("Manual") // 'QR Code', 'Manual'
+  supervisorNotes String?   @map("supervisor_notes")
   isVerified      Boolean   @default(false) @map("is_verified")
-  verifiedBy      String?   @db.ObjectId @map("verified_by")
+  verifiedBy      String?   @map("verified_by") @db.ObjectId
   verifiedAt      DateTime? @map("verified_at")
 
-  project Project @relation(fields: [projectId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  project  Project @relation(fields: [projectId], references: [id])
+  user     User    @relation(fields: [userId], references: [id])
   verifier User?   @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
 
   @@map("attendance")
 }
 
 model Task {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id          String    @db.ObjectId
-  assigned_to       String?   @db.ObjectId
-  name              String
-  description       String?
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id           String    @db.ObjectId
+  assigned_to        String?   @db.ObjectId
+  name               String
+  description        String?
   planned_start_date DateTime?
   planned_end_date   DateTime?
   actual_start_date  DateTime?
   actual_end_date    DateTime?
-  status            String    @default("Not Started") // 'Not Started', 'In Progress', 'Completed', 'Delayed'
-  priority          String    @default("Medium") // 'Low', 'Medium', 'High', 'Critical'
-  progress          Int       @default(0)
-  color             String?   // Hex color code
-  notes             String?   
-  
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  status             String    @default("Not Started") // 'Not Started', 'In Progress', 'Completed', 'Delayed'
+  priority           String    @default("Medium") // 'Low', 'Medium', 'High', 'Critical'
+  progress           Int       @default(0)
+  color              String? // Hex color code
+  notes              String?
 
-  phase             ProjectPhase @relation(fields: [phase_id], references: [id])
-  assignee          User?        @relation("TaskAssignee", fields: [assigned_to], references: [id])
-  
-  successors        TaskDependency[] @relation("TaskSuccessor")
-  predecessors      TaskDependency[] @relation("TaskPredecessor")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  @@map("tasks")
+  phase    ProjectPhase @relation(fields: [phase_id], references: [id])
+  assignee User?        @relation("TaskAssignee", fields: [assigned_to], references: [id])
+
+  successors   TaskDependency[] @relation("TaskSuccessor")
+  predecessors TaskDependency[] @relation("TaskPredecessor")
+
   @@index([phase_id])
   @@index([assigned_to])
+  @@map("tasks")
 }
 
 model TaskDependency {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id            String   @db.ObjectId
-  successor_task_id   String   @db.ObjectId
-  predecessor_task_id String   @db.ObjectId
-  
-  type                String   @default("FS") // 'FS', 'SS', 'FF', 'SF'
-  lag_time            Int      @default(0) // In days
-  notes               String?
+  id                  String @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id            String @db.ObjectId
+  successor_task_id   String @db.ObjectId
+  predecessor_task_id String @db.ObjectId
 
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
+  type     String  @default("FS") // 'FS', 'SS', 'FF', 'SF'
+  lag_time Int     @default(0) // In days
+  notes    String?
 
-  successor           Task     @relation("TaskSuccessor", fields: [successor_task_id], references: [id])
-  predecessor         Task     @relation("TaskPredecessor", fields: [predecessor_task_id], references: [id])
-  
-  @@map("task_dependencies")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  successor   Task @relation("TaskSuccessor", fields: [successor_task_id], references: [id])
+  predecessor Task @relation("TaskPredecessor", fields: [predecessor_task_id], references: [id])
+
   @@index([successor_task_id])
   @@index([predecessor_task_id])
   @@index([phase_id])
+  @@map("task_dependencies")
 }

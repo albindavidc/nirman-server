@@ -1,6 +1,7 @@
 /**
  * Phase Approval Repository Interface
  */
+import { ApprovalStatus } from '../enums/approval-status.enum';
 
 export interface PhaseApprovalMedia {
   type: string;
@@ -11,7 +12,7 @@ export interface CreatePhaseApprovalData {
   phaseId: string;
   approvedBy?: string;
   requestedBy: string;
-  approvalStatus: string;
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: PhaseApprovalMedia[];
 }
@@ -28,7 +29,7 @@ export interface PhaseApprovalResult {
   requestedBy: string;
   requesterFirstName: string;
   requesterLastName: string;
-  approvalStatus: string;
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: PhaseApprovalMedia[];
   approvedAt: Date | null;
