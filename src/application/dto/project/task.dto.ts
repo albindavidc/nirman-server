@@ -1,19 +1,21 @@
 import {
-  IsString,
-  IsOptional,
   IsDateString,
-  IsNumber,
   IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class CreateTaskDto {
+  // phaseId is required when creating a task; the client/UI should always supply it
   @IsString()
-  @IsOptional()
-  phaseId?: string;
+  @IsNotEmpty()
+  phaseId!: string;
 
+  // task name is also mandatory
   @IsString()
-  @IsOptional()
-  name?: string;
+  @IsNotEmpty()
+  name!: string;
 
   @IsString()
   @IsOptional()
@@ -39,8 +41,6 @@ export class CreateTaskDto {
   @IsOptional()
   status?: string;
 
-  @IsString()
-  @IsOptional()
   @IsString()
   @IsOptional()
   notes?: string;
@@ -91,8 +91,6 @@ export class UpdateTaskDto {
   @IsOptional()
   progress?: number;
 
-  @IsString()
-  @IsOptional()
   @IsString()
   @IsOptional()
   notes?: string;

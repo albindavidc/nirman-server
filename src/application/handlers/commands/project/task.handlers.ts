@@ -1,32 +1,51 @@
+import { BadRequestException, Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
 import {
-  CreateTaskCommand,
-  UpdateTaskCommand,
-  DeleteTaskCommand,
-  AddTaskDependencyCommand,
-  RemoveTaskDependencyCommand,
-} from '../../../commands/project/task.commands';
-import { TASK_REPOSITORY } from '../../../../domain/repositories/project-phase/task.repository.interface';
-import { TASK_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/task.query-repository.interface';
-import { ITaskWriter } from '../../../../domain/repositories/project-phase/task.writer.interface';
-import { ITaskReader } from '../../../../domain/repositories/project-phase/task.reader.interface';
-import {
-  TaskEntity,
   TaskDependencyEntity,
-  TaskStatus,
+  TaskEntity,
   TaskPriority,
+  TaskStatus,
 } from '../../../../domain/entities/task.entity';
+import { PROJECT_PHASE_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase.query-reader.interface';
+import { IProjectPhaseReader } from '../../../../domain/repositories/project-phase/project-phase.reader.interface';
+import { TASK_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/task.query-repository.interface';
+import { ITaskReader } from '../../../../domain/repositories/project-phase/task.reader.interface';
+import { TASK_REPOSITORY } from '../../../../domain/repositories/project-phase/task.repository.interface';
+import { ITaskWriter } from '../../../../domain/repositories/project-phase/task.writer.interface';
+import {
+  AddTaskDependencyCommand,
+  CreateTaskCommand,
+  DeleteTaskCommand,
+  RemoveTaskDependencyCommand,
+  UpdateTaskCommand,
+} from '../../../commands/project/task.commands';
 
 @CommandHandler(CreateTaskCommand)
 export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
   constructor(
     @Inject(TASK_REPOSITORY)
     private readonly taskWriter: ITaskWriter,
+    @Inject(PROJECT_PHASE_QUERY_REPOSITORY)
+    private readonly phaseReader: IProjectPhaseReader,
   ) {}
 
   async execute(command: CreateTaskCommand): Promise<TaskEntity> {
     const { dto } = command;
+
+    // basic validation (DTO class-validator should catch these too, but just in case)
+    if (!dto.phaseId) {
+      throw new BadRequestException('phaseId is required');
+    }
+    if (!dto.name) {
+      throw new BadRequestException('name is required');
+    }
+
+    // ensure the referenced phase actually exists
+    const phase = await this.phaseReader.findById(dto.phaseId);
+    if (!phase) {
+      throw new BadRequestException('Referenced phase not found');
+    }
+
     return this.taskWriter.save({
       id: '',
       phaseId: dto.phaseId,

@@ -5,16 +5,16 @@ import { GetProjectAttendanceQuery } from '../../../../application/queries/proje
 import { ATTENDANCE_QUERY_READER } from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
 import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project/project-worker-repository.interface';
+  IProjectWorkerQueryReader,
+  PROJECT_WORKER_QUERY_READER,
+} from '../../../../domain/repositories/project/project-worker.query-reader.interface';
 import { AttendanceMapper } from '../../../mappers/attendance.mapper';
 
 @QueryHandler(GetProjectAttendanceQuery)
 export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAttendanceQuery> {
   constructor(
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_QUERY_READER)
+    private readonly projectWorkerRepository: IProjectWorkerQueryReader,
     @Inject(ATTENDANCE_QUERY_READER)
     private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}

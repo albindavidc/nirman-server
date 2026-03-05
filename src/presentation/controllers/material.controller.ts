@@ -1,37 +1,38 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  UseGuards,
+  Put,
   Request,
-  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
-import { GetProjectMaterialsQuery } from '../../application/queries/material/get-project-materials.query';
+import { CreateMaterialRequestCommand } from '../../application/commands/material/create-material-request.command';
 import { CreateMaterialCommand } from '../../application/commands/material/create-material.command';
+import { DeleteMaterialCommand } from '../../application/commands/material/delete-material.command';
 import { UpdateMaterialStockCommand } from '../../application/commands/material/update-material-stock.command';
 import { UpdateMaterialCommand } from '../../application/commands/material/update-material.command';
-import { DeleteMaterialCommand } from '../../application/commands/material/delete-material.command';
-import { CreateMaterialRequestCommand } from '../../application/commands/material/create-material-request.command';
 import { GetMaterialTransactionsQuery } from '../../application/queries/material/get-material-transactions.query';
 import { GetProjectMaterialRequestsQuery } from '../../application/queries/material/get-project-material-requests.query';
+import { GetProjectMaterialsQuery } from '../../application/queries/material/get-project-materials.query';
+import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 
 import {
   CreateMaterialDto,
-  UpdateMaterialDto,
   MaterialDto,
+  UpdateMaterialDto,
 } from '../../application/dto/material/material.dto';
-import {
-  CreateMaterialTransactionDto,
-  MaterialTransactionDto,
-} from '../../application/dto/material/transaction.dto';
 import {
   CreateMaterialRequestDto,
   MaterialRequestDto,
 } from '../../application/dto/material/request.dto';
+import {
+  CreateMaterialTransactionDto,
+  MaterialTransactionDto,
+} from '../../application/dto/material/transaction.dto';
 
 import { MATERIAL_ROUTES } from '../../common/constants/routes.constants';
 
@@ -61,7 +62,7 @@ export class MaterialController {
     );
   }
 
-  @Post(MATERIAL_ROUTES.UPDATE_MATERIAL)
+  @Put(MATERIAL_ROUTES.UPDATE_MATERIAL)
   async updateMaterial(
     @Param('id') id: string,
     @Body() dto: UpdateMaterialDto,

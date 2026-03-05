@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ITaskWriter } from '../../../domain/repositories/project-phase/task.writer.interface';
+import { TaskMapper } from '../../../application/mappers/project-phase/task.mapper';
 import {
-  TaskEntity,
   TaskDependencyEntity,
+  TaskEntity,
   TaskStatus,
 } from '../../../domain/entities/task.entity';
-import { TaskMapper } from '../../../application/mappers/project-phase/task.mapper';
-import { RepositoryUtils } from '../repository.utils';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
+import { ITaskWriter } from '../../../domain/repositories/project-phase/task.writer.interface';
+import { PrismaService } from '../../prisma/prisma.service';
+import { RepositoryUtils } from '../repository.utils';
 
 @Injectable()
 export class TaskRepository implements ITaskWriter {
@@ -23,13 +23,24 @@ export class TaskRepository implements ITaskWriter {
       const input = TaskMapper.toCreateInput(entity);
       const updateInput = TaskMapper.toUpdateInput(entity);
 
-      const upserted = await client.task.upsert({
-        where: { id: entity.id || '' },
-        create: input,
-        update: updateInput,
+      // Prisma upsert requires a valid unique identifier in the `where` clause.
+      // Our handlers pass an empty string for new entities, which leads to a
+      // runtime error when Prisma tries to interpret that value as an ObjectId.
+      // Instead of abusing upsert, split into create vs update paths.
+      if (!entity.id) {
+        const created = await client.task.create({
+          data: input,
+          include: { assignee: true },
+        });
+        return TaskMapper.toDomain(created);
+      }
+
+      const updated = await client.task.update({
+        where: { id: entity.id },
+        data: updateInput,
         include: { assignee: true },
       });
-      return TaskMapper.toDomain(upserted);
+      return TaskMapper.toDomain(updated);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -54,17 +65,23 @@ export class TaskRepository implements ITaskWriter {
     const client = RepositoryUtils.resolveClient(this.prisma, tx);
     try {
       const input = TaskMapper.dependencyToCreateInput(entity);
-      // Prisma does not support upsert without unique identifier if id is not unique, but id is unique string.
-      const upserted = await client.taskDependency.upsert({
-        where: { id: entity.id || '' },
-        create: input,
-        update: {
+
+      if (!entity.id) {
+        const created = await client.taskDependency.create({
+          data: input,
+        });
+        return TaskMapper.dependencyToDomain(created);
+      }
+
+      const updated = await client.taskDependency.update({
+        where: { id: entity.id },
+        data: {
           lag_time: entity.lagTime,
           type: entity.type,
           notes: entity.notes,
         },
       });
-      return TaskMapper.dependencyToDomain(upserted);
+      return TaskMapper.dependencyToDomain(updated);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

@@ -134,5 +134,6 @@ const CommandHandlers = [
     ...QueryHandlers,
     ...CommandHandlers,
   ],
+  exports: [PROJECT_PHASE_QUERY_REPOSITORY],
 })
 export class ProjectModule {}

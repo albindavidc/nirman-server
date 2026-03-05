@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ProjectPhase } from '../../../domain/entities/project-phase.entity';
 import { ProjectPhaseMapper } from '../../../application/mappers/project-phase.mapper';
-import { IProjectPhaseWriter } from '../../../domain/repositories/project-phase/project-phase.writer.interface';
-import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
-import { RepositoryUtils } from '../repository.utils';
+import { ProjectPhase } from '../../../domain/entities/project-phase.entity';
 import { ProjectPhaseStatus } from '../../../domain/enums/project-phase-status.enum';
+import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
+import { IProjectPhaseWriter } from '../../../domain/repositories/project-phase/project-phase.writer.interface';
+import { PrismaService } from '../../prisma/prisma.service';
+import { RepositoryUtils } from '../repository.utils';
 
 @Injectable()
 export class ProjectPhaseRepository implements IProjectPhaseWriter {
@@ -17,12 +17,20 @@ export class ProjectPhaseRepository implements IProjectPhaseWriter {
   ): Promise<ProjectPhase> {
     const client = RepositoryUtils.resolveClient(this.prisma, tx);
     try {
-      const result = await client.projectPhase.upsert({
-        where: { id: phase.id || '' },
-        create: ProjectPhaseMapper.toCreateInput(phase),
-        update: ProjectPhaseMapper.toUpdateInput(phase),
-      });
-      return ProjectPhaseMapper.toDomain(result);
+      // if the phase has an ID then treat this as an update, otherwise create
+      if (phase.id) {
+        const result = await client.projectPhase.update({
+          where: { id: phase.id },
+          data: ProjectPhaseMapper.toUpdateInput(phase),
+        });
+        return ProjectPhaseMapper.toDomain(result);
+      } else {
+        // omit id from create input so prisma will auto-generate one
+        const createData = ProjectPhaseMapper.toCreateInput(phase);
+        delete (createData as any).id;
+        const result = await client.projectPhase.create({ data: createData });
+        return ProjectPhaseMapper.toDomain(result);
+      }
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

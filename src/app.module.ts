@@ -32,7 +32,7 @@ import { ExportProjectAttendanceExcelQueryTs } from './application/queries/proje
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
-    RedisModule,
+    RedisModule.forRootAsync(),
     VendorSignupModule,
     OtpModule,
     AuthModule,

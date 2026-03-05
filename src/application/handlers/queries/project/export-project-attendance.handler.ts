@@ -2,9 +2,9 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { ExportProjectAttendanceQuery } from '../../../../application/queries/project/export-project-attendance.query';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project/project-worker-repository.interface';
+  IProjectWorkerQueryReader,
+  PROJECT_WORKER_QUERY_READER,
+} from '../../../../domain/repositories/project/project-worker.query-reader.interface';
 import { ATTENDANCE_QUERY_READER } from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
 import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import {
@@ -18,8 +18,8 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
   constructor(
     @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: IProjectRepository,
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_QUERY_READER)
+    private readonly projectWorkerRepository: IProjectWorkerQueryReader,
     @Inject(ATTENDANCE_QUERY_READER)
     private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}

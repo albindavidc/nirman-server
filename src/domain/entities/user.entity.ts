@@ -35,7 +35,7 @@ export interface UserProps {
 }
 
 export class User extends AggregateRoot {
-  private readonly _id: string;
+  private readonly _id?: string;
   private _createdAt: Date;
   private _updatedAt: Date;
 
@@ -55,7 +55,7 @@ export class User extends AggregateRoot {
 
   constructor(props: UserProps) {
     super();
-    this._id = props.id ?? '';
+    this._id = props.id!;
     this._createdAt = props.createdAt ?? new Date();
     this._updatedAt = props.updatedAt ?? new Date();
     this._firstName = props.firstName;
@@ -75,7 +75,7 @@ export class User extends AggregateRoot {
 
   // Getters
   get id(): string {
-    return this._id;
+    return this._id ?? '';
   }
   get createdAt(): Date {
     return this._createdAt;

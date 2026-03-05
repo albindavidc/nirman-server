@@ -21,6 +21,7 @@ import {
   GetProjectDependenciesHandler,
 } from '../../application/handlers/queries/project/task.handlers';
 import { GetMyTasksHandler } from '../../application/handlers/queries/project/get-my-tasks.handler';
+import { ProjectModule } from './project.module';
 
 const CommandHandlers = [
   CreateTaskHandler,
@@ -40,7 +41,7 @@ const QueryHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, PrismaModule],
+  imports: [CqrsModule, PrismaModule, ProjectModule],
   controllers: [TaskController],
   providers: [
     {

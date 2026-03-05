@@ -94,8 +94,7 @@ export class UserMapper {
   }
 
   static entityToPersistence(entity: User): Partial<UserPersistence> {
-    return {
-      id: entity.id,
+    const data: Partial<UserPersistence> = {
       first_name: entity.firstName,
       last_name: entity.lastName,
       email: entity.email,
@@ -136,6 +135,12 @@ export class UserMapper {
           }
         : null,
     };
+
+    if (entity.id) {
+       data.id = entity.id;
+    }
+
+    return data;
   }
 
   static persistenceToEntity(persistence: UserPersistence): User {

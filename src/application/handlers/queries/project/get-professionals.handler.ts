@@ -7,17 +7,17 @@ import {
   ProfessionalWithUser,
 } from '../../../../domain/repositories/professional-repository.interface';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project/project-worker-repository.interface';
+  IProjectWorkerQueryReader,
+  PROJECT_WORKER_QUERY_READER,
+} from '../../../../domain/repositories/project/project-worker.query-reader.interface';
 
 @QueryHandler(GetProfessionalsQuery)
 export class GetProfessionalsHandler implements IQueryHandler<GetProfessionalsQuery> {
   constructor(
     @Inject(PROFESSIONAL_REPOSITORY)
     private readonly professionalRepository: IProfessionalRepository,
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_QUERY_READER)
+    private readonly projectWorkerRepository: IProjectWorkerQueryReader,
   ) {}
 
   async execute(query: GetProfessionalsQuery): Promise<ProfessionalWithUser[]> {

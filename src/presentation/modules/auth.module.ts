@@ -29,10 +29,10 @@ import {
 } from '../../application/interfaces';
 
 // Redis
-import { RedisModule } from '../../infrastructure/redis/redis.module';
-import { SessionService } from '../../infrastructure/redis/session.service';
-import { BruteForceService } from '../../infrastructure/redis/brute-force.service';
-import { UserCacheService } from '../../infrastructure/redis/user-cache.service';
+// import { RedisModule } from '../../infrastructure/redis/redis.module';
+// import { SessionService } from '../../infrastructure/redis/session.service';
+// import { BruteForceService } from '../../infrastructure/redis/brute-force.service';
+// import { UserCacheService } from '../../infrastructure/redis/user-cache.service';
 
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
@@ -60,7 +60,7 @@ const CommandHandlers = [
     CqrsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     PrismaModule,
-    RedisModule,
+    // RedisModule,
     JwtModule.register({
       secret: process.env.ACCESS_TOKEN_SECRET || 'default-access-secret',
       signOptions: { expiresIn: '1h' },
@@ -79,10 +79,6 @@ const CommandHandlers = [
       provide: RESET_TOKEN_STORAGE_SERVICE,
       useClass: ResetTokenStorageService,
     },
-    // Redis services
-    SessionService,
-    BruteForceService,
-    UserCacheService,
     // Guards & strategies
     JwtStrategy,
     JwtAuthGuard,

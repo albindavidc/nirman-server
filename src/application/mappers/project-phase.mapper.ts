@@ -1,8 +1,8 @@
-import {
-  ProjectPhase as PrismaProjectPhase,
-  Prisma,
-} from '../../generated/client/client';
 import { ProjectPhase } from '../../domain/entities/project-phase.entity';
+import {
+  Prisma,
+  ProjectPhase as PrismaProjectPhase,
+} from '../../generated/client/client';
 import { ProjectPhaseDto } from '../dto/project/phase/project-phase.dto';
 
 export class ProjectPhaseMapper {
@@ -25,8 +25,8 @@ export class ProjectPhaseMapper {
   }
 
   static toCreateInput(domain: ProjectPhase): Prisma.ProjectPhaseCreateInput {
-    return {
-      id: domain.id,
+    // Prisma will generate an id if none is supplied; avoid passing an empty string
+    const input: any = {
       project: { connect: { id: domain.projectId } },
       name: domain.name,
       description: domain.description,
@@ -40,6 +40,10 @@ export class ProjectPhaseMapper {
       created_at: domain.createdAt,
       updated_at: domain.updatedAt,
     };
+    if (domain.id) {
+      input.id = domain.id;
+    }
+    return input;
   }
 
   static toUpdateInput(domain: ProjectPhase): Prisma.ProjectPhaseUpdateInput {
