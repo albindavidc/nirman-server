@@ -4,12 +4,13 @@ import { ExportProjectAttendanceQuery } from '../../../../application/queries/pr
 import {
   IProjectWorkerRepository,
   PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project-worker-repository.interface';
-import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+} from '../../../../domain/repositories/project/project-worker-repository.interface';
+import { ATTENDANCE_QUERY_READER } from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
+import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import {
   IProjectRepository,
   PROJECT_REPOSITORY,
-} from '../../../../domain/repositories/project-repository.interface';
+} from '../../../../domain/repositories/project/project-repository.interface';
 import PDFDocument from 'pdfkit';
 
 @QueryHandler(ExportProjectAttendanceQuery)
@@ -19,8 +20,8 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
     private readonly projectRepository: IProjectRepository,
     @Inject(PROJECT_WORKER_REPOSITORY)
     private readonly projectWorkerRepository: IProjectWorkerRepository,
-    @Inject(IAttendanceRepository)
-    private readonly attendanceRepository: IAttendanceRepository,
+    @Inject(ATTENDANCE_QUERY_READER)
+    private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}
 
   async execute(
@@ -48,7 +49,7 @@ export class ExportProjectAttendanceHandler implements IQueryHandler<ExportProje
 
     // Fetch Attendance for the day
     const attendanceRecords =
-      await this.attendanceRepository.findByProjectAndDateRange(
+      await this.attendanceQueryReader.findByProjectAndDateRange(
         projectId,
         startOfDay,
         endOfDay,

@@ -2,20 +2,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../generated/client/client';
 import { IVendorRepository } from '../../domain/repositories/vendor-repository.interface';
-import { BaseRepository } from './base.repository';
 import { Vendor } from '../../domain/entities/vendor.entity';
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
 import { VendorMapper } from '../../application/mappers/vendor.mapper';
 import { VendorWherePersistenceInput } from '../types/vendor.types';
 
 @Injectable()
-export class VendorRepository
-  extends BaseRepository<Vendor>
-  implements IVendorRepository
-{
-  constructor(prisma: PrismaService) {
-    super(prisma);
-  }
+export class VendorRepository implements IVendorRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<Vendor[]> {
     const vendors = await this.prisma.vendor.findMany({

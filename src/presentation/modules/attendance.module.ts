@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AttendanceController } from '../controllers/attendance.controller';
-import { AttendanceRepository } from '../../infrastructure/repositories/attendance.repository';
+import { AttendanceRepository } from '../../infrastructure/repositories/project/attendance.repository';
+import { AttendanceQueryRepository } from '../../infrastructure/repositories/project/attendance.query-repository';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
-import { IAttendanceRepository } from '../../domain/repositories/attendance-repository.interface';
+import {
+  ATTENDANCE_READER,
+  ATTENDANCE_WRITER,
+  ATTENDANCE_QUERY_READER,
+} from '../../domain/repositories/project-attendance/attendance-repository.interface';
 
 // Handlers
 import { CheckInHandler } from '../../application/handlers/commands/attendance/check-in.handler';
@@ -37,10 +42,9 @@ const QueryHandlers = [
   providers: [
     ...CommandHandlers,
     ...QueryHandlers,
-    {
-      provide: IAttendanceRepository,
-      useClass: AttendanceRepository,
-    },
+    { provide: ATTENDANCE_READER, useClass: AttendanceRepository },
+    { provide: ATTENDANCE_WRITER, useClass: AttendanceRepository },
+    { provide: ATTENDANCE_QUERY_READER, useClass: AttendanceQueryRepository },
   ],
 })
 export class AttendanceModule {}

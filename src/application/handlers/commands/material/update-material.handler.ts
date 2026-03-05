@@ -1,23 +1,38 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateMaterialCommand } from '../../../commands/material/update-material.command';
-import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
 import { MaterialDto } from '../../../dto/material/material.dto';
-import { NotFoundException } from '@nestjs/common';
+import { MaterialStatus } from '../../../../domain/enums/material-status.enum';
+import { MaterialMapper } from '../../../mappers/material.mapper';
+import {
+  IMaterialReader,
+  MATERIAL_READER,
+} from '../../../../domain/repositories/project-material/material.reader.interface';
+import {
+  IMaterialWriter,
+  MATERIAL_WRITER,
+} from '../../../../domain/repositories/project-material/material.writer.interface';
 
+/**
+ * DIP — injects IMaterialReader (for the guard-read) and IMaterialWriter
+ * (for the save). Never the full repository.
+ */
 @CommandHandler(UpdateMaterialCommand)
 export class UpdateMaterialHandler implements ICommandHandler<UpdateMaterialCommand> {
-  constructor(private readonly repository: MaterialRepository) {}
+  constructor(
+    @Inject(MATERIAL_READER)
+    private readonly reader: IMaterialReader,
+    @Inject(MATERIAL_WRITER)
+    private readonly writer: IMaterialWriter,
+  ) {}
 
   async execute(command: UpdateMaterialCommand): Promise<MaterialDto> {
-    const material = await this.repository.findById(command.id);
+    const material = await this.reader.findById(command.id);
     if (!material) {
       throw new NotFoundException('Material not found');
     }
 
-    // Update fields using entity methods
     const { dto } = command;
-
-    // Pass existing values if dto properties are undefined
     material.updateDetails(
       dto.name ?? material.name,
       dto.category ?? material.category,
@@ -36,27 +51,10 @@ export class UpdateMaterialHandler implements ICommandHandler<UpdateMaterialComm
     );
 
     if (dto.unit !== undefined) material.changeUnit(dto.unit);
-    if (dto.status !== undefined) material.changeStatus(dto.status);
+    if (dto.status !== undefined)
+      material.changeStatus(dto.status as MaterialStatus);
 
-    const updatedMaterial = await this.repository.update(material);
-
-    return {
-      id: updatedMaterial.id,
-      projectId: updatedMaterial.projectId,
-      name: updatedMaterial.name,
-      code: updatedMaterial.code,
-      category: updatedMaterial.category,
-      description: updatedMaterial.description,
-      specifications: updatedMaterial.specifications,
-      currentStock: updatedMaterial.currentStock,
-      unit: updatedMaterial.unit,
-      unitPrice: updatedMaterial.unitPrice,
-      reorderLevel: updatedMaterial.reorderLevel,
-      storageLocation: updatedMaterial.storageLocation,
-      preferredSupplierId: updatedMaterial.preferredSupplierId,
-      status: updatedMaterial.status,
-      createdAt: updatedMaterial.createdAt,
-      updatedAt: updatedMaterial.updatedAt,
-    };
+    const saved = await this.writer.save(material);
+    return MaterialMapper.toDto(saved);
   }
 }

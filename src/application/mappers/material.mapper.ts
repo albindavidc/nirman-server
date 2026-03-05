@@ -1,12 +1,27 @@
-import { MaterialModel as PrismaMaterial } from '../../generated/client/models';
-import { Material } from '../../domain/entities/material.entity';
-import { MaterialDto } from '../dto/material/material.dto';
 import {
-  MaterialCreatePersistenceInput,
-  MaterialPersistence,
-  MaterialUpdatePersistenceInput,
-} from '../../infrastructure/types/material.types';
+  MaterialModel as PrismaMaterial,
+  MaterialUncheckedCreateInput,
+  MaterialUncheckedUpdateInput,
+} from '../../generated/client/models';
+import { Material } from '../../domain/entities/material.entity';
+import { MaterialStatus } from '../../domain/enums/material-status.enum';
+import { MaterialDto } from '../dto/material/material.dto';
 
+/**
+ * SRP — Pure data transformation only. Zero business logic.
+ *
+ * toDomain()              — PrismaMaterial → Material entity.
+ * toUncheckedCreateInput() — Material entity → Prisma UncheckedCreateInput.
+ *                            UncheckedCreateInput is the correct type here
+ *                            because we pass scalar FKs (project_id, created_by)
+ *                            directly rather than relation connect objects.
+ * toUncheckedUpdateInput() — Material entity → Prisma UncheckedUpdateInput.
+ * toDto()                 — Material entity → MaterialDto (presentation layer).
+ *
+ * fromPrismaResult / fromPrismaResults / toPersistence / toPrismaCreateInput /
+ * toPrismaUpdateInput are removed — they were duplicate paths that caused
+ * divergence and hid the type cast `as unknown as MaterialPersistence`.
+ */
 export class MaterialMapper {
   static toDomain(raw: PrismaMaterial): Material {
     return new Material(
@@ -15,40 +30,57 @@ export class MaterialMapper {
       raw.material_name,
       raw.material_code,
       raw.category,
-      raw.description || undefined,
-      raw.specifications || undefined,
+      raw.description ?? undefined,
+      raw.specifications ?? undefined,
       raw.current_stock,
       raw.unit,
-      raw.unit_price || undefined,
-      raw.reorder_level || undefined,
-      raw.storage_location || undefined,
-      raw.preferred_supplier_id || undefined,
-      raw.status,
+      raw.unit_price ?? undefined,
+      raw.reorder_level ?? undefined,
+      raw.storage_location ?? undefined,
+      raw.preferred_supplier_id ?? undefined,
+      (raw.status as MaterialStatus) ?? MaterialStatus.IN_STOCK,
       raw.created_by,
       raw.created_at,
       raw.updated_at,
     );
   }
 
-  static toPersistence(domain: Material): PrismaMaterial {
+  static toUncheckedCreateInput(
+    domain: Material,
+  ): MaterialUncheckedCreateInput {
     return {
-      id: domain.id,
       project_id: domain.projectId,
       material_name: domain.name,
       material_code: domain.code,
       category: domain.category,
-      description: domain.description || null,
-      specifications: domain.specifications || null,
+      description: domain.description ?? null,
+      specifications: domain.specifications ?? null,
       current_stock: domain.currentStock,
       unit: domain.unit,
-      unit_price: domain.unitPrice || null,
-      reorder_level: domain.reorderLevel || null,
-      storage_location: domain.storageLocation || null,
-      preferred_supplier_id: domain.preferredSupplierId || null,
+      unit_price: domain.unitPrice ?? null,
+      reorder_level: domain.reorderLevel ?? null,
+      storage_location: domain.storageLocation ?? null,
+      preferred_supplier_id: domain.preferredSupplierId ?? null,
       status: domain.status,
       created_by: domain.createdBy,
-      created_at: domain.createdAt,
-      updated_at: domain.updatedAt,
+    };
+  }
+
+  static toUncheckedUpdateInput(
+    domain: Material,
+  ): MaterialUncheckedUpdateInput {
+    return {
+      material_name: domain.name,
+      category: domain.category,
+      description: domain.description ?? null,
+      specifications: domain.specifications ?? null,
+      current_stock: domain.currentStock,
+      unit: domain.unit,
+      unit_price: domain.unitPrice ?? null,
+      reorder_level: domain.reorderLevel ?? null,
+      storage_location: domain.storageLocation ?? null,
+      preferred_supplier_id: domain.preferredSupplierId ?? null,
+      status: domain.status,
     };
   }
 
@@ -70,77 +102,6 @@ export class MaterialMapper {
       status: domain.status,
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
-    };
-  }
-
-  static fromPrismaResult(result: MaterialPersistence): Material {
-    return new Material(
-      result.id,
-      result.project_id,
-      result.material_name,
-      result.material_code,
-      result.category,
-      result.description || undefined,
-      result.specifications || undefined,
-      result.current_stock,
-      result.unit,
-      result.unit_price || undefined,
-      result.reorder_level || undefined,
-      result.storage_location || undefined,
-      result.preferred_supplier_id || undefined,
-      result.status,
-      result.created_by,
-      result.created_at,
-      result.updated_at,
-    );
-  }
-
-  static fromPrismaResults(results: MaterialPersistence[]): Material[] {
-    return results.map((r) => this.fromPrismaResult(r));
-  }
-
-  static toPrismaCreateInput(domain: Material): MaterialCreatePersistenceInput {
-    // Note: Creating explicit object to match persistence
-    return {
-      project_id: domain.projectId,
-      material_name: domain.name,
-      material_code: domain.code,
-      category: domain.category,
-      description: domain.description || null,
-      specifications: domain.specifications || null,
-      current_stock: domain.currentStock,
-      unit: domain.unit,
-      unit_price: domain.unitPrice || null,
-      reorder_level: domain.reorderLevel || null,
-      storage_location: domain.storageLocation || null,
-      preferred_supplier_id: domain.preferredSupplierId || null,
-      status: domain.status,
-      created_by: domain.createdBy,
-    };
-  }
-
-  static toPrismaUpdateInput(domain: Material): MaterialUpdatePersistenceInput {
-    // Only map partial fields needed for update (or all if repository passes full entity)
-    // The previous Repo implementation updated: current_stock, status, updated_at
-    // But Mapper should support fuller update if provided?
-    // Based on Repo usage:
-    // repo.update calls toPersistence(material).
-    // repo update extracts: current_stock, status.
-    // If we want to be clean, Repo should construct specific Input, or Mapper provides standard inputs.
-    // I will implement fuller update map.
-
-    return {
-      material_name: domain.name,
-      category: domain.category,
-      description: domain.description || null,
-      specifications: domain.specifications || null,
-      current_stock: domain.currentStock,
-      unit: domain.unit,
-      unit_price: domain.unitPrice || null,
-      reorder_level: domain.reorderLevel || null,
-      storage_location: domain.storageLocation || null,
-      preferred_supplier_id: domain.preferredSupplierId || null,
-      status: domain.status,
     };
   }
 }

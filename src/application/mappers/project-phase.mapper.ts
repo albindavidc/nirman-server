@@ -1,4 +1,7 @@
-import { ProjectPhase as PrismaProjectPhase } from '../../generated/client/client';
+import {
+  ProjectPhase as PrismaProjectPhase,
+  Prisma,
+} from '../../generated/client/client';
 import { ProjectPhase } from '../../domain/entities/project-phase.entity';
 import { ProjectPhaseDto } from '../dto/project/phase/project-phase.dto';
 
@@ -21,11 +24,10 @@ export class ProjectPhaseMapper {
     );
   }
 
-  static toPersistence(
-    domain: ProjectPhase,
-  ): Omit<PrismaProjectPhase, 'id' | 'created_at' | 'updated_at'> {
+  static toCreateInput(domain: ProjectPhase): Prisma.ProjectPhaseCreateInput {
     return {
-      project_id: domain.projectId,
+      id: domain.id,
+      project: { connect: { id: domain.projectId } },
       name: domain.name,
       description: domain.description,
       progress: domain.progress,
@@ -35,6 +37,24 @@ export class ProjectPhaseMapper {
       actual_end_date: domain.actualEndDate,
       status: domain.status,
       sequence: domain.sequence,
+      created_at: domain.createdAt,
+      updated_at: domain.updatedAt,
+    };
+  }
+
+  static toUpdateInput(domain: ProjectPhase): Prisma.ProjectPhaseUpdateInput {
+    return {
+      project: { connect: { id: domain.projectId } },
+      name: domain.name,
+      description: domain.description,
+      progress: domain.progress,
+      planned_start_date: domain.plannedStartDate,
+      planned_end_date: domain.plannedEndDate,
+      actual_start_date: domain.actualStartDate,
+      actual_end_date: domain.actualEndDate,
+      status: domain.status,
+      sequence: domain.sequence,
+      updated_at: domain.updatedAt,
     };
   }
 

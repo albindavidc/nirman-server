@@ -4,19 +4,19 @@ import { GetPhaseForApprovalQuery } from '../../../queries/phase-approval/get-ph
 import { PhaseForApprovalDto } from '../../../dto/phase-approval/phase-approval-response.dto';
 import { PhaseApprovalMapper } from '../../../mappers/phase-approval.mapper';
 import {
-  IProjectPhaseRepository,
-  PROJECT_PHASE_REPOSITORY,
-} from '../../../../domain/repositories/project-phase-repository.interface';
+  IProjectPhaseQueryReader,
+  PROJECT_PHASE_QUERY_REPOSITORY,
+} from '../../../../domain/repositories/project-phase/project-phase.query-reader.interface';
 
 @QueryHandler(GetPhaseForApprovalQuery)
 export class GetPhaseForApprovalHandler implements IQueryHandler<GetPhaseForApprovalQuery> {
   constructor(
-    @Inject(PROJECT_PHASE_REPOSITORY)
-    private readonly projectPhaseRepository: IProjectPhaseRepository,
+    @Inject(PROJECT_PHASE_QUERY_REPOSITORY)
+    private readonly projectPhaseQueryReader: IProjectPhaseQueryReader,
   ) {}
 
   async execute(query: GetPhaseForApprovalQuery): Promise<PhaseForApprovalDto> {
-    const phaseData = await this.projectPhaseRepository.findWithApprovals(
+    const phaseData = await this.projectPhaseQueryReader.findWithApprovals(
       query.phaseId,
     );
 

@@ -4,15 +4,15 @@ import { GetProjectApprovalsQuery } from '../../../queries/phase-approval/get-pr
 import { PhaseApprovalResponseDto } from '../../../dto/phase-approval/phase-approval-response.dto';
 import { PhaseApprovalMapper } from '../../../mappers/phase-approval.mapper';
 import {
-  IPhaseApprovalRepository,
-  PHASE_APPROVAL_REPOSITORY,
-} from '../../../../domain/repositories/phase-approval-repository.interface';
+  IPhaseApprovalQueryReader,
+  PHASE_APPROVAL_QUERY_READER,
+} from '../../../../domain/repositories/project-phase/phase-approval-repository.interface';
 
 @QueryHandler(GetProjectApprovalsQuery)
 export class GetProjectApprovalsHandler implements IQueryHandler<GetProjectApprovalsQuery> {
   constructor(
-    @Inject(PHASE_APPROVAL_REPOSITORY)
-    private readonly phaseApprovalRepository: IPhaseApprovalRepository,
+    @Inject(PHASE_APPROVAL_QUERY_READER)
+    private readonly phaseApprovalRepository: IPhaseApprovalQueryReader,
   ) {}
 
   async execute(

@@ -7,37 +7,38 @@ import {
   MaterialRequest as PrismaMaterialRequest,
   Prisma,
 } from '../../generated/client/client';
+import { MaterialRequestStatus } from '../../domain/enums/material-request-status.enum';
+import { MaterialRequestPriority } from '../../domain/enums/material-request-priority.enum';
 
-interface PersistenceItem {
+interface PersistedItem {
   materialId: string;
   materialName: string;
   quantity: number;
   unit: string;
 }
-
 export class MaterialRequestMapper {
   static toDomain(persistence: PrismaMaterialRequest): MaterialRequest {
-    const items = persistence.items as unknown as PersistenceItem[];
+    const items = (persistence.items as object[] as PersistedItem[]).map(
+      (i) =>
+        new MaterialRequestItem(
+          i.materialId,
+          i.materialName,
+          i.quantity,
+          i.unit,
+        ),
+    );
 
-    const request = new MaterialRequest(
+    return new MaterialRequest(
       persistence.id,
       persistence.request_number,
       persistence.project_id,
       persistence.requested_by,
-      items.map(
-        (i) =>
-          new MaterialRequestItem(
-            i.materialId,
-            i.materialName,
-            i.quantity,
-            i.unit,
-          ),
-      ),
-      persistence.priority,
+      items,
+      persistence.priority as MaterialRequestPriority,
       persistence.purpose,
       persistence.delivery_location,
       persistence.required_date,
-      persistence.status,
+      persistence.status as MaterialRequestStatus,
       persistence.approved_by,
       persistence.approved_at,
       persistence.approval_comments,
@@ -45,9 +46,65 @@ export class MaterialRequestMapper {
       persistence.created_at,
       persistence.updated_at,
     );
-    return request;
   }
 
+  /** Domain entity → Prisma CreateInput (not UncheckedCreateInput) */
+  static toCreateInput(
+    domain: MaterialRequest,
+  ): Prisma.MaterialRequestCreateInput {
+    return {
+      request_number: domain.requestNumber,
+      items: domain.items.map((item) => ({
+        materialId: item.materialId,
+        materialName: item.materialName,
+        quantity: item.quantity,
+        unit: item.unit,
+      })),
+      priority: domain.priority,
+      purpose: domain.purpose ?? null,
+      delivery_location: domain.deliveryLocation ?? null,
+      required_date: domain.requiredDate,
+      status: domain.status,
+      // approved_by is the scalar FK — in CreateInput use the relation nested write
+      ...(domain.approvedBy
+        ? { approver: { connect: { id: domain.approvedBy } } }
+        : {}),
+      approved_at: domain.approvedAt ?? null,
+      approval_comments: domain.approvalComments ?? null,
+      rejection_reason: domain.rejectionReason ?? null,
+      project: { connect: { id: domain.projectId } },
+      requester: { connect: { id: domain.requestedBy } },
+    };
+  }
+
+  /** Domain entity → Prisma UpdateInput */
+  static toUpdateInput(
+    domain: MaterialRequest,
+  ): Prisma.MaterialRequestUpdateInput {
+    return {
+      request_number: domain.requestNumber,
+      items: domain.items.map((item) => ({
+        materialId: item.materialId,
+        materialName: item.materialName,
+        quantity: item.quantity,
+        unit: item.unit,
+      })),
+      priority: domain.priority,
+      purpose: domain.purpose ?? null,
+      delivery_location: domain.deliveryLocation ?? null,
+      required_date: domain.requiredDate,
+      status: domain.status,
+      // Do NOT set approved_by scalar — use only the relation nested write
+      approved_at: domain.approvedAt ?? null,
+      approval_comments: domain.approvalComments ?? null,
+      rejection_reason: domain.rejectionReason ?? null,
+      ...(domain.approvedBy
+        ? { approver: { connect: { id: domain.approvedBy } } }
+        : { approver: { disconnect: true } }),
+    };
+  }
+
+  /** Domain entity → DTO for application responses */
   static toDto(domain: MaterialRequest): MaterialRequestDto {
     return {
       id: domain.id,
@@ -71,35 +128,6 @@ export class MaterialRequestMapper {
       rejectionReason: domain.rejectionReason ?? undefined,
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
-    };
-  }
-
-  static toPersistence(
-    domain: MaterialRequest,
-  ): Prisma.MaterialRequestUncheckedCreateInput {
-    return {
-      // id auto-generated
-      project_id: domain.projectId,
-      request_number: domain.requestNumber,
-      requested_by: domain.requestedBy,
-      items: domain.items.map((item) => ({
-        materialId: item.materialId,
-        materialName: item.materialName,
-        quantity: item.quantity,
-        unit: item.unit,
-      })),
-      priority: domain.priority,
-      purpose: domain.purpose ?? null,
-      delivery_location: domain.deliveryLocation ?? null,
-      required_date: domain.requiredDate,
-      status: domain.status,
-      approved_by: domain.approvedBy ?? null,
-      approved_at: domain.approvedAt ?? null,
-      approval_comments: domain.approvalComments ?? null,
-      rejection_reason: domain.rejectionReason ?? null,
-      // converted_to_po default false
-      created_at: domain.createdAt,
-      updated_at: domain.updatedAt,
     };
   }
 }

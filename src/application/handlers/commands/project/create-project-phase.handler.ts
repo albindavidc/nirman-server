@@ -4,16 +4,14 @@ import { ProjectPhaseDto } from '../../../dto/project/phase/project-phase.dto';
 import { ProjectPhaseMapper } from '../../../mappers/project-phase.mapper';
 import { ProjectPhase } from '../../../../domain/entities/project-phase.entity';
 import { CreateProjectPhaseCommand } from '../../../commands/project/create-project-phase.command';
-import {
-  IProjectPhaseRepository,
-  PROJECT_PHASE_REPOSITORY,
-} from '../../../../domain/repositories/project-phase-repository.interface';
+import { PROJECT_PHASE_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase-repository.interface';
+import { IProjectPhaseWriter } from '../../../../domain/repositories/project-phase/project-phase.writer.interface';
 
 @CommandHandler(CreateProjectPhaseCommand)
 export class CreateProjectPhaseHandler implements ICommandHandler<CreateProjectPhaseCommand> {
   constructor(
     @Inject(PROJECT_PHASE_REPOSITORY)
-    private readonly projectPhaseRepository: IProjectPhaseRepository,
+    private readonly projectPhaseWriter: IProjectPhaseWriter,
   ) {}
 
   async execute(command: CreateProjectPhaseCommand): Promise<ProjectPhaseDto> {
@@ -36,7 +34,7 @@ export class CreateProjectPhaseHandler implements ICommandHandler<CreateProjectP
       new Date(),
     );
 
-    const created = await this.projectPhaseRepository.create(phase);
-    return ProjectPhaseMapper.toDto(created);
+    const saved = await this.projectPhaseWriter.save(phase);
+    return ProjectPhaseMapper.toDto(saved);
   }
 }

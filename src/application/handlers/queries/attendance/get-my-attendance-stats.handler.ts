@@ -2,8 +2,9 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import {
   AttendanceSummary,
-  IAttendanceRepository,
-} from '../../../../domain/repositories/attendance-repository.interface';
+  ATTENDANCE_QUERY_READER,
+} from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
+import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import { GetMyAttendanceStatsQuery } from '../../../queries/attendance/get-my-attendance-stats.query';
 
 export interface AttendanceStats {
@@ -19,8 +20,8 @@ export class GetMyAttendanceStatsHandler implements IQueryHandler<
   AttendanceSummary
 > {
   constructor(
-    @Inject(IAttendanceRepository)
-    private readonly attendanceRepository: IAttendanceRepository,
+    @Inject(ATTENDANCE_QUERY_READER)
+    private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}
 
   async execute(query: GetMyAttendanceStatsQuery): Promise<AttendanceSummary> {
@@ -38,7 +39,7 @@ export class GetMyAttendanceStatsHandler implements IQueryHandler<
       startOfMonth < startOfWeek ? startOfMonth : startOfWeek;
 
     const records =
-      await this.attendanceRepository.findByUserProjectAndDateRange(
+      await this.attendanceQueryReader.findByUserProjectAndDateRange(
         query.userId,
         query.projectId || '',
         statsStartDate,

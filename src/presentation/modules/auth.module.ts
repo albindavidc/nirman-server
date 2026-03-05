@@ -28,6 +28,12 @@ import {
   RESET_TOKEN_STORAGE_SERVICE,
 } from '../../application/interfaces';
 
+// Redis
+import { RedisModule } from '../../infrastructure/redis/redis.module';
+import { SessionService } from '../../infrastructure/redis/session.service';
+import { BruteForceService } from '../../infrastructure/redis/brute-force.service';
+import { UserCacheService } from '../../infrastructure/redis/user-cache.service';
+
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { UploadModule } from '../modules/upload.module';
@@ -38,6 +44,7 @@ import { JwtAuthGuard } from '../../common/security/guards/jwt-auth.guard';
 import { RefreshTokenStrategy } from '../../common/security/strategies/refresh-token.strategy';
 import { RolesGuard } from '../../common/security/guards/roles.guard';
 import { RefreshTokenGuard } from '../../common/security/guards/refresh-token.guard';
+import { BruteForceGuard } from '../../common/security/guards/brute-force.guard';
 
 const CommandHandlers = [
   LoginHandler,
@@ -53,6 +60,7 @@ const CommandHandlers = [
     CqrsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     PrismaModule,
+    RedisModule,
     JwtModule.register({
       secret: process.env.ACCESS_TOKEN_SECRET || 'default-access-secret',
       signOptions: { expiresIn: '1h' },
@@ -63,22 +71,32 @@ const CommandHandlers = [
   providers: [
     ...CommandHandlers,
     { provide: USER_REPOSITORY, useClass: UserRepository },
-    { provide: OtpStorageService, useClass: OtpStorageService }, // Keep class for now if used by class token elsewhere, or replace with symbol
+    { provide: OtpStorageService, useClass: OtpStorageService },
     { provide: EmailService, useClass: EmailService },
-    { provide: ResetTokenStorageService, useClass: ResetTokenStorageService },
-    // Register tokens for interface injection
     { provide: OTP_STORAGE_SERVICE, useClass: OtpStorageService },
     { provide: EMAIL_SERVICE, useClass: EmailService },
     {
       provide: RESET_TOKEN_STORAGE_SERVICE,
       useClass: ResetTokenStorageService,
     },
+    // Redis services
+    SessionService,
+    BruteForceService,
+    UserCacheService,
+    // Guards & strategies
     JwtStrategy,
     JwtAuthGuard,
     RefreshTokenStrategy,
     RolesGuard,
     RefreshTokenGuard,
+    BruteForceGuard,
   ],
-  exports: [JwtModule, JwtAuthGuard, RolesGuard, RefreshTokenGuard],
+  exports: [
+    JwtModule,
+    JwtAuthGuard,
+    RolesGuard,
+    RefreshTokenGuard,
+    BruteForceGuard,
+  ],
 })
 export class AuthModule {}

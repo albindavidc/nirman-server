@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { TaskController } from '../controllers/task.controller';
-import { TaskRepository } from '../../infrastructure/repositories/task.repository';
-import { TASK_REPOSITORY } from '../../domain/repositories/task-repository.interface';
+import { TaskRepository } from '../../infrastructure/repositories/project-phase/task.repository';
+import { TaskQueryRepository } from '../../infrastructure/repositories/project-phase/task.query-repository';
+import { TASK_REPOSITORY } from '../../domain/repositories/project-phase/task.repository.interface';
+import { TASK_QUERY_REPOSITORY } from '../../domain/repositories/project-phase/task.query-repository.interface';
 import {
   CreateTaskHandler,
   UpdateTaskHandler,
@@ -45,9 +47,13 @@ const QueryHandlers = [
       provide: TASK_REPOSITORY,
       useClass: TaskRepository,
     },
+    {
+      provide: TASK_QUERY_REPOSITORY,
+      useClass: TaskQueryRepository,
+    },
     ...CommandHandlers,
     ...QueryHandlers,
   ],
-  exports: [TASK_REPOSITORY],
+  exports: [TASK_REPOSITORY, TASK_QUERY_REPOSITORY],
 })
 export class TaskModule {}

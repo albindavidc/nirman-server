@@ -13,6 +13,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { MaterialRequestPriority } from '../../../domain/enums/material-request-priority.enum';
 
 export class MaterialRequestItemDto {
   materialId!: string;
@@ -57,13 +58,6 @@ export class MaterialItemDto {
   @IsString()
   @IsNotEmpty()
   unit!: string;
-}
-
-export enum MaterialRequestPriority {
-  LOW = 'Low',
-  MEDIUM = 'Medium',
-  HIGH = 'High',
-  URGENT = 'Urgent',
 }
 
 export class CreateMaterialRequestDto {

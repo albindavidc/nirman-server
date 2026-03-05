@@ -8,21 +8,25 @@ import {
   GetProjectDependenciesQuery,
 } from '../../../queries/project/task.queries';
 import {
-  TASK_REPOSITORY,
-  ITaskRepository,
-  Task,
-  TaskDependency,
-} from '../../../../domain/repositories/task-repository.interface';
+  TASK_QUERY_REPOSITORY,
+  ITaskQueryReader,
+} from '../../../../domain/repositories/project-phase/task.query-repository.interface';
+import { TASK_REPOSITORY } from '../../../../domain/repositories/project-phase/task.repository.interface';
+import { ITaskReader } from '../../../../domain/repositories/project-phase/task.reader.interface';
+import {
+  TaskEntity,
+  TaskDependencyEntity,
+} from '../../../../domain/entities/task.entity';
 
 @QueryHandler(GetPhaseTasksQuery)
 export class GetPhaseTasksHandler implements IQueryHandler<GetPhaseTasksQuery> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_QUERY_REPOSITORY)
+    private readonly taskQueryReader: ITaskQueryReader,
   ) {}
 
-  async execute(query: GetPhaseTasksQuery): Promise<Task[]> {
-    return this.taskRepository.findByPhaseId(query.phaseId);
+  async execute(query: GetPhaseTasksQuery): Promise<TaskEntity[]> {
+    return this.taskQueryReader.findByPhaseId(query.phaseId);
   }
 }
 
@@ -30,46 +34,50 @@ export class GetPhaseTasksHandler implements IQueryHandler<GetPhaseTasksQuery> {
 export class GetTaskDetailsHandler implements IQueryHandler<GetTaskDetailsQuery> {
   constructor(
     @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    private readonly taskReader: ITaskReader,
   ) {}
 
-  async execute(query: GetTaskDetailsQuery): Promise<Task | null> {
-    return this.taskRepository.findById(query.taskId);
+  async execute(query: GetTaskDetailsQuery): Promise<TaskEntity | null> {
+    return this.taskReader.findById(query.taskId);
   }
 }
 
 @QueryHandler(GetTaskDependenciesQuery)
 export class GetTaskDependenciesHandler implements IQueryHandler<GetTaskDependenciesQuery> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_QUERY_REPOSITORY)
+    private readonly taskQueryReader: ITaskQueryReader,
   ) {}
 
-  async execute(query: GetTaskDependenciesQuery): Promise<TaskDependency[]> {
-    return this.taskRepository.findDependenciesByPhaseId(query.phaseId);
+  async execute(
+    query: GetTaskDependenciesQuery,
+  ): Promise<TaskDependencyEntity[]> {
+    return this.taskQueryReader.findDependenciesByPhaseId(query.phaseId);
   }
 }
 
 @QueryHandler(GetProjectTasksQuery)
 export class GetProjectTasksHandler implements IQueryHandler<GetProjectTasksQuery> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_QUERY_REPOSITORY)
+    private readonly taskQueryReader: ITaskQueryReader,
   ) {}
 
-  async execute(query: GetProjectTasksQuery): Promise<Task[]> {
-    return this.taskRepository.findByProjectId(query.projectId);
+  async execute(query: GetProjectTasksQuery): Promise<TaskEntity[]> {
+    return this.taskQueryReader.findByProjectId(query.projectId);
   }
 }
 
 @QueryHandler(GetProjectDependenciesQuery)
 export class GetProjectDependenciesHandler implements IQueryHandler<GetProjectDependenciesQuery> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_QUERY_REPOSITORY)
+    private readonly taskQueryReader: ITaskQueryReader,
   ) {}
 
-  async execute(query: GetProjectDependenciesQuery): Promise<TaskDependency[]> {
-    return this.taskRepository.findDependenciesByProjectId(query.projectId);
+  async execute(
+    query: GetProjectDependenciesQuery,
+  ): Promise<TaskDependencyEntity[]> {
+    return this.taskQueryReader.findDependenciesByProjectId(query.projectId);
   }
 }

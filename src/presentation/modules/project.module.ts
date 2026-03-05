@@ -3,19 +3,40 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 // Infrastructure
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
-import { ProjectRepository } from '../../infrastructure/repositories/project.repository';
-import { ProjectPhaseRepository } from '../../infrastructure/repositories/project-phase.repository';
-import { ProjectWorkerRepository } from '../../infrastructure/repositories/project-worker.repository';
-import { PhaseApprovalRepository } from '../../infrastructure/repositories/phase-approval.repository';
-import { AttendanceRepository } from '../../infrastructure/repositories/attendance.repository';
+import { ProjectRepository } from '../../infrastructure/repositories/project/project.repository';
+import { ProjectQueryRepository } from '../../infrastructure/repositories/project/project.query-repository';
+import { ProjectPhaseRepository } from '../../infrastructure/repositories/project-phase/project-phase.repository';
+import { ProjectPhaseQueryRepository } from '../../infrastructure/repositories/project-phase/project-phase.query-repository';
+import { ProjectWorkerRepository } from '../../infrastructure/repositories/project/project-worker.repository';
+import { ProjectWorkerQueryRepository } from '../../infrastructure/repositories/project/project-worker.query-repository';
+import { PhaseApprovalRepository } from '../../infrastructure/repositories/project-phase/phase-approval.repository';
+import { PhaseApprovalQueryRepository } from '../../infrastructure/repositories/project-phase/phase-approval.query-repository';
+import { AttendanceRepository } from '../../infrastructure/repositories/project/attendance.repository';
+import { AttendanceQueryRepository } from '../../infrastructure/repositories/project/attendance.query-repository';
 import { ProfessionalRepository } from '../../infrastructure/repositories/professional.repository';
 
 // Domain interfaces
-import { PROJECT_REPOSITORY } from '../../domain/repositories/project-repository.interface';
-import { PROJECT_PHASE_REPOSITORY } from '../../domain/repositories/project-phase-repository.interface';
-import { PROJECT_WORKER_REPOSITORY } from '../../domain/repositories/project-worker-repository.interface';
-import { PHASE_APPROVAL_REPOSITORY } from '../../domain/repositories/phase-approval-repository.interface';
-import { IAttendanceRepository } from '../../domain/repositories/attendance-repository.interface';
+import { PROJECT_REPOSITORY } from '../../domain/repositories/project/project-repository.interface';
+import { PROJECT_READER } from '../../domain/repositories/project/project.reader.interface';
+import { PROJECT_WRITER } from '../../domain/repositories/project/project.writer.interface';
+import { PROJECT_QUERY_READER } from '../../domain/repositories/project/project.query-reader.interface';
+import { PROJECT_PHASE_REPOSITORY } from '../../domain/repositories/project-phase/project-phase-repository.interface';
+import { PROJECT_PHASE_QUERY_REPOSITORY } from '../../domain/repositories/project-phase/project-phase.query-reader.interface';
+import { PROJECT_WORKER_REPOSITORY } from '../../domain/repositories/project/project-worker-repository.interface';
+import { PROJECT_WORKER_READER } from '../../domain/repositories/project/project-worker.reader.interface';
+import { PROJECT_WORKER_WRITER } from '../../domain/repositories/project/project-worker.writer.interface';
+import { PROJECT_WORKER_QUERY_READER } from '../../domain/repositories/project/project-worker.query-reader.interface';
+import {
+  PHASE_APPROVAL_REPOSITORY,
+  PHASE_APPROVAL_READER,
+  PHASE_APPROVAL_WRITER,
+  PHASE_APPROVAL_QUERY_READER,
+} from '../../domain/repositories/project-phase/phase-approval-repository.interface';
+import {
+  ATTENDANCE_READER,
+  ATTENDANCE_WRITER,
+  ATTENDANCE_QUERY_READER,
+} from '../../domain/repositories/project-attendance/attendance-repository.interface';
 import { PROFESSIONAL_REPOSITORY } from '../../domain/repositories/professional-repository.interface';
 
 // Controllers
@@ -83,10 +104,31 @@ const CommandHandlers = [
   providers: [
     // Repository bindings
     { provide: PROJECT_REPOSITORY, useClass: ProjectRepository },
+    { provide: PROJECT_READER, useClass: ProjectRepository },
+    { provide: PROJECT_WRITER, useClass: ProjectRepository },
+    { provide: PROJECT_QUERY_READER, useClass: ProjectQueryRepository },
     { provide: PROJECT_PHASE_REPOSITORY, useClass: ProjectPhaseRepository },
+    {
+      provide: PROJECT_PHASE_QUERY_REPOSITORY,
+      useClass: ProjectPhaseQueryRepository,
+    },
     { provide: PROJECT_WORKER_REPOSITORY, useClass: ProjectWorkerRepository },
+    { provide: PROJECT_WORKER_READER, useClass: ProjectWorkerRepository },
+    { provide: PROJECT_WORKER_WRITER, useClass: ProjectWorkerRepository },
+    {
+      provide: PROJECT_WORKER_QUERY_READER,
+      useClass: ProjectWorkerQueryRepository,
+    },
     { provide: PHASE_APPROVAL_REPOSITORY, useClass: PhaseApprovalRepository },
-    { provide: IAttendanceRepository, useClass: AttendanceRepository },
+    { provide: PHASE_APPROVAL_READER, useClass: PhaseApprovalQueryRepository },
+    { provide: PHASE_APPROVAL_WRITER, useClass: PhaseApprovalRepository },
+    {
+      provide: PHASE_APPROVAL_QUERY_READER,
+      useClass: PhaseApprovalQueryRepository,
+    },
+    { provide: ATTENDANCE_READER, useClass: AttendanceRepository },
+    { provide: ATTENDANCE_WRITER, useClass: AttendanceRepository },
+    { provide: ATTENDANCE_QUERY_READER, useClass: AttendanceQueryRepository },
     { provide: PROFESSIONAL_REPOSITORY, useClass: ProfessionalRepository },
     // Handlers
     ...QueryHandlers,

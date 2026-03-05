@@ -9,7 +9,7 @@ import {
 import {
   IProjectWorkerRepository,
   PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project-worker-repository.interface';
+} from '../../../../domain/repositories/project/project-worker-repository.interface';
 
 @QueryHandler(GetProfessionalsQuery)
 export class GetProfessionalsHandler implements IQueryHandler<GetProfessionalsQuery> {

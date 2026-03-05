@@ -1,18 +1,18 @@
 /**
  * Reset Token Storage Service Interface
- *
+ * Methods are async to support distributed storage (e.g. Redis).
  */
 export interface IResetTokenStorageService {
   generateResetToken(): string;
-  storeResetToken(email: string, token: string): void;
+  storeResetToken(email: string, token: string): Promise<void>;
   getResetToken(
     email: string,
-  ): { token: string; expiresAt: Date; email: string } | undefined;
-  deleteResetToken(email: string): void;
+  ): Promise<{ token: string; email: string } | undefined>;
+  deleteResetToken(email: string): Promise<void>;
   validateResetToken(
     email: string,
     token: string,
-  ): { valid: boolean; message: string };
+  ): Promise<{ valid: boolean; message: string }>;
 }
 
 export const RESET_TOKEN_STORAGE_SERVICE = Symbol(

@@ -1,25 +1,35 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../domain/repositories/user-repository.interface';
-import { BaseRepository } from './base.repository';
 import { User } from '../../domain/entities/user.entity';
 import { UserMapper } from '../../application/mappers/user.mapper';
+import { UserCacheService } from '../redis/user-cache.service';
 
 @Injectable()
-export class UserRepository
-  extends BaseRepository<User>
-  implements IUserRepository
-{
-  constructor(prisma: PrismaService) {
-    super(prisma);
-  }
+export class UserRepository implements IUserRepository {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly userCache: UserCacheService,
+  ) {}
 
   async findById(id: string): Promise<User | null> {
+    // Check Redis profile cache first
+    const cached = await this.userCache.getProfile<User>(id);
+    if (cached) return cached;
+
     const user = await this.prisma.user.findFirst({
       where: { id, is_deleted: false },
       include: { vendor: true, professional: true },
     });
-    return user ? UserMapper.fromPersistenceResult(user) : null;
+
+    if (!user) return null;
+
+    const entity = UserMapper.fromPersistenceResult(user);
+
+    // Populate cache for subsequent requests (30 min TTL)
+    await this.userCache.setProfile(id, entity);
+
+    return entity;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -60,13 +70,6 @@ export class UserRepository
   }
 
   async create(data: User): Promise<User> {
-    const persistenceData = UserMapper.entityToPersistence(data);
-
-    // Remove relation keys as we handle them through connect if needed
-    const createDataRaw = { ...persistenceData };
-    delete createDataRaw.vendor;
-    delete createDataRaw.professional;
-
     const prismaData = UserMapper.toPersistenceCreateInput(data);
     delete prismaData.vendor;
     delete prismaData.professional;
@@ -84,12 +87,8 @@ export class UserRepository
     const prismaData = UserMapper.toPersistenceUpdateInput(data);
 
     delete prismaData.vendor;
-
     delete prismaData.professional;
-
     delete prismaData.id;
-
-    // Clean undefined fields
 
     const cleanData = Object.fromEntries(
       Object.entries(prismaData).filter((entry) => entry[1] !== undefined),
@@ -97,12 +96,13 @@ export class UserRepository
 
     await this.prisma.user.update({
       where: { id },
-
       data: cleanData as unknown as Parameters<
         PrismaService['user']['update']
       >[0]['data'],
     });
 
+    // Invalidate stale profile cache before re-fetching
+    await this.userCache.invalidateProfile(id);
     return (await this.findById(id))!;
   }
 
@@ -114,6 +114,7 @@ export class UserRepository
   }
 
   async delete(id: string): Promise<void> {
+    await this.userCache.invalidateProfile(id);
     await this.prisma.user.update({
       where: { id },
       data: {

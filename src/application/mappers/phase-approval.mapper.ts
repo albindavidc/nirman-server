@@ -3,7 +3,7 @@ import {
   MediaItem,
 } from '../../domain/entities/phase-approval.entity';
 import { PhaseApprovalResponseDto } from '../dto/phase-approval/phase-approval-response.dto';
-import { PhaseApprovalResult } from '../../domain/repositories/phase-approval-repository.interface';
+import { PhaseApprovalResult } from '../../domain/repositories/project-phase/phase-approval-repository.interface';
 import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 type PrismaPhaseApproval = {
@@ -31,11 +31,37 @@ export class PhaseApprovalMapper {
       prisma.approved_by,
       prisma.approval_status,
       prisma.comments,
-      prisma.media as MediaItem[],
+      prisma.media,
       prisma.approved_at,
       prisma.created_at,
       prisma.updated_at,
     );
+  }
+
+  static toCreateInput(data: {
+    phaseId: string;
+    approvedBy?: string;
+    requestedBy: string;
+    approvalStatus: ApprovalStatus;
+    comments: string | null;
+    media: MediaItem[];
+  }) {
+    // Determine approved_at based on status
+    const isDecided =
+      data.approvalStatus === ApprovalStatus.APPROVED ||
+      data.approvalStatus === ApprovalStatus.REJECTED;
+
+    return {
+      phase: { connect: { id: data.phaseId } },
+      approver: data.approvedBy
+        ? { connect: { id: data.approvedBy } }
+        : undefined,
+      requester: { connect: { id: data.requestedBy } },
+      approval_status: data.approvalStatus,
+      comments: data.comments,
+      media: data.media,
+      approved_at: isDecided ? new Date() : null,
+    };
   }
 
   static toDto(prisma: PrismaPhaseApproval): PhaseApprovalResponseDto {

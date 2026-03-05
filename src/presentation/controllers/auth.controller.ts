@@ -15,7 +15,12 @@ import { Response, Request } from 'express';
 
 // Common - Security
 import { RefreshTokenGuard } from '../../common/security/guards/refresh-token.guard';
+import { BruteForceGuard } from '../../common/security/guards/brute-force.guard';
 import { Public } from '../../common/security/decorators/public.decorator';
+
+// Redis services
+import { BruteForceService } from '../../infrastructure/redis/brute-force.service';
+import { SessionService } from '../../infrastructure/redis/session.service';
 
 // DTOs
 import { LoginDto } from '../../application/dto/auth/login.dto';
@@ -44,41 +49,56 @@ export class AuthController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly jwtService: JwtService,
+    private readonly bruteForceService: BruteForceService,
+    private readonly sessionService: SessionService,
   ) {}
 
   @Public()
+  @UseGuards(BruteForceGuard)
   @Post(AUTH_ROUTES.LOGIN)
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = (await this.commandBus.execute(
-      new LoginCommand(dto.email, dto.password),
-    )) as { accessToken: string; refreshToken: string; user: unknown };
+    const ip = this.extractIp(req);
+    const deviceInfo = req.headers['user-agent'] ?? 'unknown';
 
-    // Set HTTP-only cookies
-    const isProduction = process.env.NODE_ENV === 'production';
+    try {
+      const result = (await this.commandBus.execute(
+        new LoginCommand(dto.email, dto.password, ip, deviceInfo),
+      )) as { accessToken: string; refreshToken: string; user: unknown };
 
-    res.cookie('access_token', result.accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || '3600000'), // 1 hour
-    });
+      // Successful login — clear any brute-force counter for this IP
+      await this.bruteForceService.clearAttempts(ip);
 
-    res.cookie('refresh_token', result.refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000000'), // 30 days
-      path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`, // Only send on refresh endpoint
-    });
+      const isProduction = process.env.NODE_ENV === 'production';
 
-    return {
-      message: 'Login successful',
-      user: result.user,
-    };
+      res.cookie('access_token', result.accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'strict',
+        maxAge: parseInt(process.env.ACCESS_TOKEN_MAX_AGE || '3600000'),
+      });
+
+      res.cookie('refresh_token', result.refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'strict',
+        maxAge: parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000000'),
+        path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`,
+      });
+
+      return {
+        message: 'Login successful',
+        user: result.user,
+      };
+    } catch (err) {
+      // Record failed attempt on any error from the command (invalid creds, etc.)
+      await this.bruteForceService.recordFailedAttempt(ip);
+      throw err;
+    }
   }
 
   @Public()
@@ -129,7 +149,6 @@ export class AuthController {
       }
     ).user;
 
-    // Use GetProfileQuery to fetch full user details + fresh Presigned URL for photo
     const profile = await this.queryBus.execute(
       new GetProfileQuery(user.userId),
     );
@@ -139,8 +158,15 @@ export class AuthController {
 
   @Post(AUTH_ROUTES.LOGOUT)
   @HttpCode(HttpStatus.OK)
-  logout(@Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const isProduction = process.env.NODE_ENV === 'production';
+
+    // Delete the Redis session if refresh token cookie is present
+    const refreshToken = req.cookies?.refresh_token as string | undefined;
+    const user = req.user as { userId?: string } | undefined;
+    if (refreshToken && user?.userId) {
+      await this.sessionService.deleteSession(user.userId, refreshToken);
+    }
 
     res.clearCookie('access_token', {
       httpOnly: true,
@@ -153,6 +179,7 @@ export class AuthController {
       sameSite: 'strict',
       path: `${AUTH_ROUTES.ROOT}/${AUTH_ROUTES.REFRESH}`,
     });
+
     return { message: 'Logged out successfully' };
   }
 
@@ -193,5 +220,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   supervisorSignup(@Body() dto: SupervisorSignupDto) {
     return this.commandBus.execute(new SupervisorSignupCommand(dto));
+  }
+
+  private extractIp(request: Request): string {
+    const forwarded = request.headers['x-forwarded-for'];
+    if (typeof forwarded === 'string') {
+      return forwarded.split(',')[0].trim();
+    }
+    return request.ip ?? '0.0.0.0';
   }
 }

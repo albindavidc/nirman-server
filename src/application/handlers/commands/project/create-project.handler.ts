@@ -2,9 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { CreateProjectCommand } from '../../../commands/project/create-project.command';
 import {
-  IProjectRepository,
-  PROJECT_REPOSITORY,
-} from '../../../../domain/repositories/project-repository.interface';
+  IProjectWriter,
+  PROJECT_WRITER,
+} from '../../../../domain/repositories/project/project.writer.interface';
+import { Project } from '../../../../domain/entities/project.entity';
 import { ProjectMapper } from '../../../mappers/project.mapper';
 import { ProjectResponseDto } from '../../../dto/project/project-response.dto';
 import { ProjectStatus } from '../../../../domain/enums/project-status.enum';
@@ -12,8 +13,8 @@ import { ProjectStatus } from '../../../../domain/enums/project-status.enum';
 @CommandHandler(CreateProjectCommand)
 export class CreateProjectHandler implements ICommandHandler<CreateProjectCommand> {
   constructor(
-    @Inject(PROJECT_REPOSITORY)
-    private readonly projectRepository: IProjectRepository,
+    @Inject(PROJECT_WRITER)
+    private readonly projectWriter: IProjectWriter,
   ) {}
 
   async execute(command: CreateProjectCommand): Promise<ProjectResponseDto> {
@@ -40,7 +41,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
       workers[creatorIndex].isCreator = true;
     }
 
-    const project = await this.projectRepository.create({
+    const newProject = new Project({
       name: data.name,
       managerIds: data.managerIds ?? [],
       description: data.description,
@@ -55,6 +56,8 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
       longitude: data.longitude,
       workers: workers,
     });
+
+    const project = await this.projectWriter.save(newProject);
 
     return ProjectMapper.toResponse(project);
   }

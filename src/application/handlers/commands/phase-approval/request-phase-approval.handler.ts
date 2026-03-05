@@ -4,30 +4,32 @@ import { RequestPhaseApprovalCommand } from '../../../commands/phase-approval/re
 import { PhaseApprovalMapper } from '../../../mappers/phase-approval.mapper';
 import { PhaseApprovalResponseDto } from '../../../dto/phase-approval/phase-approval-response.dto';
 import {
-  IPhaseApprovalRepository,
-  PHASE_APPROVAL_REPOSITORY,
-} from '../../../../domain/repositories/phase-approval-repository.interface';
-import {
-  IProjectPhaseRepository,
-  PROJECT_PHASE_REPOSITORY,
-} from '../../../../domain/repositories/project-phase-repository.interface';
+  IPhaseApprovalWriter,
+  PHASE_APPROVAL_WRITER,
+} from '../../../../domain/repositories/project-phase/phase-approval-repository.interface';
+import { IProjectPhaseReader } from '../../../../domain/repositories/project-phase/project-phase.reader.interface';
+import { PROJECT_PHASE_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase.query-reader.interface';
+import { PROJECT_PHASE_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase-repository.interface';
+import { IProjectPhaseWriter } from '../../../../domain/repositories/project-phase/project-phase.writer.interface';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus } from '../../../../domain/enums/approval-status.enum';
 
 @CommandHandler(RequestPhaseApprovalCommand)
 export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhaseApprovalCommand> {
   constructor(
-    @Inject(PHASE_APPROVAL_REPOSITORY)
-    private readonly phaseApprovalRepository: IPhaseApprovalRepository,
+    @Inject(PHASE_APPROVAL_WRITER)
+    private readonly phaseApprovalWriter: IPhaseApprovalWriter,
+    @Inject(PROJECT_PHASE_QUERY_REPOSITORY)
+    private readonly projectPhaseReader: IProjectPhaseReader,
     @Inject(PROJECT_PHASE_REPOSITORY)
-    private readonly projectPhaseRepository: IProjectPhaseRepository,
+    private readonly projectPhaseWriter: IProjectPhaseWriter,
   ) {}
 
   async execute(
     command: RequestPhaseApprovalCommand,
   ): Promise<PhaseApprovalResponseDto> {
     // 1. Validate Phase
-    const phase = await this.projectPhaseRepository.findById(command.phaseId);
+    const phase = await this.projectPhaseReader.findById(command.phaseId);
     if (!phase) {
       throw new NotFoundException('Project phase not found');
     }
@@ -42,7 +44,7 @@ export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhase
     }
 
     // 3. Create Approval Request
-    const approval = await this.phaseApprovalRepository.create({
+    const approval = await this.phaseApprovalWriter.create({
       phaseId: command.phaseId,
       requestedBy: command.requestedBy,
       approvalStatus: ApprovalStatus.PENDING,
@@ -52,10 +54,8 @@ export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhase
     });
 
     // 4. Update Phase Status
-    await this.projectPhaseRepository.updateStatus(
-      command.phaseId,
-      'Review Pending',
-    );
+    phase.updateStatus('Review Pending');
+    await this.projectPhaseWriter.save(phase);
 
     return PhaseApprovalMapper.toDtoFromResult(approval);
   }

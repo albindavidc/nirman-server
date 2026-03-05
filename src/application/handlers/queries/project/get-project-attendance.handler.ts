@@ -2,11 +2,12 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { AttendanceResponseDto } from '../../../../application/dto/project/attendance-response.dto';
 import { GetProjectAttendanceQuery } from '../../../../application/queries/project/get-project-attendance.query';
-import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { ATTENDANCE_QUERY_READER } from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
+import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import {
   IProjectWorkerRepository,
   PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project-worker-repository.interface';
+} from '../../../../domain/repositories/project/project-worker-repository.interface';
 import { AttendanceMapper } from '../../../mappers/attendance.mapper';
 
 @QueryHandler(GetProjectAttendanceQuery)
@@ -14,8 +15,8 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
   constructor(
     @Inject(PROJECT_WORKER_REPOSITORY)
     private readonly projectWorkerRepository: IProjectWorkerRepository,
-    @Inject(IAttendanceRepository)
-    private readonly attendanceRepository: IAttendanceRepository,
+    @Inject(ATTENDANCE_QUERY_READER)
+    private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}
 
   async execute(
@@ -37,7 +38,7 @@ export class GetProjectAttendanceHandler implements IQueryHandler<GetProjectAtte
     }
 
     const attendanceRecords =
-      await this.attendanceRepository.findByProjectAndDateRange(
+      await this.attendanceQueryReader.findByProjectAndDateRange(
         projectId,
         startOfDay,
         endOfDay,

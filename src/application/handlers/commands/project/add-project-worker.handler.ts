@@ -2,9 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { AddProjectWorkerCommand } from '../../../commands/project/add-project-worker.command';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project-worker-repository.interface';
+  IProjectWorkerWriter,
+  PROJECT_WORKER_WRITER,
+} from '../../../../domain/repositories/project/project-worker.writer.interface';
 import {
   IProfessionalRepository,
   PROFESSIONAL_REPOSITORY,
@@ -13,8 +13,8 @@ import {
 @CommandHandler(AddProjectWorkerCommand)
 export class AddProjectWorkerHandler implements ICommandHandler<AddProjectWorkerCommand> {
   constructor(
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_WRITER)
+    private readonly projectWorkerRepository: IProjectWorkerWriter,
     @Inject(PROFESSIONAL_REPOSITORY)
     private readonly professionalRepository: IProfessionalRepository,
   ) {}

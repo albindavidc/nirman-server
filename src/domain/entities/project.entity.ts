@@ -29,54 +29,42 @@ export class Project extends AggregateRoot {
     },
   ) {
     super();
-    // Safely extract properties handling both mapped DTOs and raw persistence data
-    const {
-      id,
-      createdAt,
-      updatedAt,
-      name,
-      managerIds,
-      description,
-      icon,
-      status,
-      progress,
-      budget,
-      spent,
-      startDate,
-      dueDate,
-      latitude,
-      longitude,
-      workers,
-      phases,
-    } = props as unknown as {
-      [key: string]:
-        | string
-        | string[]
-        | number
-        | Date
-        | ProjectStatus
-        | ProjectWorker[]
-        | ProjectPhase[]
-        | undefined;
-    };
+    // Safely extract properties
+    const id = props.id;
+    const createdAt = props.createdAt;
+    const updatedAt = props.updatedAt;
+    const name = props.name;
+    const managerIds = props.managerIds;
+    const description = props.description;
+    const icon = props.icon;
+    const status = props.status;
+    const progress = props.progress;
+    const budget = props.budget;
+    const spent = props.spent;
+    const startDate = props.startDate;
+    const dueDate = props.dueDate;
+    const latitude = props.latitude;
+    const longitude = props.longitude;
+    const workers = props.workers;
+    const phases = props.phases;
 
-    this._id = (id as string) ?? '';
-    this._createdAt = (createdAt as Date) ?? new Date();
-    this._updatedAt = (updatedAt as Date) ?? new Date();
-    this._name = name as string;
-    this._managerIds = (managerIds as string[]) ?? [];
-    this._description = description as string | undefined;
-    this._icon = (icon as string) ?? 'folder';
-    this._status = (status as ProjectStatus) ?? ProjectStatus.ACTIVE;
-    this._progress = (progress as number) ?? 0;
-    this._budget = budget as number | undefined;
-    this._spent = spent as number | undefined;
-    this._startDate = startDate as Date | undefined;
-    this._dueDate = dueDate as Date | undefined;
-    this._latitude = latitude as number | undefined;
-    this._longitude = longitude as number | undefined;
-    this._workers = (workers as ProjectWorker[]) ?? [];
-    this._phases = (phases as ProjectPhase[]) ?? [];
+    this._id = id ?? '';
+    this._createdAt = createdAt ?? new Date();
+    this._updatedAt = updatedAt ?? new Date();
+    this._name = name;
+    this._managerIds = managerIds ?? [];
+    this._description = description;
+    this._icon = icon ?? 'folder';
+    this._status = status ?? ProjectStatus.ACTIVE;
+    this._progress = progress ?? 0;
+    this._budget = budget;
+    this._spent = spent;
+    this._startDate = startDate;
+    this._dueDate = dueDate;
+    this._latitude = latitude;
+    this._longitude = longitude;
+    this._workers = workers ?? [];
+    this._phases = phases ?? [];
   }
 
   get id(): string {

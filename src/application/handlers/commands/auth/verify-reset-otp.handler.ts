@@ -18,7 +18,9 @@ export class VerifyResetOtpHandler implements ICommandHandler<VerifyResetOtpComm
     private readonly resetTokenStorageService: IResetTokenStorageService,
   ) {}
 
-  execute(command: VerifyResetOtpCommand): Promise<VerifyResetOtpResponseDto> {
+  async execute(
+    command: VerifyResetOtpCommand,
+  ): Promise<VerifyResetOtpResponseDto> {
     const { email, otp } = command;
 
     const validation = this.otpStorageService.validateOtp(email, otp);
@@ -27,13 +29,13 @@ export class VerifyResetOtpHandler implements ICommandHandler<VerifyResetOtpComm
       throw new BadRequestException(validation.message);
     }
 
-    // OTP is valid, generate a password reset token
+    // Generate a reset token and store it in Redis (async, 15 min TTL)
     const resetToken = this.resetTokenStorageService.generateResetToken();
-    this.resetTokenStorageService.storeResetToken(email, resetToken);
+    await this.resetTokenStorageService.storeResetToken(email, resetToken);
 
-    return Promise.resolve({
+    return {
       resetToken,
       message: 'OTP verified successfully. You can now reset your password.',
-    });
+    };
   }
 }

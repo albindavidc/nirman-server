@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-
-interface ResetTokenRecord {
-  token: string;
-  expiresAt: Date;
-  email: string;
-}
-
+import { RedisService } from '../../redis/redis.service';
 import { IResetTokenStorageService } from '../../../application/interfaces/reset-token-storage.interface';
+
+const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
+const RESET_TOKEN_PREFIX = 'reset_token:';
 
 @Injectable()
 export class ResetTokenStorageService implements IResetTokenStorageService {
-  private tokenStore: Map<string, ResetTokenRecord> = new Map();
+  constructor(private readonly redis: RedisService) {}
 
   generateResetToken(): string {
-    // Generate a secure random token
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let token = '';
@@ -23,44 +19,44 @@ export class ResetTokenStorageService implements IResetTokenStorageService {
     return token;
   }
 
-  storeResetToken(email: string, token: string): void {
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-    this.tokenStore.set(email.toLowerCase(), {
-      token,
-      expiresAt,
-      email: email.toLowerCase(),
-    });
+  async storeResetToken(email: string, token: string): Promise<void> {
+    const key = `${RESET_TOKEN_PREFIX}${email.toLowerCase()}`;
+    await this.redis.set(
+      key,
+      { token, email: email.toLowerCase() },
+      RESET_TOKEN_TTL_SECONDS,
+    );
   }
 
-  getResetToken(email: string): ResetTokenRecord | undefined {
-    return this.tokenStore.get(email.toLowerCase());
+  async getResetToken(
+    email: string,
+  ): Promise<{ token: string; email: string } | undefined> {
+    const key = `${RESET_TOKEN_PREFIX}${email.toLowerCase()}`;
+    const result = await this.redis.get<{ token: string; email: string }>(key);
+    return result ?? undefined;
   }
 
-  deleteResetToken(email: string): void {
-    this.tokenStore.delete(email.toLowerCase());
+  async deleteResetToken(email: string): Promise<void> {
+    const key = `${RESET_TOKEN_PREFIX}${email.toLowerCase()}`;
+    await this.redis.del(key);
   }
 
-  validateResetToken(
+  async validateResetToken(
     email: string,
     token: string,
-  ): { valid: boolean; message: string } {
-    const record = this.tokenStore.get(email.toLowerCase());
+  ): Promise<{ valid: boolean; message: string }> {
+    const record = await this.getResetToken(email);
 
     if (!record) {
       return { valid: false, message: 'No reset token found for this email' };
-    }
-
-    if (new Date() > record.expiresAt) {
-      this.deleteResetToken(email);
-      return { valid: false, message: 'Reset token has expired' };
     }
 
     if (record.token !== token) {
       return { valid: false, message: 'Invalid reset token' };
     }
 
-    // Token is valid, remove it from store (one-time use)
-    this.deleteResetToken(email);
+    // One-time use — delete immediately after validation
+    await this.deleteResetToken(email);
     return { valid: true, message: 'Reset token verified successfully' };
   }
 }

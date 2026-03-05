@@ -2,17 +2,17 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { GetProjectByIdQuery } from '../../../queries/project/get-project-by-id.query';
 import {
-  IProjectRepository,
-  PROJECT_REPOSITORY,
-} from '../../../../domain/repositories/project-repository.interface';
+  IProjectReader,
+  PROJECT_READER,
+} from '../../../../domain/repositories/project/project.reader.interface';
 import { ProjectMapper } from '../../../mappers/project.mapper';
 import { ProjectResponseDto } from '../../../dto/project/project-response.dto';
 
 @QueryHandler(GetProjectByIdQuery)
 export class GetProjectByIdHandler implements IQueryHandler<GetProjectByIdQuery> {
   constructor(
-    @Inject(PROJECT_REPOSITORY)
-    private readonly projectRepository: IProjectRepository,
+    @Inject(PROJECT_READER)
+    private readonly projectReader: IProjectReader,
   ) {}
 
   async execute(
@@ -20,7 +20,7 @@ export class GetProjectByIdHandler implements IQueryHandler<GetProjectByIdQuery>
   ): Promise<ProjectResponseDto | null> {
     const { projectId } = query;
 
-    const project = await this.projectRepository.findById(projectId);
+    const project = await this.projectReader.findById(projectId);
     if (!project) {
       throw new NotFoundException('Project not found');
     }

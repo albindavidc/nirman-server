@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 // Infrastructure
 import { PrismaService } from './infrastructure/prisma/prisma.service';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 
 // Common - Security
 import { JwtAuthGuard } from './common/security/guards/jwt-auth.guard';
@@ -31,6 +32,7 @@ import { ExportProjectAttendanceExcelQueryTs } from './application/queries/proje
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    RedisModule,
     VendorSignupModule,
     OtpModule,
     AuthModule,

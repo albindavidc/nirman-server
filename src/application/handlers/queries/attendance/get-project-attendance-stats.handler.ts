@@ -1,14 +1,15 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IAttendanceRepository } from '../../../../domain/repositories/attendance-repository.interface';
+import { ATTENDANCE_QUERY_READER } from '../../../../domain/repositories/project-attendance/attendance-repository.interface';
+import { IAttendanceQueryReader } from '../../../../domain/repositories/project-attendance/attendance.query-reader.interface';
 import { AttendanceValue } from '../../../../domain/value-objects/attendance.vo';
 import { GetProjectAttendanceStatsQuery } from '../../../queries/attendance/get-project-attendance-stats.query';
 
 @QueryHandler(GetProjectAttendanceStatsQuery)
 export class GetProjectAttendanceStatsHandler implements IQueryHandler<GetProjectAttendanceStatsQuery> {
   constructor(
-    @Inject(IAttendanceRepository)
-    private readonly attendanceRepository: IAttendanceRepository,
+    @Inject(ATTENDANCE_QUERY_READER)
+    private readonly attendanceQueryReader: IAttendanceQueryReader,
   ) {}
 
   async execute(query: GetProjectAttendanceStatsQuery): Promise<{
@@ -23,7 +24,7 @@ export class GetProjectAttendanceStatsHandler implements IQueryHandler<GetProjec
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const records = await this.attendanceRepository.findByProjectAndDateRange(
+    const records = await this.attendanceQueryReader.findByProjectAndDateRange(
       projectId,
       startOfDay,
       endOfDay,

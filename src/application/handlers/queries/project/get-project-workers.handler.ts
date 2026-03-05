@@ -2,16 +2,16 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { GetProjectWorkersQuery } from '../../../queries/project/get-project-workers.query';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-  ProjectWorkerWithUser,
-} from '../../../../domain/repositories/project-worker-repository.interface';
+  IProjectWorkerQueryReader,
+  PROJECT_WORKER_QUERY_READER,
+} from '../../../../domain/repositories/project/project-worker.query-reader.interface';
+import { ProjectWorkerWithUser } from '../../../../domain/repositories/project/project-worker-repository.interface';
 
 @QueryHandler(GetProjectWorkersQuery)
 export class GetProjectWorkersHandler implements IQueryHandler<GetProjectWorkersQuery> {
   constructor(
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_QUERY_READER)
+    private readonly projectWorkerRepository: IProjectWorkerQueryReader,
   ) {}
 
   async execute(query: GetProjectWorkersQuery): Promise<

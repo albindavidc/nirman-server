@@ -4,29 +4,35 @@ import { CreatePhaseApprovalCommand } from '../../../commands/phase-approval/cre
 import { PhaseApprovalMapper } from '../../../mappers/phase-approval.mapper';
 import { PhaseApprovalResponseDto } from '../../../dto/phase-approval/phase-approval-response.dto';
 import {
-  IPhaseApprovalRepository,
-  PHASE_APPROVAL_REPOSITORY,
-} from '../../../../domain/repositories/phase-approval-repository.interface';
-import {
-  IProjectPhaseRepository,
-  PROJECT_PHASE_REPOSITORY,
-} from '../../../../domain/repositories/project-phase-repository.interface';
+  IPhaseApprovalReader,
+  IPhaseApprovalWriter,
+  PHASE_APPROVAL_READER,
+  PHASE_APPROVAL_WRITER,
+} from '../../../../domain/repositories/project-phase/phase-approval-repository.interface';
+import { PROJECT_PHASE_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase-repository.interface';
+import { IProjectPhaseWriter } from '../../../../domain/repositories/project-phase/project-phase.writer.interface';
+import { PROJECT_PHASE_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/project-phase.query-reader.interface';
+import { IProjectPhaseReader } from '../../../../domain/repositories/project-phase/project-phase.reader.interface';
 import { ApprovalStatus } from '../../../../domain/enums/approval-status.enum';
 
 @CommandHandler(CreatePhaseApprovalCommand)
 export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseApprovalCommand> {
   constructor(
-    @Inject(PHASE_APPROVAL_REPOSITORY)
-    private readonly phaseApprovalRepository: IPhaseApprovalRepository,
+    @Inject(PHASE_APPROVAL_READER)
+    private readonly phaseApprovalReader: IPhaseApprovalReader,
+    @Inject(PHASE_APPROVAL_WRITER)
+    private readonly phaseApprovalWriter: IPhaseApprovalWriter,
+    @Inject(PROJECT_PHASE_QUERY_REPOSITORY)
+    private readonly projectPhaseReader: IProjectPhaseReader,
     @Inject(PROJECT_PHASE_REPOSITORY)
-    private readonly projectPhaseRepository: IProjectPhaseRepository,
+    private readonly projectPhaseWriter: IProjectPhaseWriter,
   ) {}
 
   async execute(
     command: CreatePhaseApprovalCommand,
   ): Promise<PhaseApprovalResponseDto> {
     // 1. Validate phase exists
-    const phase = await this.projectPhaseRepository.findById(command.phaseId);
+    const phase = await this.projectPhaseReader.findById(command.phaseId);
     if (!phase) {
       throw new NotFoundException('Project phase not found');
     }
@@ -40,8 +46,9 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
     }
 
     // 3. Check if latest approval is already decided
-    const latestApproval =
-      await this.phaseApprovalRepository.findLatestByPhaseId(command.phaseId);
+    const latestApproval = await this.phaseApprovalReader.findLatestByPhaseId(
+      command.phaseId,
+    );
     if (
       latestApproval &&
       latestApproval.approvalStatus !== ApprovalStatus.PENDING
@@ -52,7 +59,7 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
     }
 
     // 4. Create the approval record
-    const approval = await this.phaseApprovalRepository.create({
+    const approval = await this.phaseApprovalWriter.create({
       phaseId: command.phaseId,
       approvedBy: command.approvedBy,
       requestedBy: command.requestedBy,
@@ -63,15 +70,13 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
 
     // 5. Update phase status and related fields based on decision
     if (command.approvalStatus === ApprovalStatus.APPROVED) {
-      await this.projectPhaseRepository.update(command.phaseId, {
-        status: 'Completed',
-        progress: 100,
-        actualEndDate: new Date(),
-      });
+      phase.updateStatus('Completed');
+      phase.updateProgress(100);
+      phase.updateActualDates(phase.actualStartDate, new Date());
+      await this.projectPhaseWriter.save(phase);
     } else if (command.approvalStatus === ApprovalStatus.REJECTED) {
-      await this.projectPhaseRepository.update(command.phaseId, {
-        status: 'In Progress',
-      });
+      phase.updateStatus('In Progress');
+      await this.projectPhaseWriter.save(phase);
     }
 
     return PhaseApprovalMapper.toDtoFromResult(approval);

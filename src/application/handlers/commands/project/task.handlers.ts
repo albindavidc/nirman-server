@@ -7,72 +7,90 @@ import {
   AddTaskDependencyCommand,
   RemoveTaskDependencyCommand,
 } from '../../../commands/project/task.commands';
+import { TASK_REPOSITORY } from '../../../../domain/repositories/project-phase/task.repository.interface';
+import { TASK_QUERY_REPOSITORY } from '../../../../domain/repositories/project-phase/task.query-repository.interface';
+import { ITaskWriter } from '../../../../domain/repositories/project-phase/task.writer.interface';
+import { ITaskReader } from '../../../../domain/repositories/project-phase/task.reader.interface';
 import {
-  TASK_REPOSITORY,
-  ITaskRepository,
-  Task,
-  TaskDependency,
-} from '../../../../domain/repositories/task-repository.interface';
+  TaskEntity,
+  TaskDependencyEntity,
+  TaskStatus,
+  TaskPriority,
+} from '../../../../domain/entities/task.entity';
 
 @CommandHandler(CreateTaskCommand)
 export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
   constructor(
     @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    private readonly taskWriter: ITaskWriter,
   ) {}
 
-  async execute(command: CreateTaskCommand): Promise<Task> {
+  async execute(command: CreateTaskCommand): Promise<TaskEntity> {
     const { dto } = command;
-    return this.taskRepository.create({
+    return this.taskWriter.save({
+      id: '',
       phaseId: dto.phaseId,
       name: dto.name,
       description: dto.description || null,
       assignedTo: dto.assignedTo || null,
       plannedStartDate: dto.plannedStartDate
         ? new Date(dto.plannedStartDate)
-        : undefined,
-      plannedEndDate: dto.plannedEndDate
-        ? new Date(dto.plannedEndDate)
-        : undefined,
-      priority: dto.priority,
-      status: dto.status,
+        : null,
+      plannedEndDate: dto.plannedEndDate ? new Date(dto.plannedEndDate) : null,
+      actualStartDate: null,
+      actualEndDate: null,
+      priority: (dto.priority as TaskPriority) || TaskPriority.MEDIUM,
+      status: (dto.status as TaskStatus) || TaskStatus.TODO,
+      progress: 0,
       notes: dto.notes || null,
       color: dto.color || null,
-    });
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as TaskEntity);
   }
 }
 
 @CommandHandler(UpdateTaskCommand)
 export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_REPOSITORY) private readonly taskWriter: ITaskWriter,
+    @Inject(TASK_QUERY_REPOSITORY) private readonly taskReader: ITaskReader,
   ) {}
 
-  async execute(command: UpdateTaskCommand): Promise<Task> {
+  async execute(command: UpdateTaskCommand): Promise<TaskEntity> {
     const { id, dto } = command;
-    return this.taskRepository.update(id, {
-      name: dto.name,
-      description: dto.description || undefined,
-      assignedTo: dto.assignedTo || undefined,
+
+    const existing = await this.taskReader.findById(id);
+    if (!existing) {
+      throw new Error(`Task with ID ${id} not found`);
+    }
+
+    return this.taskWriter.save({
+      ...existing,
+      name: dto.name || existing.name,
+      description:
+        dto.description !== undefined ? dto.description : existing.description,
+      assignedTo:
+        dto.assignedTo !== undefined ? dto.assignedTo : existing.assignedTo,
       plannedStartDate: dto.plannedStartDate
         ? new Date(dto.plannedStartDate)
-        : undefined,
+        : existing.plannedStartDate,
       plannedEndDate: dto.plannedEndDate
         ? new Date(dto.plannedEndDate)
-        : undefined,
+        : existing.plannedEndDate,
       actualStartDate: dto.actualStartDate
         ? new Date(dto.actualStartDate)
-        : undefined,
+        : existing.actualStartDate,
       actualEndDate: dto.actualEndDate
         ? new Date(dto.actualEndDate)
-        : undefined,
-      status: dto.status,
-      priority: dto.priority,
-      progress: dto.progress,
-      notes: dto.notes || undefined,
-      color: dto.color || undefined,
-    });
+        : existing.actualEndDate,
+      status: dto.status || existing.status,
+      priority: dto.priority || existing.priority,
+      progress: dto.progress !== undefined ? dto.progress : existing.progress,
+      notes: dto.notes !== undefined ? dto.notes : existing.notes,
+      color: dto.color !== undefined ? dto.color : existing.color,
+      updatedAt: new Date(),
+    } as TaskEntity);
   }
 }
 
@@ -80,38 +98,40 @@ export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand> {
 export class DeleteTaskHandler implements ICommandHandler<DeleteTaskCommand> {
   constructor(
     @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    private readonly taskWriter: ITaskWriter,
   ) {}
 
   async execute(command: DeleteTaskCommand): Promise<void> {
-    await this.taskRepository.delete(command.id);
+    await this.taskWriter.softDelete(command.id);
   }
 }
 
 @CommandHandler(AddTaskDependencyCommand)
 export class AddTaskDependencyHandler implements ICommandHandler<AddTaskDependencyCommand> {
   constructor(
-    @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    @Inject(TASK_REPOSITORY) private readonly taskWriter: ITaskWriter,
+    @Inject(TASK_QUERY_REPOSITORY) private readonly taskReader: ITaskReader,
   ) {}
 
-  async execute(command: AddTaskDependencyCommand): Promise<TaskDependency> {
+  async execute(
+    command: AddTaskDependencyCommand,
+  ): Promise<TaskDependencyEntity> {
     const { dto } = command;
 
-    // Ensure successor exists to get valid phaseId
-    const successor = await this.taskRepository.findById(dto.successorTaskId);
+    const successor = await this.taskReader.findById(dto.successorTaskId);
     if (!successor) {
       throw new Error('Successor task not found');
     }
 
-    return this.taskRepository.addDependency({
+    return this.taskWriter.addDependency({
+      id: '',
       phaseId: successor.phaseId,
       successorTaskId: dto.successorTaskId,
       predecessorTaskId: dto.predecessorTaskId,
       type: dto.type || 'FS',
       lagTime: dto.lagTime || 0,
-      notes: null, // Initialize with null if no notes provided
-    });
+      notes: null,
+    } as TaskDependencyEntity);
   }
 }
 
@@ -119,10 +139,10 @@ export class AddTaskDependencyHandler implements ICommandHandler<AddTaskDependen
 export class RemoveTaskDependencyHandler implements ICommandHandler<RemoveTaskDependencyCommand> {
   constructor(
     @Inject(TASK_REPOSITORY)
-    private readonly taskRepository: ITaskRepository,
+    private readonly taskWriter: ITaskWriter,
   ) {}
 
   async execute(command: RemoveTaskDependencyCommand): Promise<void> {
-    await this.taskRepository.removeDependency(command.id);
+    await this.taskWriter.removeDependency(command.id);
   }
 }

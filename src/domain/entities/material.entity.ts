@@ -1,4 +1,5 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+import { MaterialStatus } from '../enums/material-status.enum';
 
 export class Material extends AggregateRoot {
   constructor(
@@ -15,7 +16,7 @@ export class Material extends AggregateRoot {
     private _reorderLevel: number | undefined,
     private _storageLocation: string | undefined,
     private _preferredSupplierId: string | undefined,
-    private _status: string,
+    private _status: MaterialStatus,
     private readonly _createdBy: string,
     private readonly _createdAt: Date,
     private _updatedAt: Date,
@@ -26,67 +27,51 @@ export class Material extends AggregateRoot {
   get id(): string {
     return this._id;
   }
-
   get projectId(): string {
     return this._projectId;
   }
-
   get name(): string {
     return this._name;
   }
-
   get code(): string {
     return this._code;
   }
-
   get category(): string {
     return this._category;
   }
-
   get description(): string | undefined {
     return this._description;
   }
-
   get specifications(): string | undefined {
     return this._specifications;
   }
-
   get currentStock(): number {
     return this._currentStock;
   }
-
   get unit(): string {
     return this._unit;
   }
-
   get unitPrice(): number | undefined {
     return this._unitPrice;
   }
-
   get reorderLevel(): number | undefined {
     return this._reorderLevel;
   }
-
   get storageLocation(): string | undefined {
     return this._storageLocation;
   }
-
   get preferredSupplierId(): string | undefined {
     return this._preferredSupplierId;
   }
-
-  get status(): string {
+  get status(): MaterialStatus {
     return this._status;
   }
-
   get createdBy(): string {
     return this._createdBy;
   }
-
   get createdAt(): Date {
     return this._createdAt;
   }
-
   get updatedAt(): Date {
     return this._updatedAt;
   }
@@ -99,17 +84,17 @@ export class Material extends AggregateRoot {
     } else {
       this._currentStock += quantity;
     }
-    this.updateStatus();
+    this._syncStatus();
     this._updatedAt = new Date();
   }
 
-  private updateStatus(): void {
+  private _syncStatus(): void {
     if (this._currentStock <= 0) {
-      this._status = 'out_of_stock';
+      this._status = MaterialStatus.OUT_OF_STOCK;
     } else if (this._reorderLevel && this._currentStock <= this._reorderLevel) {
-      this._status = 'low_stock';
+      this._status = MaterialStatus.LOW_STOCK;
     } else {
-      this._status = 'in_stock';
+      this._status = MaterialStatus.IN_STOCK;
     }
   }
 
@@ -131,13 +116,11 @@ export class Material extends AggregateRoot {
     this._reorderLevel = reorderLevel;
     this._storageLocation = storageLocation;
     this._preferredSupplierId = preferredSupplierId;
-
-    this.updateStatus();
+    this._syncStatus();
     this._updatedAt = new Date();
   }
 
-  // Explicit manual overrides
-  changeStatus(status: string): void {
+  changeStatus(status: MaterialStatus): void {
     this._status = status;
     this._updatedAt = new Date();
   }
@@ -148,7 +131,7 @@ export class Material extends AggregateRoot {
   }
 
   markAsArchived(): void {
-    this._status = 'archived';
+    this._status = MaterialStatus.ARCHIVED;
     this._updatedAt = new Date();
   }
 }

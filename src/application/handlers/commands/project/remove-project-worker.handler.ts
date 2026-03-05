@@ -2,15 +2,15 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { RemoveProjectWorkerCommand } from '../../../commands/project/remove-project-worker.command';
 import {
-  IProjectWorkerRepository,
-  PROJECT_WORKER_REPOSITORY,
-} from '../../../../domain/repositories/project-worker-repository.interface';
+  IProjectWorkerWriter,
+  PROJECT_WORKER_WRITER,
+} from '../../../../domain/repositories/project/project-worker.writer.interface';
 
 @CommandHandler(RemoveProjectWorkerCommand)
 export class RemoveProjectWorkerHandler implements ICommandHandler<RemoveProjectWorkerCommand> {
   constructor(
-    @Inject(PROJECT_WORKER_REPOSITORY)
-    private readonly projectWorkerRepository: IProjectWorkerRepository,
+    @Inject(PROJECT_WORKER_WRITER)
+    private readonly projectWorkerRepository: IProjectWorkerWriter,
   ) {}
 
   async execute(command: RemoveProjectWorkerCommand): Promise<{

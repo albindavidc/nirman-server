@@ -1,5 +1,5 @@
 import { AttendanceEntity } from '../../domain/entities/attendance.entity';
-import { ProjectWorkerWithUser } from '../../domain/repositories/project-worker-repository.interface';
+import { ProjectWorkerWithUser } from '../../domain/repositories/project/project-worker-repository.interface';
 import { AttendanceMethod } from '../../domain/value-objects/attendance-method.vo';
 import { AttendanceStatus } from '../../domain/value-objects/attendance.vo';
 import { WorkHours } from '../../domain/value-objects/work-hours.vo';
@@ -70,13 +70,7 @@ export class AttendanceMapper {
   static toResponseDto(entity: AttendanceEntity): AttendanceResponseDto {
     const dto = new AttendanceResponseDto();
 
-    if (!entity.id) {
-      throw new Error(
-        'AttendanceEntity must have an id to be converted to AttendanceResponseDto',
-      );
-    }
-
-    dto.id = entity.id;
+    dto.id = entity.id!;
     dto.userId = entity.userId;
     dto.projectId = entity.projectId;
     dto.date = entity.date;

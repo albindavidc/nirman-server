@@ -8,6 +8,7 @@ import {
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
 import { S3Service } from '../../../../infrastructure/services/s3/s3.service';
+import { SessionService } from '../../../../infrastructure/redis/session.service';
 
 export interface LoginResult {
   accessToken: string;
@@ -18,7 +19,7 @@ export interface LoginResult {
     role: string;
     firstName: string;
     lastName: string;
-    profilePhotoUrl?: string; // Presigned URL
+    profilePhotoUrl?: string;
     vendorStatus?: string;
     rejectionReason?: string | null;
     vendorId?: string;
@@ -32,10 +33,11 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
     private readonly s3Service: S3Service,
+    private readonly sessionService: SessionService,
   ) {}
 
   async execute(command: LoginCommand): Promise<LoginResult> {
-    const { email, password } = command;
+    const { email, password, ip, deviceInfo } = command;
 
     const user = await this.userRepository.findByEmail(email.toLowerCase());
 
@@ -66,6 +68,14 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       secret: process.env.REFRESH_TOKEN_SECRET || 'default-refresh-secret',
       expiresIn: '30d',
     });
+
+    // Persist session in Redis — async, non-blocking to the response
+    await this.sessionService.createSession(
+      user.id,
+      refreshToken,
+      deviceInfo ?? 'unknown',
+      ip ?? 'unknown',
+    );
 
     // Generate presigned URL for profile photo if it exists
     let profilePhotoUrl = user.profilePhotoUrl;

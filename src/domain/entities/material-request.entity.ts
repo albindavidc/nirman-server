@@ -1,4 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+import { MaterialRequestStatus } from '../enums/material-request-status.enum';
+import { MaterialRequestPriority } from '../enums/material-request-priority.enum';
 
 export class MaterialRequest extends AggregateRoot {
   constructor(
@@ -7,11 +9,11 @@ export class MaterialRequest extends AggregateRoot {
     private _projectId: string,
     private _requestedBy: string,
     private _items: MaterialRequestItem[],
-    private _priority: string,
+    private _priority: MaterialRequestPriority,
     private _purpose: string | null,
     private _deliveryLocation: string | null,
     private _requiredDate: Date,
-    private _status: string,
+    private _status: MaterialRequestStatus,
     private _approvedBy: string | null,
     private _approvedAt: Date | null,
     private _approvalComments: string | null,
@@ -38,7 +40,7 @@ export class MaterialRequest extends AggregateRoot {
   get items(): Readonly<MaterialRequestItem[]> {
     return this._items;
   }
-  get priority(): string {
+  get priority(): MaterialRequestPriority {
     return this._priority;
   }
   get purpose(): string | null {
@@ -50,7 +52,7 @@ export class MaterialRequest extends AggregateRoot {
   get requiredDate(): Date {
     return this._requiredDate;
   }
-  get status(): string {
+  get status(): MaterialRequestStatus {
     return this._status;
   }
   get approvedBy(): string | null {
@@ -72,13 +74,13 @@ export class MaterialRequest extends AggregateRoot {
     return this._updatedAt;
   }
 
-  /* Setters   */
+  /* Domain mutation methods */
   updateRequestNumber(requestNumber: string): void {
     this._requestNumber = requestNumber;
     this._updatedAt = new Date();
   }
 
-  updateStatus(status: string): void {
+  updateStatus(status: MaterialRequestStatus): void {
     this._status = status;
     this._updatedAt = new Date();
   }

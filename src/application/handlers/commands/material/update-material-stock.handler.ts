@@ -1,45 +1,61 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MaterialRepository } from '../../../../infrastructure/repositories/material.repository';
-import { MaterialTransactionRepository } from '../../../../infrastructure/repositories/material-transaction.repository';
+import { Inject, NotFoundException } from '@nestjs/common';
+import {
+  IMaterialReader,
+  MATERIAL_READER,
+} from '../../../../domain/repositories/project-material/material.reader.interface';
+import {
+  IMaterialWriter,
+  MATERIAL_WRITER,
+} from '../../../../domain/repositories/project-material/material.writer.interface';
+import {
+  IMaterialTransactionWriter,
+  MATERIAL_TRANSACTION_WRITER,
+} from '../../../../domain/repositories/project-material/material-transaction.writer.interface';
 import { MaterialTransaction } from '../../../../domain/entities/material-transaction.entity';
 import { MaterialTransactionMapper } from '../../../mappers/material-transaction.mapper';
-
 import { UpdateMaterialStockCommand } from '../../../commands/material/update-material-stock.command';
 
+/**
+ * DIP — injects only the three narrow interfaces it needs:
+ *       IMaterialReader (guard-read), IMaterialWriter (stock update),
+ *       IMaterialTransactionWriter (audit record).
+ * No concrete infrastructure class import.
+ */
 @CommandHandler(UpdateMaterialStockCommand)
 export class UpdateMaterialStockHandler implements ICommandHandler<UpdateMaterialStockCommand> {
   constructor(
-    private readonly materialRepository: MaterialRepository,
-    private readonly transactionRepository: MaterialTransactionRepository,
+    @Inject(MATERIAL_READER)
+    private readonly materialReader: IMaterialReader,
+    @Inject(MATERIAL_WRITER)
+    private readonly materialWriter: IMaterialWriter,
+    @Inject(MATERIAL_TRANSACTION_WRITER)
+    private readonly transactionWriter: IMaterialTransactionWriter,
   ) {}
 
   async execute(command: UpdateMaterialStockCommand) {
     const { materialId, userId, dto } = command;
 
-    const material = await this.materialRepository.findById(materialId);
+    const material = await this.materialReader.findById(materialId);
     if (!material) {
-      throw new Error('Material not found');
+      throw new NotFoundException('Material not found');
     }
 
-    // Update stock using domain entity method
     material.updateStock(dto.quantity, dto.type);
+    await this.materialWriter.save(material);
 
-    await this.materialRepository.update(material);
-
-    // Create transaction record
     const transaction = new MaterialTransaction(
-      '', // ID
+      '',
       materialId,
       dto.type,
       dto.quantity,
-      new Date(), // date
+      new Date(),
       dto.referenceId ?? null,
-      userId, // performedBy
+      userId,
       dto.notes ?? null,
     );
 
-    const savedTransaction =
-      await this.transactionRepository.create(transaction);
-    return MaterialTransactionMapper.toDto(savedTransaction);
+    const saved = await this.transactionWriter.save(transaction);
+    return MaterialTransactionMapper.toDto(saved);
   }
 }

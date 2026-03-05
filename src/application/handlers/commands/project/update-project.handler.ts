@@ -2,9 +2,13 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateProjectCommand } from '../../../commands/project/update-project.command';
 import {
-  IProjectRepository,
-  PROJECT_REPOSITORY,
-} from '../../../../domain/repositories/project-repository.interface';
+  IProjectReader,
+  PROJECT_READER,
+} from '../../../../domain/repositories/project/project.reader.interface';
+import {
+  IProjectWriter,
+  PROJECT_WRITER,
+} from '../../../../domain/repositories/project/project.writer.interface';
 import { ProjectMapper } from '../../../mappers/project.mapper';
 import { ProjectResponseDto } from '../../../dto/project/project-response.dto';
 import { ProjectStatus } from '../../../../domain/enums/project-status.enum';
@@ -12,14 +16,16 @@ import { ProjectStatus } from '../../../../domain/enums/project-status.enum';
 @CommandHandler(UpdateProjectCommand)
 export class UpdateProjectHandler implements ICommandHandler<UpdateProjectCommand> {
   constructor(
-    @Inject(PROJECT_REPOSITORY)
-    private readonly projectRepository: IProjectRepository,
+    @Inject(PROJECT_READER)
+    private readonly projectReader: IProjectReader,
+    @Inject(PROJECT_WRITER)
+    private readonly projectWriter: IProjectWriter,
   ) {}
 
   async execute(command: UpdateProjectCommand): Promise<ProjectResponseDto> {
     const { projectId, data } = command;
 
-    const project = await this.projectRepository.findById(projectId);
+    const project = await this.projectReader.findById(projectId);
     if (!project) {
       throw new NotFoundException('Project not found');
     }
@@ -65,10 +71,7 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProjectComman
       project['managerIds'].length = 0; // Or better, we should have a `setManagers` method.
     }
 
-    const updatedProject = await this.projectRepository.update(
-      projectId,
-      project,
-    );
+    const updatedProject = await this.projectWriter.save(project);
 
     return ProjectMapper.toResponse(updatedProject);
   }

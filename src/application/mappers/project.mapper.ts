@@ -63,18 +63,15 @@ export class ProjectMapper {
 
   /**
    * Converts a Prisma result to domain entity.
-   * Encapsulates the type conversion internally.
    */
-  static fromPrismaResult<T extends Record<string, unknown>>(
-    result: T,
-  ): Project {
+  static fromPrismaResult<T extends Record<string, any>>(result: T): Project {
     return this.persistenceToEntity(result as unknown as ProjectPersistence);
   }
 
   /**
    * Converts a Prisma result array to domain entities.
    */
-  static fromPrismaResults<T extends Record<string, unknown>>(
+  static fromPrismaResults<T extends Record<string, any>>(
     results: T[],
   ): Project[] {
     return results.map((r) => this.fromPrismaResult(r));

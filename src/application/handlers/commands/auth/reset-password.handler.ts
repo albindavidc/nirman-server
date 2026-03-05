@@ -23,8 +23,8 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
   async execute(command: ResetPasswordCommand): Promise<{ message: string }> {
     const { email, resetToken, newPassword } = command;
 
-    // Validate reset token
-    const validation = this.resetTokenStorageService.validateResetToken(
+    // Validate reset token (now async — backed by Redis)
+    const validation = await this.resetTokenStorageService.validateResetToken(
       email,
       resetToken,
     );
@@ -33,11 +33,9 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
       throw new BadRequestException(validation.message);
     }
 
-    // Hash new password
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(newPassword, saltRounds);
 
-    // Update password in database
     await this.userRepository.updatePassword(email, passwordHash);
 
     return {

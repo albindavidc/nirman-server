@@ -6,8 +6,6 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import 'dotenv/config'; // Ensure env vars are loaded
-
 @Injectable()
 export class PrismaService
   extends PrismaClient
