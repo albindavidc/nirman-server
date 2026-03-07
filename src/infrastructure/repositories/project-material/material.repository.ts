@@ -58,12 +58,16 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
     const client = RepositoryUtils.resolveClient(this.prisma, tx);
     const createData = MaterialMapper.toUncheckedCreateInput(entity);
     const updateData = MaterialMapper.toUncheckedUpdateInput(entity);
+    const isNew = !entity.id;
     try {
-      const result = await client.material.upsert({
-        where: { id: entity.id || '__new__' },
-        create: createData,
-        update: updateData,
-      });
+      const result = isNew
+        ? await client.material.create({ data: createData })
+        : await client.material.upsert({
+            where: { id: entity.id },
+            create: createData,
+            update: updateData,
+          });
+
       return MaterialMapper.toDomain(result);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);

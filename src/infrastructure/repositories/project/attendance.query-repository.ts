@@ -45,32 +45,6 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     return count;
   }
 
-  async findById(
-    id: string,
-    tx?: ITransactionContext,
-  ): Promise<AttendanceEntity | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
-    try {
-      const record = await client.attendance.findUnique({
-        where: { id },
-        include: this.defaultIncludes(),
-      });
-      return record ? AttendanceMapper.toDomain(record) : null;
-    } catch (error: unknown) {
-      RepositoryUtils.handleError(error);
-    }
-  }
-
-  async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
-    try {
-      const count = await client.attendance.count({ where: { id } });
-      return count > 0;
-    } catch (error: unknown) {
-      RepositoryUtils.handleError(error);
-    }
-  }
-
   async findTodayByUser(
     userId: string,
     projectId: string,

@@ -3,11 +3,11 @@ import { AttendanceMapper } from '../../../application/mappers/attendance.mapper
 import { AttendanceEntity } from '../../../domain/entities/attendance.entity';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 
+import { IAttendanceWriter } from '../../../domain/repositories/project-attendance/attendance.writer.interface';
+import { AttendanceValue } from '../../../domain/value-objects/attendance.vo';
 import { Prisma } from '../../../generated/client/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { AttendanceValue } from '../../../domain/value-objects/attendance.vo';
 import { RepositoryUtils } from '../repository.utils';
-import { IAttendanceWriter } from '../../../domain/repositories/project-attendance/attendance.writer.interface';
 
 @Injectable()
 export class AttendanceRepository implements IAttendanceWriter {
@@ -23,6 +23,32 @@ export class AttendanceRepository implements IAttendanceWriter {
       },
       verifier: { select: { id: true, first_name: true, last_name: true } },
     };
+  }
+
+  async findById(
+    id: string,
+    tx?: ITransactionContext,
+  ): Promise<AttendanceEntity | null> {
+    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    try {
+      const record = await client.attendance.findUnique({
+        where: { id },
+        include: this.defaultIncludes(),
+      });
+      return record ? AttendanceMapper.toDomain(record) : null;
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
+  }
+
+  async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
+    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    try {
+      const count = await client.attendance.count({ where: { id } });
+      return count > 0;
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 
   // ── Write ─────────────────────────────────────────────────────────────────
@@ -68,13 +94,21 @@ export class AttendanceRepository implements IAttendanceWriter {
         : { verifier: { disconnect: true } }),
     };
 
+    const isNew = !data.id;
+
     try {
-      const saved = await client.attendance.upsert({
-        where: { id: data.id ?? '' },
-        create: createData,
-        update: updateData,
-        include: this.defaultIncludes(),
-      });
+      const saved = isNew
+        ? await client.attendance.create({
+            data: createData,
+            include: this.defaultIncludes(),
+          })
+        : await client.attendance.upsert({
+            where: { id: data.id ?? '' },
+            create: createData,
+            update: updateData,
+            include: this.defaultIncludes(),
+          });
+
       return AttendanceMapper.toDomain(saved);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);

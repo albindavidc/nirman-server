@@ -126,7 +126,7 @@ const CommandHandlers = [
       provide: PHASE_APPROVAL_QUERY_READER,
       useClass: PhaseApprovalQueryRepository,
     },
-    { provide: ATTENDANCE_READER, useClass: AttendanceRepository },
+    { provide: ATTENDANCE_READER, useClass: AttendanceQueryRepository },
     { provide: ATTENDANCE_WRITER, useClass: AttendanceRepository },
     { provide: ATTENDANCE_QUERY_READER, useClass: AttendanceQueryRepository },
     { provide: PROFESSIONAL_REPOSITORY, useClass: ProfessionalRepository },
