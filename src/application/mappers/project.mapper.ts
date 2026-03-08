@@ -100,10 +100,8 @@ export class ProjectMapper {
     }
 
     if (persistence.members) {
-      // Map flat persistence members to Prisma Create structure
-      createInput.members = {
-        create: persistence.members,
-      };
+      // For Json fields in Prisma, we just pass the array/object directly.
+      (createInput as any).members = persistence.members;
     }
 
     return createInput;
@@ -172,15 +170,17 @@ export class ProjectMapper {
       prismaWhere.OR = where.OR.map((cond) => ({ ...cond }));
     }
 
-    if (where.members) {
-      if (where.members.some) {
-        prismaWhere.members = {
-          some: {
+    if (where.members?.some) {
+      prismaWhere.members = {
+        array_contains: [
+          {
             user_id: where.members.some.user_id,
             is_creator: where.members.some.is_creator,
           },
-        };
-      }
+        ].filter(
+          (v) => v.user_id !== undefined || v.is_creator !== undefined,
+        ),
+      };
     }
 
     return prismaWhere;

@@ -1,39 +1,39 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+// eslint.config.mjs
 import globals from 'globals';
+import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  {
-    ignores: ['eslint.config.mjs'],
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
+  { ignores: ['dist', 'node_modules', '*.js'] }, // add your ignores
+
+  pluginJs.configs.recommended,
+
+  ...tseslint.configs.recommended, // ← spreads the recommended TS rules
+  ...tseslint.configs.stylistic, // optional: stylistic rules
+
+  // Prettier integration (must come after TS rules)
+  pluginPrettierRecommended,
+  eslintConfigPrettier, // turns off conflicting rules — must be last!
+
   {
     languageOptions: {
       globals: {
         ...globals.node,
-        ...globals.jest,
+        ...globals.jest, // if using Jest
       },
-      sourceType: 'commonjs',
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: __dirname,
+        project: true, // enables project: true for type-aware rules (needs tsconfig.json)
+        tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
     },
   },
 );

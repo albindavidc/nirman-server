@@ -7,14 +7,17 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 import { RepositoryUtils } from '../repository.utils';
 import { ProjectWherePersistenceInput } from '../../types/project.types';
 import { ProjectStatus } from '../../../domain/enums/project-status.enum';
-import { Prisma } from '../../../generated/client/client';
+import { PrismaClient, Prisma } from '../../../generated/client/client';
 
 @Injectable()
 export class ProjectQueryRepository implements IProjectQueryReader {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(tx?: ITransactionContext): Promise<Project[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const projects = await client.project.findMany({
         where: { is_deleted: false },
@@ -36,7 +39,10 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     },
     tx?: ITransactionContext,
   ): Promise<{ projects: Project[]; total: number }> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const { search, status, page, limit } = params;
       const skip = (page - 1) * limit;
@@ -84,15 +90,15 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     userId: string,
     tx?: ITransactionContext,
   ): Promise<Project[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const projects = await client.project.findMany({
         where: {
           members: {
-            some: {
-              user_id: userId,
-              is_creator: true,
-            },
+            array_contains: [{ user_id: userId, is_creator: true }],
           },
           is_deleted: false,
         },
@@ -106,7 +112,10 @@ export class ProjectQueryRepository implements IProjectQueryReader {
   }
 
   async count(tx?: ITransactionContext): Promise<number> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       return await client.project.count({
         where: { is_deleted: false },
@@ -120,7 +129,10 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     status: string,
     tx?: ITransactionContext,
   ): Promise<number> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const where: ProjectWherePersistenceInput = {
         status: status as ProjectStatus,
@@ -139,7 +151,10 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     totalBudget: number;
     totalSpent: number;
   }> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const budgetData = await client.project.aggregate({
         where: { is_deleted: false },

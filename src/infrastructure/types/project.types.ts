@@ -48,16 +48,21 @@ export interface ProjectPersistence extends ProjectBase {
   phases?: ProjectPhasePersistence[];
 }
 
+export interface ProjectMemberFilter {
+  some?: {
+    user_id?: string;
+    is_creator?: boolean;
+    role?: string;
+  };
+  array_contains?: any; // Prisma expects JsonValue, but we'll use a more specific type if possible
+  path_exists?: string[];
+}
+
 export interface ProjectWherePersistenceInput {
   id?: string;
   is_deleted?: boolean;
   status?: ProjectStatus;
-  members?: {
-    some: {
-      user_id: string;
-      is_creator?: boolean;
-    };
-  };
+  members?: ProjectMemberFilter;
   OR?: Array<{
     name?: { contains: string; mode: 'insensitive' };
     description?: { contains: string; mode: 'insensitive' };

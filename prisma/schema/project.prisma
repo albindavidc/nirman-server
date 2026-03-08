@@ -11,17 +11,10 @@ enum ApprovalStatus {
   rejected
 }
 
-type ProjectMember {
-  user_id    String
-  role       String
-  joined_at  DateTime @default(now())
-  is_creator Boolean  @default(false)
-}
-
 model Project {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  id          String        @id @default(uuid())
   name        String
-  manager_ids String[]      @db.ObjectId
+  manager_ids String[]
   description String?
   icon        String        @default("folder")
   status      ProjectStatus @default(active)
@@ -35,7 +28,7 @@ model Project {
   latitude  Float?
   longitude Float?
 
-  members ProjectMember[]
+  members Json // Array of ProjectMember { user_id, role, joined_at, is_creator }
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -53,8 +46,8 @@ model Project {
 }
 
 model ProjectPhase {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  project_id         String    @db.ObjectId
+  id                 String    @id @default(uuid())
+  project_id         String
   name               String
   description        String?
   progress           Int       @default(0)
@@ -75,19 +68,14 @@ model ProjectPhase {
   @@map("project_phases")
 }
 
-type MediaItem {
-  type String
-  url  String
-}
-
 model PhaseApproval {
-  id              String         @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id        String         @db.ObjectId
-  approved_by     String?        @db.ObjectId
-  requested_by    String         @db.ObjectId
+  id              String         @id @default(uuid())
+  phase_id        String
+  approved_by     String?
+  requested_by    String
   approval_status ApprovalStatus @default(pending)
   comments        String?
-  media           MediaItem[]
+  media           Json // Array of MediaItem { type, url }
   approved_at     DateTime?
   requested_at    DateTime       @default(now())
   created_at      DateTime       @default(now())
@@ -104,9 +92,9 @@ model PhaseApproval {
 }
 
 model Attendance {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  projectId String    @map("project_id") @db.ObjectId
-  userId    String    @map("user_id") @db.ObjectId
+  id        String    @id @default(uuid())
+  projectId String    @map("project_id")
+  userId    String    @map("user_id")
   date      DateTime
   checkIn   DateTime? @map("check_in")
   checkOut  DateTime? @map("check_out")
@@ -117,7 +105,7 @@ model Attendance {
   method          String    @default("Manual") // 'QR Code', 'Manual'
   supervisorNotes String?   @map("supervisor_notes")
   isVerified      Boolean   @default(false) @map("is_verified")
-  verifiedBy      String?   @map("verified_by") @db.ObjectId
+  verifiedBy      String?   @map("verified_by")
   verifiedAt      DateTime? @map("verified_at")
 
   project  Project @relation(fields: [projectId], references: [id])
@@ -128,9 +116,9 @@ model Attendance {
 }
 
 model Task {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id           String    @db.ObjectId
-  assigned_to        String?   @db.ObjectId
+  id                 String    @id @default(uuid())
+  phase_id           String
+  assigned_to        String?
   name               String
   description        String?
   planned_start_date DateTime?
@@ -158,10 +146,10 @@ model Task {
 }
 
 model TaskDependency {
-  id                  String @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id            String @db.ObjectId
-  successor_task_id   String @db.ObjectId
-  predecessor_task_id String @db.ObjectId
+  id                  String @id @default(uuid())
+  phase_id            String
+  successor_task_id   String
+  predecessor_task_id String
 
   type     String  @default("FS") // 'FS', 'SS', 'FF', 'SF'
   lag_time Int     @default(0) // In days

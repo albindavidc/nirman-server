@@ -6,6 +6,7 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 import { IProjectPhaseWriter } from '../../../domain/repositories/project-phase/project-phase.writer.interface';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient } from '../../../generated/client/client';
 
 @Injectable()
 export class ProjectPhaseRepository implements IProjectPhaseWriter {
@@ -15,7 +16,10 @@ export class ProjectPhaseRepository implements IProjectPhaseWriter {
     phase: ProjectPhase,
     tx?: ITransactionContext,
   ): Promise<ProjectPhase> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       // if the phase has an ID then treat this as an update, otherwise create
       if (phase.id) {
@@ -27,8 +31,9 @@ export class ProjectPhaseRepository implements IProjectPhaseWriter {
       } else {
         // omit id from create input so prisma will auto-generate one
         const createData = ProjectPhaseMapper.toCreateInput(phase);
-        delete (createData as any).id;
-        const result = await client.projectPhase.create({ data: createData });
+        const result = await client.projectPhase.create({
+          data: createData as any,
+        }); // Keep any for dynamic object here if needed, but project_phase is name fix
         return ProjectPhaseMapper.toDomain(result);
       }
     } catch (error: unknown) {
@@ -37,7 +42,10 @@ export class ProjectPhaseRepository implements IProjectPhaseWriter {
   }
 
   async softDelete(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.projectPhase.update({
         where: { id },

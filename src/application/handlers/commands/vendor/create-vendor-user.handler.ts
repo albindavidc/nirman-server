@@ -66,11 +66,12 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
       userModel.commit();
 
       return saved.id;
-    } catch (error) {
+    } catch (error: unknown) {
       // Handle Prisma unique constraint errors from Repository (if it propagates them)
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          const target = (error.meta?.target as string) || '';
+      const err = error as any;
+      if (error instanceof Prisma.PrismaClientKnownRequestError || err.code) {
+        if (err.code === 'P2002') {
+          const target = (err.meta?.target as string | undefined) || '';
           if (target.includes('email')) {
             throw new ConflictException(
               'A user with this email already exists',

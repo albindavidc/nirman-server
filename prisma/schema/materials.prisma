@@ -1,6 +1,6 @@
 model Material {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  project_id String @db.ObjectId
+  id         String @id @default(uuid())
+  project_id String
 
   material_name String
   material_code String
@@ -15,10 +15,10 @@ model Material {
 
   reorder_level         Float?
   storage_location      String?
-  preferred_supplier_id String? @db.ObjectId
+  preferred_supplier_id String?
   status                String  @default("in_stock") // in_stock, low_stock, out_of_stock
 
-  created_by String   @db.ObjectId
+  created_by String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -36,15 +36,15 @@ model Material {
 }
 
 model MaterialTransaction {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  material_id String @db.ObjectId
+  id          String @id @default(uuid())
+  material_id String
 
   type     String // IN, OUT, ADJUSTMENT
   quantity Float
   date     DateTime @default(now())
 
   reference_id String? // Invoice ID, Task ID, etc.
-  performed_by String? @db.ObjectId // User ID
+  performed_by String? // User ID
   notes        String?
 
   material Material @relation(fields: [material_id], references: [id])
@@ -55,12 +55,12 @@ model MaterialTransaction {
 }
 
 model MaterialRequest {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  id             String @id @default(uuid())
   request_number String @unique
-  project_id     String @db.ObjectId
-  requested_by   String @db.ObjectId
+  project_id     String
+  requested_by   String
 
-  items Json[] // Array of { material_id, material_name, quantity, ... }
+  items Json // Array of { material_id, material_name, quantity, ... }
 
   priority          String   @default("medium") // low, medium, high, urgent
   purpose           String?
@@ -69,7 +69,7 @@ model MaterialRequest {
 
   status String @default("pending") // pending, approved, rejected, partially_fulfilled, fulfilled, cancelled
 
-  approved_by       String?   @db.ObjectId
+  approved_by       String?
   approved_at       DateTime?
   approval_comments String?
 

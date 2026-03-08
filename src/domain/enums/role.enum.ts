@@ -3,5 +3,4 @@ export enum Role {
   SUPERVISOR = 'supervisor',
   VENDOR = 'vendor',
   WORKER = 'worker',
-  MEMBER = 'member',
 }

@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MaterialTransaction } from '../../../domain/entities/material-transaction.entity';
 import { MaterialTransactionMapper } from '../../../application/mappers/material-transaction.mapper';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import { IMaterialTransactionQueryReader } from '../../../domain/repositories/project-material/material-transaction.query-reader.interface';
 import { RepositoryUtils } from '../repository.utils';
+
+import { Injectable } from '@nestjs/common';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY complex read operations: material-level and
@@ -23,13 +25,18 @@ export class MaterialTransactionQueryRepository implements IMaterialTransactionQ
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<MaterialTransaction[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.materialTransaction.findMany({
         where: { material: { project_id: projectId } },
         orderBy: { date: 'desc' },
       });
-      return records.map((r) => MaterialTransactionMapper.toDomain(r));
+      return records.map((r: Prisma.MaterialTransactionGetPayload<{}>) =>
+        MaterialTransactionMapper.toDomain(r),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -39,13 +46,18 @@ export class MaterialTransactionQueryRepository implements IMaterialTransactionQ
     materialId: string,
     tx?: ITransactionContext,
   ): Promise<MaterialTransaction[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.materialTransaction.findMany({
         where: { material_id: materialId },
         orderBy: { date: 'desc' },
       });
-      return records.map((r) => MaterialTransactionMapper.toDomain(r));
+      return records.map((r: Prisma.MaterialTransactionGetPayload<{}>) =>
+        MaterialTransactionMapper.toDomain(r),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

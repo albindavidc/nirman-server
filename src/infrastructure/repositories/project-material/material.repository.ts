@@ -7,6 +7,7 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 import { IMaterialReader } from '../../../domain/repositories/project-material/material.reader.interface';
 import { IMaterialWriter } from '../../../domain/repositories/project-material/material.writer.interface';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY point-reads (findById, existsById) and write ops
@@ -28,7 +29,10 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
     id: string,
     tx?: ITransactionContext,
   ): Promise<Material | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const record = await client.material.findUnique({ where: { id } });
       return record ? MaterialMapper.toDomain(record) : null;
@@ -38,7 +42,10 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.material.count({ where: { id } });
       return count > 0;
@@ -55,7 +62,10 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
    * never set it manually.
    */
   async save(entity: Material, tx?: ITransactionContext): Promise<Material> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const createData = MaterialMapper.toUncheckedCreateInput(entity);
     const updateData = MaterialMapper.toUncheckedUpdateInput(entity);
     const isNew = !entity.id;
@@ -80,7 +90,10 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
    * Schema @updatedAt manages the timestamp automatically.
    */
   async softDelete(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.material.update({
         where: { id },

@@ -8,9 +8,9 @@ import {
   PaginatedAttendance,
 } from '../../../domain/repositories/project-attendance/attendance-repository.interface';
 import { IAttendanceQueryReader } from '../../../domain/repositories/project-attendance/attendance.query-reader.interface';
-import { Prisma } from '../../../generated/client/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RepositoryUtils } from '../repository.utils';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 
 @Injectable()
 export class AttendanceQueryRepository implements IAttendanceQueryReader {
@@ -50,7 +50,10 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<AttendanceEntity | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const { todayStart, tomorrowStart } = this.todayRange();
     try {
       const record = await client.attendance.findFirst({
@@ -62,7 +65,7 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
         include: this.defaultIncludes(),
       });
       return record ? AttendanceMapper.toDomain(record) : null;
-    } catch (error) {
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
@@ -72,7 +75,10 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const { todayStart, tomorrowStart } = this.todayRange();
     try {
       const count = await client.attendance.count({
@@ -83,7 +89,7 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
         },
       });
       return count > 0;
-    } catch (error) {
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
@@ -93,7 +99,10 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     filters: AttendanceFilter,
     tx?: ITransactionContext,
   ): Promise<PaginatedAttendance> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const where: Prisma.AttendanceWhereInput = { userId };
 
     if (filters.projectId) where.projectId = filters.projectId;
@@ -118,13 +127,13 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
       ]);
 
       return {
-        data: records.map((r) => AttendanceMapper.toDomain(r)),
+        data: records.map((r: any) => AttendanceMapper.toDomain(r as any)),
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
       };
-    } catch (error) {
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
@@ -134,7 +143,10 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     projectId?: string,
     tx?: ITransactionContext,
   ): Promise<AttendanceSummary> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const now = new Date();
 
     const startOfWeek = new Date(now);
@@ -186,7 +198,7 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
         attendanceRate,
         lateArrivals: lateCount,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
@@ -197,14 +209,17 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     endDate: Date,
     tx?: ITransactionContext,
   ): Promise<AttendanceEntity[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.attendance.findMany({
         where: { projectId, date: { gte: startDate, lte: endDate } },
         include: this.defaultIncludes(),
       });
-      return records.map((r) => AttendanceMapper.toDomain(r));
-    } catch (error) {
+      return records.map(AttendanceMapper.toDomain);
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
@@ -216,7 +231,10 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     endDate: Date,
     tx?: ITransactionContext,
   ): Promise<AttendanceEntity[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.attendance.findMany({
         where: {
@@ -227,8 +245,8 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
         orderBy: { date: 'desc' },
         include: this.defaultIncludes(),
       });
-      return records.map((r) => AttendanceMapper.toDomain(r));
-    } catch (error) {
+      return records.map(AttendanceMapper.toDomain);
+    } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }

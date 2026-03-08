@@ -5,7 +5,7 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 
 import { IAttendanceWriter } from '../../../domain/repositories/project-attendance/attendance.writer.interface';
 import { AttendanceValue } from '../../../domain/value-objects/attendance.vo';
-import { Prisma } from '../../../generated/client/client';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RepositoryUtils } from '../repository.utils';
 
@@ -29,7 +29,10 @@ export class AttendanceRepository implements IAttendanceWriter {
     id: string,
     tx?: ITransactionContext,
   ): Promise<AttendanceEntity | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const record = await client.attendance.findUnique({
         where: { id },
@@ -42,7 +45,10 @@ export class AttendanceRepository implements IAttendanceWriter {
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.attendance.count({ where: { id } });
       return count > 0;
@@ -57,7 +63,10 @@ export class AttendanceRepository implements IAttendanceWriter {
     entity: AttendanceEntity,
     tx?: ITransactionContext,
   ): Promise<AttendanceEntity> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const data = AttendanceMapper.toPersistence(entity);
 
     const createData: Prisma.AttendanceCreateInput = {
@@ -116,7 +125,10 @@ export class AttendanceRepository implements IAttendanceWriter {
   }
 
   async softDelete(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.attendance.update({
         where: { id },

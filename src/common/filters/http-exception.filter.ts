@@ -51,7 +51,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         }
       }
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      const prismaException = exception;
+      const prismaException = exception as Prisma.PrismaClientKnownRequestError;
       errorCode = prismaException.code;
 
       switch (prismaException.code) {
@@ -61,7 +61,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           const targetMeta = prismaException.meta?.target;
           const target = Array.isArray(targetMeta)
             ? targetMeta.join(', ')
-            : (targetMeta as string) || 'field';
+            : (targetMeta as string | undefined) || 'field';
           message = `A record with this ${target} already exists`;
           break;
         }

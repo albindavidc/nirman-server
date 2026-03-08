@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma } from '../../../generated/client/client';
 import { MaterialRequest } from '../../../domain/entities/material-request.entity';
 import { MaterialRequestMapper } from '../../../application/mappers/material-request.mapper';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
@@ -10,6 +9,7 @@ import {
   PaginatedMaterialRequests,
 } from '../../../domain/repositories/project-material/material-request.query-reader.interface';
 import { RepositoryUtils } from '../repository.utils';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY complex read operations: paginated lists, date-range
@@ -22,19 +22,22 @@ import { RepositoryUtils } from '../repository.utils';
 export class MaterialRequestQueryRepository implements IMaterialRequestQueryReader {
   constructor(private readonly prisma: PrismaService) {}
 
-  // ── IMaterialRequestQueryReader ────────────────────────────────────────────
-
   async findByProjectId(
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<MaterialRequest[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.materialRequest.findMany({
         where: { project_id: projectId },
         orderBy: { created_at: 'desc' },
       });
-      return records.map((r) => MaterialRequestMapper.toDomain(r));
+      return records.map((r: Prisma.MaterialRequestGetPayload<{}>) =>
+        MaterialRequestMapper.toDomain(r),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -44,7 +47,10 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
     filters: MaterialRequestFilter,
     tx?: ITransactionContext,
   ): Promise<PaginatedMaterialRequests> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
 
     // Fully typed Prisma where clause — no Record<string, unknown> bypass.
     const where: Prisma.MaterialRequestWhereInput = {};
@@ -72,7 +78,9 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
       ]);
 
       return {
-        data: records.map((r) => MaterialRequestMapper.toDomain(r)),
+        data: records.map((r: Prisma.MaterialRequestGetPayload<{}>) =>
+          MaterialRequestMapper.toDomain(r),
+        ),
         total,
         page,
         limit,
@@ -89,7 +97,10 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
     endDate: Date,
     tx?: ITransactionContext,
   ): Promise<MaterialRequest[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.materialRequest.findMany({
         where: {
@@ -98,7 +109,9 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
         },
         orderBy: { created_at: 'desc' },
       });
-      return records.map((r) => MaterialRequestMapper.toDomain(r));
+      return records.map((r: Prisma.MaterialRequestGetPayload<{}>) =>
+        MaterialRequestMapper.toDomain(r),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

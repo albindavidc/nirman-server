@@ -46,7 +46,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
       managerIds: data.managerIds ?? [],
       description: data.description,
       icon: data.icon ?? 'folder',
-      status: (data.status as unknown as ProjectStatus) ?? ProjectStatus.ACTIVE,
+      status: (data.status as ProjectStatus | undefined) ?? ProjectStatus.ACTIVE,
       progress: data.progress ?? 0,
       budget: data.budget,
       spent: data.spent,

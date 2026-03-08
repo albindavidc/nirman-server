@@ -9,6 +9,7 @@ import {
   IWorkerRepository,
   WORKER_REPOSITORY,
 } from '../../../../domain/repositories/worker-repository.interface';
+import { UserStatus } from '../../../../domain/enums/user-status.enum';
 
 @CommandHandler(BlockWorkerCommand)
 export class BlockWorkerHandler implements ICommandHandler<BlockWorkerCommand> {
@@ -28,7 +29,7 @@ export class BlockWorkerHandler implements ICommandHandler<BlockWorkerCommand> {
     }
 
     // Update status to blocked
-    const worker = await this.workerRepository.updateStatus(id, 'blocked');
+    const worker = await this.workerRepository.updateStatus(id, UserStatus.BLOCKED);
 
     return {
       id: worker.id,
@@ -38,13 +39,13 @@ export class BlockWorkerHandler implements ICommandHandler<BlockWorkerCommand> {
       phoneNumber: worker.phoneNumber ?? undefined,
       role: worker.role,
       userStatus: worker.userStatus,
-      professionalTitle: worker.professionalTitle,
-      experienceYears: worker.experienceYears,
-      skills: worker.skills,
-      addressStreet: worker.addressStreet,
-      addressCity: worker.addressCity,
-      addressState: worker.addressState,
-      addressZipCode: worker.addressZipCode,
+      professionalTitle: worker.professional?.professionalTitle,
+      experienceYears: worker.professional?.experienceYears,
+      skills: worker.professional?.skills,
+      addressStreet: worker.professional?.addressStreet,
+      addressCity: worker.professional?.addressCity,
+      addressState: worker.professional?.addressState,
+      addressZipCode: worker.professional?.addressZipCode,
       createdAt: worker.createdAt,
       updatedAt: worker.updatedAt,
     };
@@ -69,7 +70,7 @@ export class UnblockWorkerHandler implements ICommandHandler<UnblockWorkerComman
     }
 
     // Update status to active
-    const worker = await this.workerRepository.updateStatus(id, 'active');
+    const worker = await this.workerRepository.updateStatus(id, UserStatus.ACTIVE);
 
     return {
       id: worker.id,
@@ -79,13 +80,13 @@ export class UnblockWorkerHandler implements ICommandHandler<UnblockWorkerComman
       phoneNumber: worker.phoneNumber ?? undefined,
       role: worker.role,
       userStatus: worker.userStatus,
-      professionalTitle: worker.professionalTitle,
-      experienceYears: worker.experienceYears,
-      skills: worker.skills,
-      addressStreet: worker.addressStreet,
-      addressCity: worker.addressCity,
-      addressState: worker.addressState,
-      addressZipCode: worker.addressZipCode,
+      professionalTitle: worker.professional?.professionalTitle,
+      experienceYears: worker.professional?.experienceYears,
+      skills: worker.professional?.skills,
+      addressStreet: worker.professional?.addressStreet,
+      addressCity: worker.professional?.addressCity,
+      addressState: worker.professional?.addressState,
+      addressZipCode: worker.professional?.addressZipCode,
       createdAt: worker.createdAt,
       updatedAt: worker.updatedAt,
     };

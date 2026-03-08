@@ -1,6 +1,6 @@
 model Professional {
-  id                 String @id @default(auto()) @map("_id") @db.ObjectId
-  user_id            String @unique @db.ObjectId
+  id                 String @id @default(uuid())
+  user_id            String @unique
   professional_title String
 
   experience_years Int

@@ -9,11 +9,8 @@ import {
   WorkerCreatePersistenceInput,
   WorkerUpdatePersistenceInput,
 } from '../../infrastructure/types/worker.types';
-import { Role as UserRole } from '../../domain/enums/role.enum';
+import { Role, Role as UserRole } from '../../domain/enums/role.enum';
 
-/**
- * Type-safe mapper for Worker entity <-> Prisma persistence conversion.
- */
 export class WorkerMapper {
   /**
    * Converts a Prisma result to domain entity.
@@ -123,23 +120,41 @@ export class WorkerMapper {
    * Converts where input to Prisma-compatible format.
    */
   static toPrismaWhereInput(
-    where: WorkerWherePersistenceInput,
+    input: WorkerWherePersistenceInput,
   ): WorkerWherePersistenceInput {
     const prismaWhere: WorkerWherePersistenceInput = {};
 
-    if (where.role) {
-      if (typeof where.role === 'object' && 'in' in where.role) {
-        prismaWhere.role = { in: where.role.in };
+    if (input.role) {
+      if (typeof input.role === 'object' && 'in' in input.role) {
+        prismaWhere.role = { in: input.role.in };
+        input.role = {
+          in: (input.role as { in: Role[] }).in.map(this.mapRoleToUserRole),
+        };
       } else {
-        prismaWhere.role = where.role;
+        // Handle single Role.WORKER → UserRole.WORKER
+        input.role = this.mapRoleToUserRole(input.role as Role);
       }
     }
 
-    if (where.OR) {
-      prismaWhere.OR = where.OR.map((condition) => ({ ...condition }));
+    if (input.OR) {
+      prismaWhere.OR = input.OR.map((condition) => ({ ...condition }));
     }
 
     return prismaWhere;
+  }
+
+  private static mapRoleToUserRole(role: Role): UserRole {
+    const roleMap: Record<Role, UserRole> = {
+      [Role.ADMIN]: UserRole.ADMIN,
+      [Role.SUPERVISOR]: UserRole.SUPERVISOR,
+      [Role.VENDOR]: UserRole.VENDOR,
+      [Role.WORKER]: UserRole.WORKER,
+    };
+    const mapped = roleMap[role];
+    if (!mapped) {
+      throw new Error(`Unsupported role mapping: ${role}`); // Or handle gracefully
+    }
+    return mapped;
   }
 
   static persistenceToEntity(
@@ -153,13 +168,17 @@ export class WorkerMapper {
       phoneNumber: persistence.phone_number,
       role: persistence.role,
       userStatus: persistence.user_status,
-      professionalTitle: persistence.professional?.professional_title,
-      experienceYears: persistence.professional?.experience_years,
-      skills: persistence.professional?.skills,
-      addressStreet: persistence.professional?.address_street,
-      addressCity: persistence.professional?.address_city,
-      addressState: persistence.professional?.address_state,
-      addressZipCode: persistence.professional?.address_zip_code,
+      professional: persistence.professional
+        ? {
+            professionalTitle: persistence.professional?.professional_title,
+            experienceYears: persistence.professional?.experience_years,
+            skills: persistence.professional?.skills,
+            addressStreet: persistence.professional?.address_street,
+            addressCity: persistence.professional?.address_city,
+            addressState: persistence.professional?.address_state,
+            addressZipCode: persistence.professional?.address_zip_code,
+          }
+        : null,
       createdAt: persistence.created_at,
       updatedAt: persistence.updated_at,
     };

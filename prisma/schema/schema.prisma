@@ -1,11 +1,9 @@
 generator client {
-  provider      = "prisma-client"
-  output        = "../../src/generated/client"
-  moduleFormat  = "cjs"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider     = "prisma-client-js"
+  output       = "../../src/generated/client"
+  moduleFormat = "cjs"
 }
 
 datasource db {
-  provider = "mongodb"
-  // url      = env("DATABASE_URL")
+  provider = "postgresql"
 }

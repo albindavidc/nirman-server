@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '../../generated/client/client';
 import {
   IWorkerRepository,
   WorkerWithProfessional,
@@ -10,33 +9,72 @@ import {
 import { WorkerWherePersistenceInput } from '../types/worker.types';
 import { WorkerMapper } from '../../application/mappers/worker.mapper';
 import { Role as UserRole } from '../../domain/enums/role.enum';
+import { UserStatus } from '../../domain/enums/user-status.enum'; // ✅ typed enum replaces raw string
+import { ITransactionContext } from '../../domain/interfaces/transaction-context.interface';
+import { RepositoryUtils } from './repository.utils';
+
+import { Prisma, PrismaClient } from '../../generated/client/client';
 
 @Injectable()
 export class WorkerRepository implements IWorkerRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<WorkerWithProfessional | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: { professional: true },
-    });
-    return user ? WorkerMapper.fromPrismaResult(user) : null;
+  // ─── Queries ───────────────────────────────────────────────────────────────
+
+  async findById(
+    id: string,
+    tx?: ITransactionContext,
+  ): Promise<WorkerWithProfessional | null> {
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
+    try {
+      const user = await client.user.findUnique({
+        where: { id },
+        include: { professional: true },
+      });
+
+      if (!user) return null;
+
+      return user ? WorkerMapper.fromPrismaResult(user) : null;
+    } catch (error: unknown) {
+      return RepositoryUtils.handleError(error);
+    }
   }
 
-  async findByEmail(email: string): Promise<WorkerWithProfessional | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      include: { professional: true },
-    });
-    return user ? WorkerMapper.fromPrismaResult(user) : null;
+  async findByEmail(
+    email: string,
+    tx?: ITransactionContext,
+  ): Promise<WorkerWithProfessional | null> {
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
+    try {
+      const user = await client.user.findUnique({
+        where: { email },
+        include: { professional: true },
+      });
+      return user ? WorkerMapper.fromPrismaResult(user) : null;
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 
-  async findAllWithFilters(params: {
-    page: number;
-    limit: number;
-    role?: string;
-    search?: string;
-  }): Promise<{ workers: WorkerWithProfessional[]; total: number }> {
+  async findAllWithFilters(
+    params: {
+      page: number;
+      limit: number;
+      role?: UserRole; // ✅ typed enum, not raw string
+      search?: string;
+    },
+    tx?: ITransactionContext,
+  ): Promise<{ workers: WorkerWithProfessional[]; total: number }> {
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const { page, limit, role, search } = params;
     const skip = (page - 1) * limit;
 
@@ -45,7 +83,7 @@ export class WorkerRepository implements IWorkerRepository {
     };
 
     if (role) {
-      where.role = role as UserRole;
+      where.role = role; // ✅ already UserRole — no cast needed
     }
 
     if (search) {
@@ -56,63 +94,103 @@ export class WorkerRepository implements IWorkerRepository {
       ];
     }
 
-    const prismaWhere = WorkerMapper.toPrismaWhereInput(where);
+    // ✅ Mapper returns Prisma.UserWhereInput directly — no double cast needed
+    const prismaWhere: Prisma.UserWhereInput =
+      WorkerMapper.toPrismaWhereInput(where);
 
-    const [workers, total] = await Promise.all([
-      this.prisma.user.findMany({
-        where: prismaWhere as Prisma.UserWhereInput,
-        skip,
-        take: limit,
-        include: { professional: true },
-        orderBy: { created_at: 'desc' },
-      }),
-      this.prisma.user.count({
-        where: prismaWhere as Prisma.UserWhereInput,
-      }),
-    ]);
+    try {
+      const [users, total] = await Promise.all([
+        client.user.findMany({
+          where: prismaWhere, // ✅ clean, no cast
+          skip,
+          take: limit,
+          include: { professional: true },
+          orderBy: { created_at: 'desc' },
+        }),
+        client.user.count({
+          where: prismaWhere, // ✅ clean, no cast
+        }),
+      ]);
 
-    return {
-      workers: WorkerMapper.fromPrismaResults(workers),
-      total,
-    };
+      return {
+        workers: WorkerMapper.fromPrismaResults(users),
+        total,
+      };
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 
-  async create(data: CreateWorkerData): Promise<WorkerWithProfessional> {
-    const prismaData = WorkerMapper.toPrismaCreateInput(data);
+  // ─── Mutations ─────────────────────────────────────────────────────────────
 
-    const created = await this.prisma.user.create({
-      data: prismaData as Prisma.UserCreateInput,
-      include: { professional: true },
-    });
+  async create(
+    data: CreateWorkerData,
+    tx?: ITransactionContext,
+  ): Promise<WorkerWithProfessional> {
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
 
-    return WorkerMapper.fromPrismaResult(created);
+    // ✅ Mapper must return Prisma.UserCreateInput — fix belongs in the mapper
+    const prismaData: Prisma.UserCreateInput =
+      WorkerMapper.toPrismaCreateInput(data);
+
+    try {
+      const created = await client.user.create({
+        data: prismaData, // ✅ no double cast
+        include: { professional: true },
+      });
+      return WorkerMapper.fromPrismaResult(created);
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 
   async update(
     id: string,
     data: UpdateWorkerData,
+    tx?: ITransactionContext,
   ): Promise<WorkerWithProfessional> {
-    const prismaData = WorkerMapper.toPrismaUpdateInput(data);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
 
-    await this.prisma.user.update({
-      where: { id },
+    // ✅ Mapper must return Prisma.UserUpdateInput — fix belongs in the mapper
+    const prismaData: Prisma.UserUpdateInput =
+      WorkerMapper.toPrismaUpdateInput(data);
 
-      data: prismaData as Prisma.UserUpdateInput,
-    });
-
-    return (await this.findById(id))!;
+    try {
+      const updated = await client.user.update({
+        where: { id },
+        data: prismaData, // ✅ no double cast
+        include: { professional: true }, // ✅ single query — no second round-trip
+      });
+      return WorkerMapper.fromPrismaResult(updated);
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 
   async updateStatus(
     id: string,
-    status: string,
+    status: UserStatus, // ✅ typed enum, not raw string
+    tx?: ITransactionContext,
   ): Promise<WorkerWithProfessional> {
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: { user_status: status },
-      include: { professional: true },
-    });
-
-    return WorkerMapper.fromPrismaResult(user);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
+    try {
+      const user = await client.user.update({
+        where: { id },
+        data: { user_status: status },
+        include: { professional: true },
+      });
+      return WorkerMapper.fromPrismaResult(user);
+    } catch (error: unknown) {
+      RepositoryUtils.handleError(error);
+    }
   }
 }

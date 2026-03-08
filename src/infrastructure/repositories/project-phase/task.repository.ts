@@ -9,6 +9,7 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 import { ITaskWriter } from '../../../domain/repositories/project-phase/task.writer.interface';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient } from '../../../generated/client/client';
 
 @Injectable()
 export class TaskRepository implements ITaskWriter {
@@ -18,15 +19,14 @@ export class TaskRepository implements ITaskWriter {
     entity: TaskEntity,
     tx?: ITransactionContext,
   ): Promise<TaskEntity> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const input = TaskMapper.toCreateInput(entity);
       const updateInput = TaskMapper.toUpdateInput(entity);
 
-      // Prisma upsert requires a valid unique identifier in the `where` clause.
-      // Our handlers pass an empty string for new entities, which leads to a
-      // runtime error when Prisma tries to interpret that value as an ObjectId.
-      // Instead of abusing upsert, split into create vs update paths.
       if (!entity.id) {
         const created = await client.task.create({
           data: input,
@@ -47,7 +47,10 @@ export class TaskRepository implements ITaskWriter {
   }
 
   async softDelete(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.task.update({
         where: { id },
@@ -62,7 +65,10 @@ export class TaskRepository implements ITaskWriter {
     entity: TaskDependencyEntity,
     tx?: ITransactionContext,
   ): Promise<TaskDependencyEntity> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const input = TaskMapper.dependencyToCreateInput(entity);
 
@@ -88,7 +94,10 @@ export class TaskRepository implements ITaskWriter {
   }
 
   async removeDependency(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.taskDependency.delete({
         where: { id },

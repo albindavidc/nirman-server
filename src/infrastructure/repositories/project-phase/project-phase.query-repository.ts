@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProjectPhase } from '../../../domain/entities/project-phase.entity';
 import { ProjectPhaseMapper } from '../../../application/mappers/project-phase.mapper';
@@ -8,6 +7,8 @@ import { PhaseWithApprovals } from '../../../domain/repositories/project-phase/p
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import { RepositoryUtils } from '../repository.utils';
 import { ApprovalStatus } from '../../../domain/enums/approval-status.enum';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ProjectPhaseQueryRepository
@@ -19,7 +20,10 @@ export class ProjectPhaseQueryRepository
     id: string,
     tx?: ITransactionContext,
   ): Promise<ProjectPhase | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const phase = await client.projectPhase.findUnique({
         where: { id },
@@ -31,7 +35,10 @@ export class ProjectPhaseQueryRepository
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.projectPhase.count({
         where: { id },
@@ -46,13 +53,16 @@ export class ProjectPhaseQueryRepository
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<ProjectPhase[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const phases = await client.projectPhase.findMany({
         where: { project_id: projectId },
         orderBy: { sequence: 'asc' },
       });
-      return phases.map((phase) => ProjectPhaseMapper.toDomain(phase));
+      return phases.map(ProjectPhaseMapper.toDomain);
     } catch (error) {
       RepositoryUtils.handleError(error);
     }
@@ -62,7 +72,10 @@ export class ProjectPhaseQueryRepository
     phaseId: string,
     tx?: ITransactionContext,
   ): Promise<PhaseWithApprovals | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const phase = await client.projectPhase.findUnique({
         where: { id: phaseId },
@@ -91,24 +104,35 @@ export class ProjectPhaseQueryRepository
           budget: phase.project.budget,
           spent: phase.project.spent,
         },
-        approvals: phase.approvals.map((a) => ({
-          id: a.id,
-          phaseId: a.phase_id,
-          approvedBy: a.approved_by,
-          approverName: a.approver
-            ? `${a.approver.first_name} ${a.approver.last_name}`
-            : null,
-          requestedBy: a.requested_by,
-          requesterName: `${a.requester.first_name} ${a.requester.last_name}`,
-          approvalStatus: a.approval_status as string as ApprovalStatus,
-          comments: a.comments,
-          media: (a.media as Array<{ type: string; url: string }>) ?? [],
-          approvedAt: a.approved_at,
-          createdAt: a.created_at,
-        })),
+        approvals: phase.approvals.map(
+          (
+            a: Prisma.PhaseApprovalGetPayload<{
+              include: {
+                approver: { select: { first_name: true; last_name: true } };
+                requester: { select: { first_name: true; last_name: true } };
+              };
+            }>,
+          ) => ({
+            id: a.id,
+            phaseId: a.phase_id,
+            approvedBy: a.approved_by,
+            approverName: a.approver
+              ? `${a.approver.first_name} ${a.approver.last_name}`
+              : null,
+            requestedBy: a.requested_by,
+            requesterName: `${a.requester.first_name} ${a.requester.last_name}`,
+            approvalStatus: a.approval_status as string as ApprovalStatus,
+            comments: a.comments,
+            media: (a.media as Array<{ type: string; url: string }>) ?? [],
+            approvedAt: a.approved_at,
+            createdAt: a.created_at,
+          }),
+        ),
         taskStats: {
           total: phase.tasks.length,
-          completed: phase.tasks.filter((t) => t.status === 'Completed').length,
+          completed: phase.tasks.filter(
+            (t: { status: string }) => t.status === 'Completed',
+          ).length,
         },
       };
     } catch (error) {

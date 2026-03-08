@@ -1,4 +1,5 @@
 import { Role as UserRole } from '../../domain/enums/role.enum';
+import { UserStatus } from '../../domain/enums/user-status.enum';
 
 interface ProfessionalBase {
   id: string;
@@ -24,7 +25,7 @@ interface WorkerBase {
   phone_number: string | null;
   password_hash: string;
   role: UserRole;
-  user_status: string;
+  user_status: UserStatus;
   created_at: Date;
   updated_at: Date;
 }

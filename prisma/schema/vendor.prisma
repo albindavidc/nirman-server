@@ -1,6 +1,6 @@
 model Vendor {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  user_id String @unique @db.ObjectId
+  id      String @id @default(uuid())
+  user_id String @unique
 
   company_name        String
   registration_number String  @unique

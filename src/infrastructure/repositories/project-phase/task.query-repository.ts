@@ -9,6 +9,7 @@ import {
 } from '../../../domain/entities/task.entity';
 import { TaskMapper } from '../../../application/mappers/project-phase/task.mapper';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient } from '../../../generated/client/client';
 
 @Injectable()
 export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
@@ -18,7 +19,10 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
     id: string,
     tx?: ITransactionContext,
   ): Promise<TaskEntity | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const found = await client.task.findUnique({
         where: { id },
@@ -31,7 +35,10 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.task.count({
         where: { id },
@@ -48,7 +55,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
         where: { phase_id: phaseId },
         include: { assignee: true },
       });
-      return tasks.map((t) => TaskMapper.toDomain(t));
+      return tasks.map(TaskMapper.toDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -60,7 +67,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
         where: { phase: { project_id: projectId } },
         include: { assignee: true },
       });
-      return tasks.map((t) => TaskMapper.toDomain(t));
+      return tasks.map(TaskMapper.toDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -72,7 +79,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
         where: { assigned_to: userId },
         include: { assignee: true },
       });
-      return tasks.map((t) => TaskMapper.toDomain(t));
+      return tasks.map(TaskMapper.toDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -85,7 +92,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
       const deps = await this.prisma.taskDependency.findMany({
         where: { phase_id: phaseId },
       });
-      return deps.map((d) => TaskMapper.dependencyToDomain(d));
+      return deps.map(TaskMapper.dependencyToDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -99,12 +106,12 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
         where: { project_id: projectId },
         select: { id: true },
       });
-      const phaseIds = phases.map((p) => p.id);
+      const phaseIds = phases.map((p: { id: string }) => p.id);
 
       const deps = await this.prisma.taskDependency.findMany({
         where: { phase_id: { in: phaseIds } },
       });
-      return deps.map((d) => TaskMapper.dependencyToDomain(d));
+      return deps.map(TaskMapper.dependencyToDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

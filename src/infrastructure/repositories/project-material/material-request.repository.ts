@@ -7,6 +7,7 @@ import { IMaterialRequestReader } from '../../../domain/repositories/project-mat
 import { IMaterialRequestWriter } from '../../../domain/repositories/project-material/material-request.writer.interface';
 import { RepositoryUtils } from '../repository.utils';
 import { MaterialRequestStatus } from '../../../domain/enums/material-request-status.enum';
+import { PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY write mutations and simple point-reads.
@@ -24,13 +25,14 @@ export class MaterialRequestRepository
 {
   constructor(private readonly prisma: PrismaService) {}
 
-  // ── IMaterialRequestReader ─────────────────────────────────────────────────
-
   async findById(
     id: string,
     tx?: ITransactionContext,
   ): Promise<MaterialRequest | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const record = await client.materialRequest.findUnique({ where: { id } });
       return record ? MaterialRequestMapper.toDomain(record) : null;
@@ -40,7 +42,10 @@ export class MaterialRequestRepository
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.materialRequest.count({ where: { id } });
       return count > 0;
@@ -51,15 +56,14 @@ export class MaterialRequestRepository
 
   // ── IMaterialRequestWriter ─────────────────────────────────────────────────
 
-  /**
-   * OCP / Architecture — save() uses upsert (not separate create + update).
-   * No `updated_at: new Date()` — the schema @updatedAt directive handles it.
-   */
   async save(
     entity: MaterialRequest,
     tx?: ITransactionContext,
   ): Promise<MaterialRequest> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     const createData = MaterialRequestMapper.toCreateInput(entity);
     const updateData = MaterialRequestMapper.toUpdateInput(entity);
 
@@ -75,11 +79,11 @@ export class MaterialRequestRepository
     }
   }
 
-  /**
-   * Soft-delete using the domain enum value — never a raw string literal.
-   */
   async softDelete(id: string, tx?: ITransactionContext): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       await client.materialRequest.update({
         where: { id },

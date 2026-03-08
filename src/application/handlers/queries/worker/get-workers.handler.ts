@@ -20,7 +20,7 @@ export class GetWorkersHandler implements IQueryHandler<GetWorkersQuery> {
     const { workers, total } = await this.workerRepository.findAllWithFilters({
       page,
       limit,
-      role,
+      role: role as any, // Cast string to UserRole enum
       search,
     });
 
@@ -33,13 +33,13 @@ export class GetWorkersHandler implements IQueryHandler<GetWorkersQuery> {
         phoneNumber: worker.phoneNumber ?? undefined,
         role: worker.role,
         userStatus: worker.userStatus,
-        professionalTitle: worker.professionalTitle,
-        experienceYears: worker.experienceYears,
-        skills: worker.skills,
-        addressStreet: worker.addressStreet,
-        addressCity: worker.addressCity,
-        addressState: worker.addressState,
-        addressZipCode: worker.addressZipCode,
+        professionalTitle: worker.professional?.professionalTitle,
+        experienceYears: worker.professional?.experienceYears,
+        skills: worker.professional?.skills,
+        addressStreet: worker.professional?.addressStreet,
+        addressCity: worker.professional?.addressCity,
+        addressState: worker.professional?.addressState,
+        addressZipCode: worker.professional?.addressZipCode,
         createdAt: worker.createdAt,
         updatedAt: worker.updatedAt,
       })),

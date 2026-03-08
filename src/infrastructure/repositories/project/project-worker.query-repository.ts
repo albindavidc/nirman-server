@@ -4,6 +4,7 @@ import { IProjectWorkerQueryReader } from '../../../domain/repositories/project/
 import { ProjectWorkerWithUser } from '../../../domain/repositories/project/project-worker-repository.interface';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import { RepositoryUtils } from '../repository.utils';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 
 interface MemberData {
   user_id: string;
@@ -20,7 +21,10 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<ProjectWorkerWithUser[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
 
     try {
       const project = await client.project.findUnique({
@@ -52,7 +56,10 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
 
       // Map users to worker response
       return members.map((member) => {
-        const user = users.find((u) => u.id === member.user_id);
+        const user = users.find(
+          (u: Prisma.UserGetPayload<{ include: { professional: true } }>) =>
+            u.id === member.user_id,
+        );
         return {
           userId: member.user_id,
           role: member.role,
@@ -82,7 +89,10 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     userId: string,
     tx?: ITransactionContext,
   ): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
@@ -101,7 +111,10 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<string[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },

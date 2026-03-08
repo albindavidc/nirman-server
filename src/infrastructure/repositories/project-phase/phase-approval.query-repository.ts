@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 import { RepositoryUtils } from '../repository.utils';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import {
@@ -27,7 +28,10 @@ export class PhaseApprovalQueryRepository
     phaseId: string,
     tx?: ITransactionContext,
   ): Promise<PhaseApprovalResult | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const approval = await client.phaseApproval.findFirst({
         where: { phase_id: phaseId },
@@ -52,7 +56,10 @@ export class PhaseApprovalQueryRepository
     phaseId: string,
     tx?: ITransactionContext,
   ): Promise<PhaseApprovalResult[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const approvals = await client.phaseApproval.findMany({
         where: { phase_id: phaseId },
@@ -63,7 +70,16 @@ export class PhaseApprovalQueryRepository
         orderBy: { created_at: 'desc' },
       });
 
-      return approvals.map((a) => this.toResult(a));
+      return approvals.map(
+        (
+          a: Prisma.PhaseApprovalGetPayload<{
+            include: {
+              approver: { select: { first_name: true; last_name: true } };
+              requester: { select: { first_name: true; last_name: true } };
+            };
+          }>,
+        ) => this.toResult(a),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -73,7 +89,10 @@ export class PhaseApprovalQueryRepository
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<PhaseApprovalResult[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const approvals = await client.phaseApproval.findMany({
         where: { phase: { project_id: projectId } },
@@ -85,14 +104,27 @@ export class PhaseApprovalQueryRepository
         orderBy: { created_at: 'desc' },
       });
 
-      return approvals.map((a) => this.toResultWithPhase(a));
+      return approvals.map(
+        (
+          a: Prisma.PhaseApprovalGetPayload<{
+            include: {
+              approver: { select: { first_name: true; last_name: true } };
+              requester: { select: { first_name: true; last_name: true } };
+              phase: { select: { name: true } };
+            };
+          }>,
+        ) => this.toResultWithPhase(a),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
   }
 
   async findAll(tx?: ITransactionContext): Promise<PhaseApprovalResult[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const approvals = await client.phaseApproval.findMany({
         include: {
@@ -108,7 +140,22 @@ export class PhaseApprovalQueryRepository
         orderBy: { created_at: 'desc' },
       });
 
-      return approvals.map((a) => this.toResultWithPhaseAndProject(a));
+      return approvals.map(
+        (
+          a: Prisma.PhaseApprovalGetPayload<{
+            include: {
+              approver: { select: { first_name: true; last_name: true } };
+              requester: { select: { first_name: true; last_name: true } };
+              phase: {
+                select: {
+                  name: true;
+                  project: { select: { id: true; name: true } };
+                };
+              };
+            };
+          }>,
+        ) => this.toResultWithPhaseAndProject(a),
+      );
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -123,7 +170,7 @@ export class PhaseApprovalQueryRepository
     requested_by: string;
     approval_status: PrismaApprovalStatus;
     comments: string | null;
-    media: PhaseApprovalMedia[];
+    media: Prisma.JsonValue;
     approved_at: Date | null;
     requested_at: Date;
     created_at: Date;
@@ -141,48 +188,43 @@ export class PhaseApprovalQueryRepository
       requesterLastName: approval.requester.last_name,
       approvalStatus: approval.approval_status as string as ApprovalStatus,
       comments: approval.comments,
-      media: approval.media || [],
+      media: Array.isArray(approval.media)
+        ? (approval.media as unknown as PhaseApprovalMedia[])
+        : [],
       approvedAt: approval.approved_at,
       requestedAt: approval.requested_at,
       createdAt: approval.created_at,
     };
   }
 
-  private toResultWithPhase(approval: {
-    id: string;
-    phase_id: string;
-    approved_by: string | null;
-    requested_by: string;
-    approval_status: PrismaApprovalStatus;
-    comments: string | null;
-    media: PhaseApprovalMedia[];
-    approved_at: Date | null;
-    requested_at: Date;
-    created_at: Date;
-    approver: { first_name: string; last_name: string } | null;
-    requester: { first_name: string; last_name: string };
-    phase: { name: string };
-  }): PhaseApprovalResult {
+  private toResultWithPhase(
+    approval: Prisma.PhaseApprovalGetPayload<{
+      include: {
+        approver: { select: { first_name: true; last_name: true } };
+        requester: { select: { first_name: true; last_name: true } };
+        phase: { select: { name: true } };
+      };
+    }>,
+  ): PhaseApprovalResult {
     const result = this.toResult(approval);
     result.phaseName = approval.phase.name;
     return result;
   }
 
-  private toResultWithPhaseAndProject(approval: {
-    id: string;
-    phase_id: string;
-    approved_by: string | null;
-    requested_by: string;
-    approval_status: PrismaApprovalStatus;
-    comments: string | null;
-    media: PhaseApprovalMedia[];
-    approved_at: Date | null;
-    requested_at: Date;
-    created_at: Date;
-    approver: { first_name: string; last_name: string } | null;
-    requester: { first_name: string; last_name: string };
-    phase: { name: string; project: { id: string; name: string } };
-  }): PhaseApprovalResult {
+  private toResultWithPhaseAndProject(
+    approval: Prisma.PhaseApprovalGetPayload<{
+      include: {
+        approver: { select: { first_name: true; last_name: true } };
+        requester: { select: { first_name: true; last_name: true } };
+        phase: {
+          select: {
+            name: true;
+            project: { select: { id: true; name: true } };
+          };
+        };
+      };
+    }>,
+  ): PhaseApprovalResult {
     const result = this.toResult(approval);
     result.phaseName = approval.phase.name;
     result.projectId = approval.phase.project.id;

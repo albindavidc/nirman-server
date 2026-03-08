@@ -19,7 +19,8 @@ export class RepositoryUtils {
 
   static handleError(error: unknown): never {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (error.code) {
+      const knownError = error as Prisma.PrismaClientKnownRequestError;
+      switch (knownError.code) {
         case 'P2025':
           throw new NotFoundException('Entity not found');
         case 'P2002':
@@ -28,10 +29,10 @@ export class RepositoryUtils {
           throw new BadRequestException('Foreign key constraint failed');
         default:
           throw new InternalServerErrorException(
-            `Database error: ${error.message}`,
+            `Database error: ${knownError.message}`,
           );
       }
     }
-    throw error as Error;
+    throw error;
   }
 }

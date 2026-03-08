@@ -1,6 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '../../generated/client/client';
 import { IVendorRepository } from '../../domain/repositories/vendor-repository.interface';
 import { Vendor } from '../../domain/entities/vendor.entity';
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
@@ -47,7 +46,7 @@ export class VendorRepository implements IVendorRepository {
     const existingUserIds = await this.prisma.user.findMany({
       select: { id: true },
     });
-    const validUserIds = existingUserIds.map((u) => u.id);
+    const validUserIds = existingUserIds.map((u: { id: string }) => u.id);
 
     const where: VendorWherePersistenceInput = {
       user_id: { in: validUserIds },
@@ -69,14 +68,18 @@ export class VendorRepository implements IVendorRepository {
 
     const [vendors, total] = await Promise.all([
       this.prisma.vendor.findMany({
-        where: prismaWhere as Prisma.VendorWhereInput,
+        where: prismaWhere as unknown as NonNullable<
+          Parameters<PrismaService['vendor']['findMany']>[0]
+        >['where'],
         skip,
         take: limit,
         include: { user: true },
         orderBy: { created_at: 'desc' },
       }),
       this.prisma.vendor.count({
-        where: prismaWhere as Prisma.VendorWhereInput,
+        where: prismaWhere as unknown as NonNullable<
+          Parameters<PrismaService['vendor']['count']>[0]
+        >['where'],
       }),
     ]);
 
@@ -90,7 +93,9 @@ export class VendorRepository implements IVendorRepository {
     const prismaData = VendorMapper.toPrismaCreateInput(data);
 
     const created = await this.prisma.vendor.create({
-      data: prismaData as Prisma.VendorUncheckedCreateInput,
+      data: prismaData as unknown as Parameters<
+        PrismaService['vendor']['create']
+      >[0]['data'],
       include: { user: true },
     });
 
@@ -102,7 +107,9 @@ export class VendorRepository implements IVendorRepository {
 
     await this.prisma.vendor.update({
       where: { id },
-      data: prismaData as Prisma.VendorUpdateInput,
+      data: prismaData as unknown as Parameters<
+        PrismaService['vendor']['update']
+      >[0]['data'],
     });
 
     return (await this.findById(id))!;

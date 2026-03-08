@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '../../../generated/client/client';
+import { Prisma, PrismaClient } from '../../../generated/client/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RepositoryUtils } from '../repository.utils';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
@@ -31,7 +31,10 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
     data: CreatePhaseApprovalData,
     tx?: ITransactionContext,
   ): Promise<PhaseApprovalResult> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const isDecided =
         data.approvalStatus === ApprovalStatus.APPROVED ||
@@ -45,7 +48,7 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
         requester: { connect: { id: data.requestedBy } },
         approval_status: data.approvalStatus as string as PrismaApprovalStatus,
         comments: data.comments,
-        media: data.media,
+        media: data.media as unknown as Prisma.InputJsonValue,
         approved_at: isDecided ? new Date() : null,
       };
 
@@ -72,7 +75,7 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
     requested_by: string;
     approval_status: PrismaApprovalStatus;
     comments: string | null;
-    media: PhaseApprovalMedia[];
+    media: Prisma.JsonValue;
     approved_at: Date | null;
     requested_at: Date;
     created_at: Date;
@@ -90,7 +93,9 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
       requesterLastName: approval.requester.last_name,
       approvalStatus: approval.approval_status as string as ApprovalStatus,
       comments: approval.comments,
-      media: approval.media || [],
+      media: Array.isArray(approval.media)
+        ? (approval.media as unknown as PhaseApprovalMedia[])
+        : [],
       approvedAt: approval.approved_at,
       requestedAt: approval.requested_at,
       createdAt: approval.created_at,

@@ -7,6 +7,7 @@ import {
 } from '../../../domain/repositories/project/project-worker-repository.interface';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient, Prisma } from '../../../generated/client/client';
 
 // Local interface to strictly type the JSON elements stored in the array
 interface MemberData {
@@ -25,7 +26,10 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     workers: AddWorkerData[],
     tx?: ITransactionContext,
   ): Promise<{ addedCount: number; workers: ProjectWorkerData[] }> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
@@ -92,7 +96,10 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     userId: string,
     tx?: ITransactionContext,
   ): Promise<ProjectWorkerData[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
@@ -110,11 +117,10 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
 
       const updatedMembers = members.filter((m) => m.user_id !== userId);
 
-      // Force cast as any just to write array back to raw Prisma JSON field without compiler error
       const updatedProject = await client.project.update({
         where: { id: projectId },
         data: {
-          members: updatedMembers as unknown as typeof project.members,
+          members: updatedMembers as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -137,7 +143,10 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     role: string,
     tx?: ITransactionContext,
   ): Promise<void> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
@@ -162,7 +171,7 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
       await client.project.update({
         where: { id: projectId },
         data: {
-          members: updatedMembers as unknown as typeof project.members,
+          members: updatedMembers as unknown as Prisma.InputJsonValue,
         },
       });
     } catch (error: unknown) {

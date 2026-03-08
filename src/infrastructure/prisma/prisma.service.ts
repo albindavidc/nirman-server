@@ -1,4 +1,6 @@
 import { PrismaClient } from '../../generated/client/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import {
   Injectable,
   OnModuleInit,
@@ -14,15 +16,23 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // required for Supabase
+      max: 10, // max connections in pool
+      idleTimeoutMillis: 30000, // close idle connections after 30s
+    });
+
     super({
-      log: [],
+      adapter: new PrismaPg(pool),
+      log: ['query', 'info', 'warn', 'error'],
     });
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
-      this.logger.log('🚀 Prisma connected to MongoDB');
+      this.logger.log('🚀 Prisma connected to PostgreSQL');
     } catch (error) {
       this.logger.error('❌ Prisma connection failed:', error);
     }

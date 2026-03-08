@@ -6,6 +6,7 @@ import { ITransactionContext } from '../../../domain/interfaces/transaction-cont
 import { IMaterialTransactionReader } from '../../../domain/repositories/project-material/material-transaction.reader.interface';
 import { IMaterialTransactionWriter } from '../../../domain/repositories/project-material/material-transaction.writer.interface';
 import { RepositoryUtils } from '../repository.utils';
+import { PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY point-reads (findById, existsById) and writes (save).
@@ -28,7 +29,10 @@ export class MaterialTransactionRepository
     id: string,
     tx?: ITransactionContext,
   ): Promise<MaterialTransaction | null> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const record = await client.materialTransaction.findUnique({
         where: { id },
@@ -40,7 +44,10 @@ export class MaterialTransactionRepository
   }
 
   async existsById(id: string, tx?: ITransactionContext): Promise<boolean> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const count = await client.materialTransaction.count({ where: { id } });
       return count > 0;
@@ -60,7 +67,10 @@ export class MaterialTransactionRepository
     entity: MaterialTransaction,
     tx?: ITransactionContext,
   ): Promise<MaterialTransaction> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const result = await client.materialTransaction.create({
         data: MaterialTransactionMapper.toPersistence(entity),

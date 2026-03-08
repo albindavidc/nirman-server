@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '../../generated/client/client';
 import {
   IProfessionalRepository,
   ProfessionalWithUser,
@@ -66,7 +67,22 @@ export class ProfessionalRepository implements IProfessionalRepository {
       take: limit,
     });
 
-    return professionals.map((p) => ({
+    type ProfessionalQueryResult = Prisma.ProfessionalGetPayload<{
+      include: {
+        user: {
+          select: {
+            id: true;
+            first_name: true;
+            last_name: true;
+            email: true;
+            phone_number: true;
+            profile_photo_url: true;
+          };
+        };
+      };
+    }>;
+
+    return (professionals as ProfessionalQueryResult[]).map((p) => ({
       id: p.user.id,
       firstName: p.user.first_name,
       lastName: p.user.last_name,
@@ -90,6 +106,6 @@ export class ProfessionalRepository implements IProfessionalRepository {
       },
     });
 
-    return professionals.map((p) => p.user_id);
+    return professionals.map((p: { user_id: string }) => p.user_id);
   }
 }

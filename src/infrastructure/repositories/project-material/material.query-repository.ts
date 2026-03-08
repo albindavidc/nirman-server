@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Material } from '../../../domain/entities/material.entity';
 import { MaterialMapper } from '../../../application/mappers/material.mapper';
 import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
 import { IMaterialQueryReader } from '../../../domain/repositories/project-material/material.query-reader.interface';
 import { RepositoryUtils } from '../repository.utils';
+
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '../../../generated/client';
+import { PrismaClient } from '../../../generated/client/client';
 
 /**
  * SRP — Handles ONLY complex read operations (project-level material lists).
@@ -22,13 +25,16 @@ export class MaterialQueryRepository implements IMaterialQueryReader {
     projectId: string,
     tx?: ITransactionContext,
   ): Promise<Material[]> {
-    const client = RepositoryUtils.resolveClient(this.prisma, tx);
+    const client = RepositoryUtils.resolveClient(
+      this.prisma,
+      tx,
+    ) as PrismaClient;
     try {
       const records = await client.material.findMany({
         where: { project_id: projectId },
         orderBy: { created_at: 'desc' },
       });
-      return records.map((r) => MaterialMapper.toDomain(r));
+      return records.map(MaterialMapper.toDomain);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
