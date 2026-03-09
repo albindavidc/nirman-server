@@ -209,7 +209,10 @@ export class ProjectMapper {
           (m): ProjectWorker => ({
             userId: m.user_id,
             role: m.role,
-            joinedAt: m.joined_at,
+            joinedAt:
+              m.joined_at instanceof Date
+                ? m.joined_at
+                : new Date(m.joined_at),
             isCreator: m.is_creator,
           }),
         ) ?? [],

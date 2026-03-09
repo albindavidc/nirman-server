@@ -43,10 +43,18 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
         return [];
       }
 
-      const members = project.members as unknown as MemberData[];
+      const members = (project.members as unknown as any[]).map((m) => ({
+        user_id: m.user_id || m.userId,
+        role: m.role,
+        joined_at: m.joined_at || m.joinedAt,
+        is_creator: m.is_creator || m.isCreator,
+      })) as MemberData[];
 
-      // Get user details for all workers
-      const userIds = members.map((m) => m.user_id);
+      // Get user details for all workers, filtering out any undefined/null IDs
+      const userIds = members
+        .map((m) => m.user_id)
+        .filter((id): id is string => !!id);
+
       const users = await client.user.findMany({
         where: { id: { in: userIds } },
         include: {
