@@ -1,7 +1,8 @@
 import { User } from '../../domain/entities/user.entity';
 import { Vendor } from '../../domain/entities/vendor.entity';
 import { VendorStatus } from '../../domain/enums/vendor-status.enum';
-import { CreateVendorUserDto } from '../dto/vendor/create-vendor-user.dto';
+import { CreateUserDto } from '../dto/user/create-user.dto';
+
 import { Role } from '../../domain/enums/role.enum';
 import { UserStatus } from '../../domain/enums/user-status.enum';
 import { UserPersistence } from '../interfaces/user.persistence.interface';
@@ -44,9 +45,10 @@ export class UserMapper {
 
   static dtoToEntity(
     dto: Pick<
-      CreateVendorUserDto,
+      CreateUserDto,
       'firstName' | 'lastName' | 'email' | 'phoneNumber' | 'password'
     >,
+    role: Role,
   ): User {
     return new User({
       firstName: dto.firstName,
@@ -54,10 +56,11 @@ export class UserMapper {
       email: dto.email,
       phoneNumber: dto.phoneNumber,
       passwordHash: dto.password,
-      role: Role.VENDOR,
+      role: role,
       userStatus: UserStatus.ACTIVE,
     });
   }
+
 
   static entityToDto(entity: User): {
     id: string;

@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateVendorUserDto {
+export class CreateUserDto {
   @IsNotEmpty()
   firstName!: string;
 
@@ -34,7 +34,7 @@ export class CreateVendorUserDto {
   confirmPassword!: string;
 
   @Transform(
-    ({ value, obj }: { value: string; obj: CreateVendorUserDto }) =>
+    ({ value, obj }: { value: string; obj: CreateUserDto }) =>
       value === obj.password,
   )
   get isPasswordMatch(): boolean {

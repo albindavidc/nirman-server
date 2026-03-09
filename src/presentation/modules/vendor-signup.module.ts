@@ -14,24 +14,28 @@ import { EMAIL_SERVICE } from '../../application/interfaces/email-service.interf
 
 // Controllers
 import { VendorSignupController } from '../controllers/vendor-signup.controller';
+import { AdminSignupController } from '../controllers/admin-signup.controller';
+
 
 // Command Handlers
-import { CreateVendorUserHandler } from '../../application/handlers/commands/vendor/create-vendor-user.handler';
+import { CreateUserHandler } from '../../application/handlers/commands/user/create-user.handler';
 import { CreateVendorCompanyHandler } from '../../application/handlers/commands/vendor/create-vendor-company.handler';
+
 
 // Event Handlers
 import { UserRegisteredHandler } from '../../application/handlers/events/user-registered.handler';
 
 @Module({
   imports: [CqrsModule, PrismaModule],
-  controllers: [VendorSignupController],
+  controllers: [VendorSignupController, AdminSignupController],
   providers: [
     { provide: USER_REPOSITORY, useClass: UserRepository },
     { provide: VENDOR_REPOSITORY, useClass: VendorRepository },
     { provide: EMAIL_SERVICE, useClass: EmailService },
-    CreateVendorUserHandler,
+    CreateUserHandler,
     CreateVendorCompanyHandler,
     UserRegisteredHandler,
   ],
+
 })
 export class VendorSignupModule {}

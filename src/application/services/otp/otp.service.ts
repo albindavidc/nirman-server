@@ -44,6 +44,7 @@ export class OtpService {
       });
 
       this.logger.log(`OTP sent to ${email}: ${otp}`);
+      console.log(`\n[DEBUG] Generated OTP for ${email}: ${otp}\n`);
 
       // Send email
       await this.transporter.sendMail({

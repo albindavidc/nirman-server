@@ -37,11 +37,16 @@ import { WorkerSignupCommand } from '../../application/commands/auth/worker-sign
 import { WorkerSignupDto } from '../../application/dto/auth/worker-signup.dto';
 import { SupervisorSignupCommand } from '../../application/commands/auth/supervisor-signup.command';
 import { SupervisorSignupDto } from '../../application/dto/auth/supervisor-signup.dto';
+import { CreateUserCommand } from '../../application/commands/user/create-user.command';
+import { CreateUserDto } from '../../application/dto/user/create-user.dto';
+import { SendOtpCommand } from '../../application/commands/otp/send-otp.command';
+import { SendOtpDto } from '../../application/dto/otp/otp.dto';
 
 // Queries
 import { GetProfileQuery } from '../../application/queries/profile/get-profile.query';
 
 import { AUTH_ROUTES } from '../../common/constants/routes.constants';
+import { Role } from '../../domain/enums/role.enum';
 
 @Controller(AUTH_ROUTES.ROOT)
 export class AuthController {
@@ -206,6 +211,21 @@ export class AuthController {
     return this.commandBus.execute(
       new ResetPasswordCommand(dto.email, dto.resetToken, dto.newPassword),
     );
+  }
+
+  @Public()
+  @Post(AUTH_ROUTES.ADMIN_SIGNUP)
+  @HttpCode(HttpStatus.OK)
+  async adminSignup(@Body() dto: CreateUserDto) {
+    const userId = await this.commandBus.execute(new CreateUserCommand(dto, Role.ADMIN));
+    
+    // Trigger OTP send immediately after successful user creation
+    await this.commandBus.execute(new SendOtpCommand({ email: dto.email }));
+    
+    return {
+      message: 'Admin account created successfully. Please verify your email.',
+      userId,
+    };
   }
 
   @Public()

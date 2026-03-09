@@ -24,6 +24,7 @@ export class OtpStorageService implements IOtpStorageService {
       expiresAt,
       email: email.toLowerCase(),
     });
+    console.log(`\n[DEBUG] Generated OTP for ${email}: ${otp}\n`);
   }
 
   getOtp(email: string): OtpRecord | undefined {

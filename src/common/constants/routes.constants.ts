@@ -12,7 +12,9 @@ export const AUTH_ROUTES = {
   RESET_PASSWORD: 'reset-password',
   WORKER_SIGNUP: 'worker/signup',
   SUPERVISOR_SIGNUP: 'supervisor/signup',
+  ADMIN_SIGNUP: 'admin/signup',
 };
+
 
 export const WORKER_ROUTES = {
   ROOT: `${API_PREFIX}/${API_VERSION}/workers`,

@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 
 // Controllers
 import { AuthController } from '../controllers/auth.controller';
+import { AdminSignupController } from '../controllers/admin-signup.controller';
 
 // Handlers
 import { LoginHandler } from '../../application/handlers/commands/auth/login.handler';
@@ -13,6 +14,8 @@ import { ResetPasswordHandler } from '../../application/handlers/commands/auth/r
 import { VerifyResetOtpHandler } from '../../application/handlers/commands/auth/verify-reset-otp.handler';
 import { WorkerSignupHandler } from '../../application/handlers/commands/auth/worker-signup.handler';
 import { SupervisorSignupHandler } from '../../application/handlers/commands/auth/supervisor-signup.handler';
+import { CreateUserHandler } from '../../application/handlers/commands/user/create-user.handler';
+
 
 // Repositories
 import { UserRepository } from '../../infrastructure/repositories/user.repository';
@@ -53,6 +56,7 @@ const CommandHandlers = [
   ResetPasswordHandler,
   WorkerSignupHandler,
   SupervisorSignupHandler,
+  CreateUserHandler,
 ];
 
 @Module({
@@ -67,7 +71,8 @@ const CommandHandlers = [
     }),
     UploadModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AdminSignupController],
+
   providers: [
     ...CommandHandlers,
     { provide: USER_REPOSITORY, useClass: UserRepository },

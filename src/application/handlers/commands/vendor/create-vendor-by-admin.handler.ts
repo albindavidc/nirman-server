@@ -2,6 +2,7 @@ import { ConflictException, Inject } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import * as argon2 from 'argon2';
 import { VendorStatus } from '../../../../domain/enums/vendor-status.enum';
+import { Role } from '../../../../domain/enums/role.enum';
 import {
   IUserRepository,
   USER_REPOSITORY,
@@ -34,13 +35,17 @@ export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorB
 
     const hashedPassword = await argon2.hash(dto.password);
 
-    const userEntity = UserMapper.dtoToEntity({
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      phoneNumber: dto.phone,
-      password: hashedPassword,
-    });
+    const userEntity = UserMapper.dtoToEntity(
+      {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        email: dto.email,
+        phoneNumber: dto.phone,
+        password: hashedPassword,
+      },
+      Role.VENDOR,
+    );
+
     const createdUser = await this.userRepository.create(userEntity);
 
     const vendorEntity = VendorMapper.dtoToEntity({

@@ -6,13 +6,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateVendorUserDto } from '../../application/dto/vendor/create-vendor-user.dto';
-import { CreateVendorUserCommand } from '../../application/commands/vendor/create-vendor-user.command';
+import { CreateUserDto } from '../../application/dto/user/create-user.dto';
+import { CreateUserCommand } from '../../application/commands/user/create-user.command';
 import { CreateVendorCompanyDto } from '../../application/dto/vendor/create-vendor-company.dto';
 import { CreateVendorCompanyCommand } from '../../application/commands/vendor/create-vendor-company.command';
 import { Public } from '../../common/security/decorators/public.decorator';
 
 import { VENDOR_SIGNUP_ROUTES } from '../../common/constants/routes.constants';
+import { Role } from '../../domain/enums/role.enum';
 
 @Controller(VENDOR_SIGNUP_ROUTES.ROOT)
 export class VendorSignupController {
@@ -22,9 +23,9 @@ export class VendorSignupController {
   @Public()
   @Post(VENDOR_SIGNUP_ROUTES.STEP_1)
   @UsePipes(new ValidationPipe({ transform: true }))
-  async step1(@Body() dto: CreateVendorUserDto) {
+  async step1(@Body() dto: CreateUserDto) {
     const userId = await this.commandBus.execute(
-      new CreateVendorUserCommand(dto),
+      new CreateUserCommand(dto, Role.VENDOR),
     );
     return {
       message: 'User created successfully',
@@ -32,6 +33,7 @@ export class VendorSignupController {
       nextStep: 'company-details',
     };
   }
+
 
   //Company Details
   @Public()

@@ -7,19 +7,19 @@ import {
   USER_REPOSITORY,
 } from '../../../../domain/repositories/user-repository.interface';
 import { Prisma } from '../../../../generated/client/client';
-import { CreateVendorUserCommand } from '../../../commands/vendor/create-vendor-user.command';
+import { CreateUserCommand } from '../../../commands/user/create-user.command';
 import { UserMapper } from '../../../mappers/user.mapper';
 
-@CommandHandler(CreateVendorUserCommand)
-export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUserCommand> {
+@CommandHandler(CreateUserCommand)
+export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
     private readonly eventPublisher: EventPublisher,
   ) {}
 
-  async execute(command: CreateVendorUserCommand): Promise<string> {
-    const { dto } = command;
+  async execute(command: CreateUserCommand): Promise<string> {
+    const { dto, role } = command;
     // Normalize email to lowercase
     const email = dto.email.toLowerCase();
 
@@ -52,11 +52,14 @@ export class CreateVendorUserHandler implements ICommandHandler<CreateVendorUser
     });
 
     try {
-      const userEntity = UserMapper.dtoToEntity({
-        ...dto,
-        email, // Use lowercased email
-        password: hashPassword,
-      });
+      const userEntity = UserMapper.dtoToEntity(
+        {
+          ...dto,
+          email, // Use lowercased email
+          password: hashPassword,
+        },
+        role,
+      );
 
       // Repository now accepts Domain Entity directly
       const saved = await this.userRepository.create(userEntity);
