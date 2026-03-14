@@ -6,7 +6,7 @@ import {
   IWorkerRepository,
   WORKER_REPOSITORY,
 } from '../../../../domain/repositories/worker-repository.interface';
-import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 
 @CommandHandler(CreateWorkerCommand)
 export class CreateWorkerHandler implements ICommandHandler<CreateWorkerCommand> {
@@ -31,7 +31,7 @@ export class CreateWorkerHandler implements ICommandHandler<CreateWorkerCommand>
 
     // Hash password - use provided or generate default
     const rawPassword = data.password || 'Temp@1234';
-    const passwordHash = await bcrypt.hash(rawPassword, 10);
+    const passwordHash = await argon2.hash(rawPassword);
 
     // Create worker with optional professional data
     const worker = await this.workerRepository.create({

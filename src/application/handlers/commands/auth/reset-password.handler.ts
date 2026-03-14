@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Inject } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 import { ResetPasswordCommand } from '../../../commands/auth/reset-password.command';
 import {
   IUserRepository,
@@ -33,8 +33,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
       throw new BadRequestException(validation.message);
     }
 
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+    const passwordHash = await argon2.hash(newPassword);
 
     await this.userRepository.updatePassword(email, passwordHash);
 

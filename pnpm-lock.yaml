@@ -29,18 +29,12 @@ importers:
       '@nestjs/cqrs':
         specifier: ^11.0.3
         version: 11.0.3(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/jwt':
-        specifier: ^11.0.2
-        version: 11.0.2(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nestjs/mapped-types':
         specifier: ^2.1.0
         version: 2.1.0(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)
       '@nestjs/passport':
         specifier: ^11.0.5
         version: 11.0.5(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(passport@0.7.0)
-      '@nestjs/platform-express':
-        specifier: ^11.0.1
-        version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)
       '@nestjs/platform-socket.io':
         specifier: ^11.1.15
         version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/websockets@11.1.16)(rxjs@7.8.2)
@@ -53,9 +47,6 @@ importers:
       '@nestjs/websockets':
         specifier: ^11.1.15
         version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(@nestjs/platform-socket.io@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@prisma/adapter-pg':
-        specifier: ^7.4.2
-        version: 7.4.2
       '@prisma/client':
         specifier: ^7.4.2
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
@@ -86,9 +77,6 @@ importers:
       exceljs:
         specifier: ^4.4.0
         version: 4.4.0
-      ioredis:
-        specifier: ^5.10.0
-        version: 5.10.0
       multer:
         specifier: ^2.0.2
         version: 2.1.1
@@ -101,24 +89,15 @@ importers:
       passport:
         specifier: ^0.7.0
         version: 0.7.0
-      passport-jwt:
-        specifier: ^4.0.1
-        version: 4.0.1
       pdfkit:
         specifier: ^0.17.2
         version: 0.17.2
-      pg:
-        specifier: ^8.20.0
-        version: 8.20.0
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.2
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -135,12 +114,21 @@ importers:
       '@nestjs/cli':
         specifier: ^11.0.0
         version: 11.0.16(@types/node@22.19.15)
+      '@nestjs/jwt':
+        specifier: ^11.0.2
+        version: 11.0.2(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      '@nestjs/platform-express':
+        specifier: ^11.0.1
+        version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)
       '@nestjs/schematics':
         specifier: ^11.0.0
         version: 11.0.9(chokidar@4.0.3)(typescript@5.9.3)
       '@nestjs/testing':
         specifier: ^11.0.1
         version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(@nestjs/platform-express@11.1.16)
+      '@prisma/adapter-pg':
+        specifier: ^7.4.2
+        version: 7.4.2
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
@@ -192,18 +180,30 @@ importers:
       globals:
         specifier: ^17.4.0
         version: 17.4.0
+      ioredis:
+        specifier: ^5.10.0
+        version: 5.10.0
       jest:
         specifier: ^30.0.0
         version: 30.2.0(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3))
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
+      passport-jwt:
+        specifier: ^4.0.1
+        version: 4.0.1
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
       prisma:
         specifier: 7.4.2
         version: 7.4.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.2
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
