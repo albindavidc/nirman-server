@@ -48,18 +48,18 @@ export class UserCacheService {
   // ─── Profile ─────────────────────────────────────────────────────────────────
 
   async getProfile<T>(userId: string): Promise<T | null> {
-    return this.redis.get<T>(`user:profile:${userId}`);
+    return this.redis.get<T>(`user:profile:v2:${userId}`);
   }
 
   async setProfile<T>(userId: string, data: T): Promise<void> {
     await this.redis.set(
-      `user:profile:${userId}`,
+      `user:profile:v2:${userId}`,
       data,
       this.profileTtlSeconds,
     );
   }
 
   async invalidateProfile(userId: string): Promise<void> {
-    await this.redis.del(`user:profile:${userId}`);
+    await this.redis.del(`user:profile:v2:${userId}`);
   }
 }

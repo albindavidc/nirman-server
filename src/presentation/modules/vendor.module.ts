@@ -24,6 +24,7 @@ import { UnblacklistVendorHandler } from '../../application/handlers/commands/ve
 import { RejectVendorHandler } from '../../application/handlers/commands/vendor/reject-vendor.handler';
 import { RequestRecheckHandler } from '../../application/handlers/commands/vendor/request-recheck.handler';
 import { BlacklistVendorHandler } from '../../application/handlers/commands/vendor/blacklist-vendor.handler';
+import { ApproveVendorHandler } from '../../application/handlers/commands/vendor/approve-vendor.handler';
 
 const QueryHandlers = [GetVendorsHandler, GetVendorByIdHandler];
 const CommandHandlers = [
@@ -31,6 +32,7 @@ const CommandHandlers = [
   UpdateVendorHandler,
   UnblacklistVendorHandler,
   RejectVendorHandler,
+  ApproveVendorHandler,
   RequestRecheckHandler,
   BlacklistVendorHandler,
 ];

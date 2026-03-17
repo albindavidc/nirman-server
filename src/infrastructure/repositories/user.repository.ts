@@ -14,8 +14,8 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     // Check Redis profile cache first
-    const cached = await this.userCache.getProfile<User>(id);
-    if (cached) return cached;
+    const cached = await this.userCache.getProfile<any>(id);
+    if (cached) return UserMapper.fromPersistenceResult(cached);
 
     const user = await this.prisma.user.findFirst({
       where: { id, is_deleted: false },
@@ -24,12 +24,10 @@ export class UserRepository implements IUserRepository {
 
     if (!user) return null;
 
-    const entity = UserMapper.fromPersistenceResult(user);
-
     // Populate cache for subsequent requests (30 min TTL)
-    await this.userCache.setProfile(id, entity);
+    await this.userCache.setProfile(id, user);
 
-    return entity;
+    return UserMapper.fromPersistenceResult(user);
   }
 
   async findByEmail(email: string): Promise<User | null> {

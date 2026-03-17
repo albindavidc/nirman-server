@@ -30,14 +30,4 @@ export class CreateUserDto {
   @MinLength(8)
   password!: string;
 
-  @IsNotEmpty()
-  confirmPassword!: string;
-
-  @Transform(
-    ({ value, obj }: { value: string; obj: CreateUserDto }) =>
-      value === obj.password,
-  )
-  get isPasswordMatch(): boolean {
-    return true;
-  }
 }

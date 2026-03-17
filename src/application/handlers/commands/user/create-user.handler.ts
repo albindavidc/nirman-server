@@ -23,9 +23,6 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     // Normalize email to lowercase
     const email = dto.email.toLowerCase();
 
-    if (dto.password !== dto.confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
-    }
 
     // Check for existing email
     const existingUser = await this.userRepository.findByEmail(email);

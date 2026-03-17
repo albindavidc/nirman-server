@@ -10,7 +10,4 @@ export class WorkerSignupDto {
   @MinLength(8)
   password!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  confirmPassword!: string;
 }

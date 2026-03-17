@@ -20,12 +20,7 @@ export class SupervisorSignupHandler implements ICommandHandler<SupervisorSignup
   async execute(
     command: SupervisorSignupCommand,
   ): Promise<{ success: boolean; message: string }> {
-    const { email, password, confirmPassword } = command.dto;
-
-    if (password !== confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
-    }
-
+    const { email, password } = command.dto;
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new NotFoundException(

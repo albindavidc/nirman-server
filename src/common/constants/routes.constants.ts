@@ -48,6 +48,7 @@ export const VENDOR_ROUTES = {
   UPDATE_VENDOR: ':id',
   UNBLACKLIST: ':id/unblacklist',
   REJECT: ':id/reject',
+  APPROVE: ':id/approve',
   REQUEST_RECHECK: ':id/request-recheck',
   BLACKLIST: ':id/blacklist',
 };
