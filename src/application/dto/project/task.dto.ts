@@ -122,27 +122,27 @@ export class TaskDto {
   id!: string;
   phaseId!: string;
   name!: string;
-  description?: string;
-  assignedTo?: string;
-  plannedStartDate?: Date;
-  plannedEndDate?: Date;
-  actualStartDate?: Date;
-  actualEndDate?: Date;
+  description!: string | null;
+  assignedTo!: string | null;
+  plannedStartDate!: Date | null;
+  plannedEndDate!: Date | null;
+  actualStartDate!: Date | null;
+  actualEndDate!: Date | null;
   status!: string;
   priority!: string;
   progress!: number;
-  notes?: string;
-  color?: string;
+  notes?: string | null;
+  color?: string | null;
   createdAt!: Date;
   updatedAt!: Date;
 }
 
 export class TaskDependencyDto {
   id!: string;
+  phaseId!: string;
   successorTaskId!: string;
   predecessorTaskId!: string;
   type!: string;
   lagTime!: number;
-  createdAt!: Date;
-  updatedAt!: Date;
+  notes!: string | null;
 }

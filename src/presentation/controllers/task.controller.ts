@@ -75,7 +75,7 @@ export class TaskController {
   }
 
   @Get(TASK_ROUTES.GET_TASK_BY_ID)
-  async getTaskDetails(@Param('id') id: string): Promise<TaskDto> {
+  async getTaskDetails(@Param('id') id: string): Promise<TaskDto | null> {
     return this.queryBus.execute(new GetTaskDetailsQuery(id));
   }
 

@@ -25,7 +25,7 @@ export class GetVendorsHandler implements IQueryHandler<GetVendorsQuery> {
     });
 
     return {
-      vendors: vendors.map((v) => {
+      data: vendors.map((v) => {
         const dto = VendorMapper.toResponse(v);
         return {
           ...dto,

@@ -67,9 +67,6 @@ export class CreateVendorByAdminHandler implements ICommandHandler<CreateVendorB
 
     const createdVendor = await this.vendorRepository.create(vendorEntity);
 
-    return {
-      user: createdUser,
-      vendor: createdVendor,
-    };
+    return VendorMapper.toResponse(createdVendor);
   }
 }

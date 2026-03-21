@@ -1,4 +1,7 @@
-export class UpdateProjectPhaseCommand {
+import { Command } from '@nestjs/cqrs';
+import { ProjectPhaseDto } from '../../dto/project/phase/project-phase.dto';
+
+export class UpdateProjectPhaseCommand extends Command<ProjectPhaseDto> {
   constructor(
     public readonly phaseId: string,
     public readonly data: {
@@ -12,5 +15,7 @@ export class UpdateProjectPhaseCommand {
       actualEndDate?: string;
       sequence?: number;
     },
-  ) {}
+  ) {
+    super();
+  }
 }

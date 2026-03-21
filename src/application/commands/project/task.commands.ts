@@ -1,28 +1,43 @@
+import { Command } from '@nestjs/cqrs';
 import {
   CreateTaskDto,
   UpdateTaskDto,
   CreateTaskDependencyDto,
 } from '../../dto/project/task.dto';
+import {
+  TaskEntity,
+  TaskDependencyEntity,
+} from '../../../domain/entities/task.entity';
 
-export class CreateTaskCommand {
-  constructor(public readonly dto: CreateTaskDto) {}
+export class CreateTaskCommand extends Command<TaskEntity> {
+  constructor(public readonly dto: CreateTaskDto) {
+    super();
+  }
 }
 
-export class UpdateTaskCommand {
+export class UpdateTaskCommand extends Command<TaskEntity> {
   constructor(
     public readonly id: string,
     public readonly dto: UpdateTaskDto,
-  ) {}
+  ) {
+    super();
+  }
 }
 
-export class DeleteTaskCommand {
-  constructor(public readonly id: string) {}
+export class DeleteTaskCommand extends Command<void> {
+  constructor(public readonly id: string) {
+    super();
+  }
 }
 
-export class AddTaskDependencyCommand {
-  constructor(public readonly dto: CreateTaskDependencyDto) {}
+export class AddTaskDependencyCommand extends Command<TaskDependencyEntity> {
+  constructor(public readonly dto: CreateTaskDependencyDto) {
+    super();
+  }
 }
 
-export class RemoveTaskDependencyCommand {
-  constructor(public readonly id: string) {}
+export class RemoveTaskDependencyCommand extends Command<void> {
+  constructor(public readonly id: string) {
+    super();
+  }
 }

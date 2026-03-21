@@ -1,6 +1,8 @@
+import { Command } from '@nestjs/cqrs';
 import { ApprovalStatus } from '../../../domain/enums/approval-status.enum';
+import { PhaseApprovalResponseDto } from '../../dto/phase-approval/phase-approval-response.dto';
 
-export class CreatePhaseApprovalCommand {
+export class CreatePhaseApprovalCommand extends Command<PhaseApprovalResponseDto> {
   constructor(
     public readonly phaseId: string,
     public readonly approvedBy: string,
@@ -8,5 +10,7 @@ export class CreatePhaseApprovalCommand {
     public readonly approvalStatus: ApprovalStatus,
     public readonly comments: string | null,
     public readonly media: { type: string; url: string }[],
-  ) {}
+  ) {
+    super();
+  }
 }

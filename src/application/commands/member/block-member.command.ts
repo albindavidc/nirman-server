@@ -1,7 +1,13 @@
-export class BlockMemberCommand {
-  constructor(public readonly id: string) {}
+import { Command } from '@nestjs/cqrs';
+
+export class BlockMemberCommand extends Command<any> {
+  constructor(public readonly id: string) {
+    super();
+  }
 }
 
-export class UnblockMemberCommand {
-  constructor(public readonly id: string) {}
+export class UnblockMemberCommand extends Command<any> {
+  constructor(public readonly id: string) {
+    super();
+  }
 }

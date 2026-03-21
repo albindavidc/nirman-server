@@ -1,5 +1,8 @@
-import { IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
+import { TaskEntity } from '../../../domain/entities/task.entity';
 
-export class GetMyTasksQuery implements IQuery {
-  constructor(public readonly userId: string) {}
+export class GetMyTasksQuery extends Query<TaskEntity[]> {
+  constructor(public readonly userId: string) {
+    super();
+  }
 }

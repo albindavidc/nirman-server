@@ -1,4 +1,7 @@
-export class UpdateVendorCommand {
+import { Command } from '@nestjs/cqrs';
+import { VendorResponseDto } from '../../dto/vendor/vendor-response.dto';
+
+export class UpdateVendorCommand extends Command<VendorResponseDto> {
   constructor(
     public readonly vendorId: string,
     public readonly data: {
@@ -16,5 +19,7 @@ export class UpdateVendorCommand {
       productsServices?: string[];
       vendorStatus?: string;
     },
-  ) {}
+  ) {
+    super();
+  }
 }

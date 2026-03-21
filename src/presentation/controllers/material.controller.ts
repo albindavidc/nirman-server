@@ -78,7 +78,7 @@ export class MaterialController {
     @Param('id') id: string,
     @Request() req: { user: { userId: string } },
   ): Promise<void> {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new DeleteMaterialCommand(id, req.user.userId),
     );
   }

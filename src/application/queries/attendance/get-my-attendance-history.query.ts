@@ -1,4 +1,5 @@
-import { IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
+import { PaginatedAttendanceDto } from '../../dto/attendance/attendance-response.dto';
 
 export interface GetHistoryQueryParams {
   userId: string;
@@ -10,6 +11,8 @@ export interface GetHistoryQueryParams {
   limit?: number;
 }
 
-export class GetMyAttendanceHistoryQuery implements IQuery {
-  constructor(public readonly params: GetHistoryQueryParams) {}
+export class GetMyAttendanceHistoryQuery extends Query<PaginatedAttendanceDto> {
+  constructor(public readonly params: GetHistoryQueryParams) {
+    super();
+  }
 }

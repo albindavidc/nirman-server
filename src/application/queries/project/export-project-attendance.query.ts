@@ -1,3 +1,7 @@
-export class ExportProjectAttendanceQuery {
-  constructor(public readonly projectId: string) {}
+import { Query } from '@nestjs/cqrs';
+
+export class ExportProjectAttendanceQuery extends Query<PDFKit.PDFDocument> {
+  constructor(public readonly projectId: string) {
+    super();
+  }
 }

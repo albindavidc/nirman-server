@@ -41,10 +41,12 @@ import { ProjectPhaseDto } from '../../application/dto/project/phase/project-pha
 import { CreateProjectPhaseCommand } from '../../application/commands/project/create-project-phase.command';
 import { UpdateProjectPhaseCommand } from '../../application/commands/project/update-project-phase.command';
 import { GetProjectPhasesQuery } from '../../application/queries/project/get-project-phases.query';
-import { AttendanceResponseDto } from '../../application/dto/project/attendance-response.dto';
+import { AttendanceResponseDto as ProjectAttendanceResponseDto } from '../../application/dto/project/attendance-response.dto';
+import { AttendanceResponseDto } from '../../application/dto/attendance/attendance-response.dto';
 import { ProjectStatsDto } from '../../application/dto/project/project-stats.dto';
 import { ProfessionalResponseDto } from '../../application/dto/project/professional-response.dto';
 import { ProjectWorkerResponseDto } from '../../application/dto/project/project-worker-response.dto';
+import { ProfessionalWithUser } from '../../domain/repositories/professional-repository.interface';
 
 import { CreatePhaseApprovalDto } from '../../application/dto/phase-approval/create-phase-approval.dto';
 import {
@@ -106,9 +108,22 @@ export class ProjectController {
     @Query('search') search?: string,
     @Query('excludeProjectId') excludeProjectId?: string,
   ): Promise<ProfessionalResponseDto[]> {
-    return this.queryBus.execute(
+    const professionals: ProfessionalWithUser[] = await this.queryBus.execute(
       new GetProfessionalsQuery(search, excludeProjectId),
     );
+
+    return professionals.map((p) => ({
+      id: p.id,
+      firstName: p.firstName,
+      lastName: p.lastName,
+      fullName: p.fullName,
+      email: p.email,
+      phone: p.phone,
+      profilePhoto: p.profilePhoto,
+      title: p.title,
+      experienceYears: p.experienceYears || 0,
+      skills: p.skills,
+    }));
   }
 
   @Get(PROJECT_ROUTES.GET_PROJECT_BY_ID)
@@ -130,8 +145,11 @@ export class ProjectController {
   @Get(PROJECT_ROUTES.GET_ATTENDANCE)
   async getAttendance(
     @Param('id') id: string,
-  ): Promise<AttendanceResponseDto[]> {
-    return this.queryBus.execute(new GetProjectAttendanceQuery(id));
+  ): Promise<ProjectAttendanceResponseDto[]> {
+    return this.queryBus.execute<
+      GetProjectAttendanceQuery,
+      ProjectAttendanceResponseDto[]
+    >(new GetProjectAttendanceQuery(id));
   }
 
   @Get(PROJECT_ROUTES.EXPORT_ATTENDANCE)
@@ -199,7 +217,7 @@ export class ProjectController {
     @Param('id') projectId: string,
     @Body() addWorkerDto: AddProjectWorkerDto,
   ): Promise<void> {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new AddProjectWorkerCommand(
         projectId,
         addWorkerDto.userIds,
@@ -226,7 +244,7 @@ export class ProjectController {
     @Param('id') projectId: string,
     @Param('userId') userId: string,
   ): Promise<void> {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new RemoveProjectWorkerCommand(projectId, userId),
     );
   }

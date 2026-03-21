@@ -1,21 +1,32 @@
-import { IQuery } from '@nestjs/cqrs';
+import { Query } from '@nestjs/cqrs';
+import { TaskEntity, TaskDependencyEntity } from '../../../domain/entities/task.entity';
 
-export class GetPhaseTasksQuery implements IQuery {
-  constructor(public readonly phaseId: string) {}
+export class GetPhaseTasksQuery extends Query<TaskEntity[]> {
+  constructor(public readonly phaseId: string) {
+    super();
+  }
 }
 
-export class GetTaskDetailsQuery implements IQuery {
-  constructor(public readonly taskId: string) {}
+export class GetTaskDetailsQuery extends Query<TaskEntity | null> {
+  constructor(public readonly taskId: string) {
+    super();
+  }
 }
 
-export class GetTaskDependenciesQuery implements IQuery {
-  constructor(public readonly phaseId: string) {}
+export class GetTaskDependenciesQuery extends Query<TaskDependencyEntity[]> {
+  constructor(public readonly phaseId: string) {
+    super();
+  }
 }
 
-export class GetProjectTasksQuery implements IQuery {
-  constructor(public readonly projectId: string) {}
+export class GetProjectTasksQuery extends Query<TaskEntity[]> {
+  constructor(public readonly projectId: string) {
+    super();
+  }
 }
 
-export class GetProjectDependenciesQuery implements IQuery {
-  constructor(public readonly projectId: string) {}
+export class GetProjectDependenciesQuery extends Query<TaskDependencyEntity[]> {
+  constructor(public readonly projectId: string) {
+    super();
+  }
 }
