@@ -2,7 +2,6 @@ export interface ProjectWorker {
   userId: string;
   role:
     | 'Admin'
-    | 'Viewer'
     | 'Worker'
     | 'Supervisor'
     | 'Engineer'

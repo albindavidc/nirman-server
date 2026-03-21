@@ -20,8 +20,8 @@ export class ProjectWorkerDto {
   userId!: string;
 
   @IsString()
-  @IsIn(['Admin', 'Viewer'])
-  role!: 'Admin' | 'Viewer';
+  @IsIn(['Admin'])
+  role!: 'Admin';
 
   @IsOptional()
   @IsDateString()
