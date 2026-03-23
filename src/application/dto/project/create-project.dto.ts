@@ -14,14 +14,14 @@ import {
 import { Type } from 'class-transformer';
 
 import { ProjectStatus } from '../../../domain/enums/project-status.enum';
+import { ProjectRole } from '../../../domain/enums/project-role.enum';
 
 export class ProjectWorkerDto {
   @IsString()
   userId!: string;
 
-  @IsString()
-  @IsIn(['Admin'])
-  role!: 'Admin';
+  @IsEnum(ProjectRole)
+  role!: ProjectRole;
 
   @IsOptional()
   @IsDateString()

@@ -9,6 +9,7 @@ import { Project } from '../../../../domain/entities/project.entity';
 import { ProjectMapper } from '../../../mappers/project.mapper';
 import { ProjectResponseDto } from '../../../dto/project/project-response.dto';
 import { ProjectStatus } from '../../../../domain/enums/project-status.enum';
+import { ProjectRole } from '../../../../domain/enums/project-role.enum';
 
 @CommandHandler(CreateProjectCommand)
 export class CreateProjectHandler implements ICommandHandler<CreateProjectCommand> {
@@ -33,7 +34,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
     if (creatorIndex === -1) {
       workers.unshift({
         userId: createdBy,
-        role: 'Admin',
+        role: ProjectRole.ADMIN,
         joinedAt: new Date(),
         isCreator: true,
       });

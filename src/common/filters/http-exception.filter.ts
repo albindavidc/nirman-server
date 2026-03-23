@@ -108,7 +108,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     } else {
       this.logger.warn(
-        `Warning processing request ${request.method} ${request.url}: ${message}`,
+        `Warning processing request ${request.method} ${request.url}: ${message}${
+          errors ? ' - Details: ' + JSON.stringify(errors) : ''
+        }`,
       );
     }
 
