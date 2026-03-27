@@ -1,6 +1,8 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
+  Task,
+  TaskDependency,
   TaskDependencyEntity,
   TaskEntity,
   TaskPriority,
@@ -46,26 +48,25 @@ export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
       throw new BadRequestException('Referenced phase not found');
     }
 
-    return this.taskWriter.save({
-      id: '',
-      phaseId: dto.phaseId,
-      name: dto.name,
-      description: dto.description || null,
-      assignedTo: dto.assignedTo || null,
-      plannedStartDate: dto.plannedStartDate
-        ? new Date(dto.plannedStartDate)
-        : null,
-      plannedEndDate: dto.plannedEndDate ? new Date(dto.plannedEndDate) : null,
-      actualStartDate: null,
-      actualEndDate: null,
-      priority: (dto.priority as TaskPriority) || TaskPriority.MEDIUM,
-      status: (dto.status as TaskStatus) || TaskStatus.TODO,
-      progress: 0,
-      notes: dto.notes || null,
-      color: dto.color || null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as TaskEntity);
+    return this.taskWriter.save(
+      new Task({
+        phaseId: dto.phaseId,
+        name: dto.name,
+        description: dto.description || null,
+        assignedTo: dto.assignedTo || null,
+        plannedStartDate: dto.plannedStartDate
+          ? new Date(dto.plannedStartDate)
+          : null,
+        plannedEndDate: dto.plannedEndDate ? new Date(dto.plannedEndDate) : null,
+        actualStartDate: null,
+        actualEndDate: null,
+        priority: (dto.priority as TaskPriority) || TaskPriority.MEDIUM,
+        status: (dto.status as TaskStatus) || TaskStatus.TODO,
+        progress: 0,
+        notes: dto.notes || null,
+        color: dto.color || null,
+      }),
+    );
   }
 }
 
@@ -84,8 +85,7 @@ export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand> {
       throw new Error(`Task with ID ${id} not found`);
     }
 
-    return this.taskWriter.save({
-      ...existing,
+    existing.updateDetails({
       name: dto.name || existing.name,
       description:
         dto.description !== undefined ? dto.description : existing.description,
@@ -108,8 +108,8 @@ export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand> {
       progress: dto.progress !== undefined ? dto.progress : existing.progress,
       notes: dto.notes !== undefined ? dto.notes : existing.notes,
       color: dto.color !== undefined ? dto.color : existing.color,
-      updatedAt: new Date(),
-    } as TaskEntity);
+    });
+    return this.taskWriter.save(existing);
   }
 }
 
@@ -142,15 +142,16 @@ export class AddTaskDependencyHandler implements ICommandHandler<AddTaskDependen
       throw new Error('Successor task not found');
     }
 
-    return this.taskWriter.addDependency({
-      id: '',
-      phaseId: successor.phaseId,
-      successorTaskId: dto.successorTaskId,
-      predecessorTaskId: dto.predecessorTaskId,
-      type: dto.type || 'FS',
-      lagTime: dto.lagTime || 0,
-      notes: null,
-    } as TaskDependencyEntity);
+    return this.taskWriter.addDependency(
+      new TaskDependency({
+        phaseId: successor.phaseId,
+        successorTaskId: dto.successorTaskId,
+        predecessorTaskId: dto.predecessorTaskId,
+        type: dto.type || 'FS',
+        lagTime: dto.lagTime || 0,
+        notes: null,
+      }),
+    );
   }
 }
 

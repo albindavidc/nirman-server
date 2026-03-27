@@ -1,5 +1,7 @@
 import { Prisma } from '../../../generated/client/client';
 import {
+  Task,
+  TaskDependency,
   TaskEntity,
   TaskDependencyEntity,
 } from '../../../domain/entities/task.entity';
@@ -9,8 +11,8 @@ import {
 } from '../../../infrastructure/types/task.types';
 
 export class TaskMapper {
-  static toDomain(record: TaskRecord): TaskEntity {
-    return {
+  static toDomain(record: TaskRecord): Task {
+    return new Task({
       id: record.id,
       phaseId: record.phase_id,
       assignedTo: record.assigned_to,
@@ -34,7 +36,7 @@ export class TaskMapper {
             email: record.assignee.email,
           }
         : null,
-    };
+    });
   }
 
   static toCreateInput(entity: TaskEntity): Prisma.TaskCreateInput {
@@ -86,10 +88,8 @@ export class TaskMapper {
     };
   }
 
-  static dependencyToDomain(
-    record: TaskDependencyRecord,
-  ): TaskDependencyEntity {
-    return {
+  static dependencyToDomain(record: TaskDependencyRecord): TaskDependency {
+    return new TaskDependency({
       id: record.id,
       phaseId: record.phase_id,
       successorTaskId: record.successor_task_id,
@@ -97,7 +97,7 @@ export class TaskMapper {
       type: record.type,
       lagTime: record.lag_time,
       notes: record.notes,
-    };
+    });
   }
 
   static dependencyToCreateInput(
