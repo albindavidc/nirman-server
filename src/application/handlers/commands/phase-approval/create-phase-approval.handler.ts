@@ -38,8 +38,11 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
     }
 
     // 2. Guard against duplicate decisions
+    if (phase.status === 'In Progress') {
+      throw new BadRequestException('Phase is already approved and in progress');
+    }
     if (phase.status === 'Completed') {
-      throw new BadRequestException('Phase is already approved and completed');
+      throw new BadRequestException('Phase is already completed');
     }
     if (phase.status === 'Rejected') {
       throw new BadRequestException('Phase has already been rejected');
@@ -70,12 +73,12 @@ export class CreatePhaseApprovalHandler implements ICommandHandler<CreatePhaseAp
 
     // 5. Update phase status and related fields based on decision
     if (command.approvalStatus === ApprovalStatus.APPROVED) {
-      phase.updateStatus('Completed');
-      phase.updateProgress(100);
-      phase.updateActualDates(phase.actualStartDate, new Date());
+      phase.updateStatus('In Progress');
+      phase.updateProgress(2);
+      phase.updateActualDates(new Date(), phase.actualEndDate);
       await this.projectPhaseWriter.save(phase);
     } else if (command.approvalStatus === ApprovalStatus.REJECTED) {
-      phase.updateStatus('In Progress');
+      phase.updateStatus('Not Started');
       await this.projectPhaseWriter.save(phase);
     }
 

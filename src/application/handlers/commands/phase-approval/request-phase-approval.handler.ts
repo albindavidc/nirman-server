@@ -39,6 +39,9 @@ export class RequestPhaseApprovalHandler implements ICommandHandler<RequestPhase
     if (phase.status === 'Completed') {
       throw new BadRequestException('Phase is already completed');
     }
+    if (phase.status === 'In Progress') {
+      throw new BadRequestException('Phase is already in progress');
+    }
     if (phase.status === 'Review Pending') {
       throw new BadRequestException('Approval already requested');
     }
