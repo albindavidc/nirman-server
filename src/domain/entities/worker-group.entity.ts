@@ -1,11 +1,12 @@
 import { AggregateRoot } from '@nestjs/cqrs';
 import { WorkerGroupMemberEntity as WorkerGroupMember } from './worker-group-member.entity';
+import { TradeType } from '../enums/trade-type.enum';
 
 export interface WorkerGroupProps {
   id: string;
   name: string;
   description: string;
-  trade: string;
+  trade: TradeType;
   projectId: string;
   createdById: string;
   isActive: boolean;
@@ -20,7 +21,7 @@ export class WorkerGroupEntity extends AggregateRoot {
   private readonly _id: string;
   private _name: string;
   private _description: string;
-  private _trade: string;
+  private _trade: TradeType;
   private _projectId: string;
   private _createdById: string;
   private _isActive: boolean;
@@ -94,7 +95,7 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._members;
   }
 
-  updateDetails(name?: string, description?: string, trade?: string) {
+  updateDetails(name?: string, description?: string, trade?: TradeType) {
     if (name) this._name = name;
     if (description) this._description = description;
     if (trade) this._trade = trade;
