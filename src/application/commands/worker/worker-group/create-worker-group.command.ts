@@ -1,4 +1,4 @@
-import { TradeType } from "../../../domain/enums/trade-type.enum";
+import { TradeType } from '../../../../domain/enums/trade-type.enum';
 
 export class CreateWorkerGroupCommand {
   constructor(

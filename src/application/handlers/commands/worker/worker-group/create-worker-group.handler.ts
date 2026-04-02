@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CreateWorkerGroupCommand } from '../../../commands/worker/create-worker-group.command';
+import { CreateWorkerGroupCommand } from '../../../../commands/worker/worker-group/create-worker-group.command';
 import { Inject } from '@nestjs/common';
 import {
   IWorkerGroupRepository,
   WORKER_GROUP_REPOSITORY,
-} from '../../../../domain/repositories/worker';
-import { WorkerGroupResponseDto } from '../../../dto/worker/worker-group/worker-group-response.dto';
-import { WorkerGroupEntity } from '../../../../domain/entities/worker-group.entity';
-import { WorkerGroupMapper } from '../../../mappers/worker/worker-group/worker-group.mapper';
+} from '../../../../../domain/repositories/worker';
+import { WorkerGroupResponseDto } from '../../../../dto/worker/worker-group/worker-group-response.dto';
+import { WorkerGroupEntity } from '../../../../../domain/entities/worker-group.entity';
+import { WorkerGroupMapper } from '../../../../mappers/worker/worker-group/worker-group.mapper';
 
 @CommandHandler(CreateWorkerGroupCommand)
 export class CreateWorkerGroupHandler implements ICommandHandler<CreateWorkerGroupCommand> {

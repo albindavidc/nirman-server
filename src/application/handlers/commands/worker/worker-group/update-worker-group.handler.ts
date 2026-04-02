@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdateWorkerGroupCommand } from '../../../commands/worker/update-worker-group.command';
+import { UpdateWorkerGroupCommand } from '../../../../commands/worker/worker-group/update-worker-group.command';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import {
   IWorkerGroupRepository,
   WORKER_GROUP_REPOSITORY,
-} from '../../../../domain/repositories/worker';
-import { WorkerGroupResponseDto } from '../../../dto/worker/worker-group/worker-group-response.dto';
-import { TradeType } from '../../../../domain/enums/trade-type.enum';
-import { WorkerGroupMapper } from '../../../mappers/worker/worker-group/worker-group.mapper';
+} from '../../../../../domain/repositories/worker';
+import { WorkerGroupResponseDto } from '../../../../dto/worker/worker-group/worker-group-response.dto';
+import { TradeType } from '../../../../../domain/enums/trade-type.enum';
+import { WorkerGroupMapper } from '../../../../mappers/worker/worker-group/worker-group.mapper';
 
 @CommandHandler(UpdateWorkerGroupCommand)
 export class UpdateWorkerGroupHandler implements ICommandHandler<UpdateWorkerGroupCommand> {
