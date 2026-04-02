@@ -3,23 +3,23 @@ import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 export type ProjectPhaseRecord = {
   id: string;
-  project_id: string;
+  projectId: string;
   name: string;
   description: string | null;
   progress: number;
-  planned_start_date: Date | null;
-  planned_end_date: Date | null;
-  actual_start_date: Date | null;
-  actual_end_date: Date | null;
+  plannedStartDate: Date | null;
+  plannedEndDate: Date | null;
+  actualStartDate: Date | null;
+  actualEndDate: Date | null;
   status: string;
   sequence: number;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type RepoUser = {
-  first_name: User['firstName'];
-  last_name: User['lastName'];
+  firstName: User['firstName'];
+  lastName: User['lastName'];
 };
 
 export type PhaseWithApprovalsResult = ProjectPhaseRecord & {
@@ -31,16 +31,16 @@ export type PhaseWithApprovalsResult = ProjectPhaseRecord & {
   };
   approvals: Array<{
     id: string;
-    phase_id: string;
-    approved_by: string | null;
+    phaseId: string;
+    approvedBy: string | null;
     approver: RepoUser | null;
-    requested_by: string;
+    requestedBy: string;
     requester: RepoUser;
-    approval_status: ApprovalStatus;
+    approvalStatus: ApprovalStatus;
     comments: string | null;
     media: unknown;
-    approved_at: Date | null;
-    created_at: Date;
+    approvedAt: Date | null;
+    createdAt: Date;
   }>;
   tasks: Array<{ status: string }>;
 };

@@ -70,7 +70,7 @@ export class VendorManagementController {
   async getStats() {
     const [total, approved] = await Promise.all([
       this.prisma.vendor.count(),
-      this.prisma.vendor.count({ where: { vendor_status: 'approved' } }),
+      this.prisma.vendor.count({ where: { vendorStatus: 'approved' } }),
     ]);
 
     return {

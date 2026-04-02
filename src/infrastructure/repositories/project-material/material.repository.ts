@@ -58,7 +58,7 @@ export class MaterialRepository implements IMaterialReader, IMaterialWriter {
 
   /**
    * Architecture — Uses upsert so that both create and update go through a
-   * single method. The schema's @updatedAt directive manages updated_at — we
+   * single method. The schema's @updatedAt directive manages updatedAt — we
    * never set it manually.
    */
   async save(entity: Material, tx?: ITransactionContext): Promise<Material> {

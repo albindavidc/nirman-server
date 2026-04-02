@@ -24,10 +24,10 @@ export class VerifyOtpHandler implements ICommandHandler<VerifyOtpCommand> {
       throw new BadRequestException(result.message);
     }
 
-    // Update is_email_verified to true after successful OTP verification
+    // Update isEmailVerified to true after successful OTP verification
     await this.prisma.user.update({
       where: { email },
-      data: { is_email_verified: true },
+      data: { isEmailVerified: true },
     });
 
     return { verified: true, message: result.message };

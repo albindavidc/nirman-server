@@ -2,31 +2,31 @@ import { Role as UserRole } from '../../domain/enums/role.enum';
 
 interface ProfessionalBase {
   id: string;
-  user_id: string;
-  professional_title: string;
-  experience_years: number;
+  userId: string;
+  professionalTitle: string;
+  experienceYears: number;
   skills: string[];
-  address_street: string;
-  address_city: string;
-  address_state: string;
-  address_zip_code: string;
-  created_at: Date;
-  updated_at: Date;
+  addressStreet: string;
+  addressCity: string;
+  addressState: string;
+  addressZipCode: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type ProfessionalPersistence = ProfessionalBase;
 
 interface MemberBase {
   id: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone_number: string | null;
-  password_hash: string;
+  phoneNumber: string | null;
+  passwordHash: string;
   role: UserRole;
-  user_status: string;
-  created_at: Date;
-  updated_at: Date;
+  userStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface MemberPersistence extends MemberBase {
@@ -38,40 +38,40 @@ export interface MemberWherePersistenceInput {
   email?: string;
   role?: UserRole | { in: UserRole[] };
   OR?: Array<{
-    first_name?: { contains: string; mode: 'insensitive' };
-    last_name?: { contains: string; mode: 'insensitive' };
+    firstName?: { contains: string; mode: 'insensitive' };
+    lastName?: { contains: string; mode: 'insensitive' };
     email?: { contains: string; mode: 'insensitive' };
   }>;
 }
 
 export interface MemberCreatePersistenceInput extends Omit<
   MemberBase,
-  'id' | 'created_at' | 'updated_at' | 'user_status' | 'phone_number'
+  'id' | 'createdAt' | 'updatedAt' | 'userStatus' | 'phoneNumber'
 > {
-  phone_number?: string;
-  user_status?: string;
+  phoneNumber?: string;
+  userStatus?: string;
   professional?: {
     create: Omit<
       ProfessionalBase,
-      'id' | 'user_id' | 'created_at' | 'updated_at'
+      'id' | 'userId' | 'createdAt' | 'updatedAt'
     >;
   };
 }
 
 export interface MemberUpdatePersistenceInput {
-  first_name?: string;
-  last_name?: string;
-  phone_number?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
   role?: UserRole;
-  user_status?: string;
+  userStatus?: string;
   professional?: {
     upsert: {
       create: Omit<
         ProfessionalBase,
-        'id' | 'user_id' | 'created_at' | 'updated_at'
+        'id' | 'userId' | 'createdAt' | 'updatedAt'
       >;
       update: Partial<
-        Omit<ProfessionalBase, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+        Omit<ProfessionalBase, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
       >;
     };
   };

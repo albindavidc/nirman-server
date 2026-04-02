@@ -4,35 +4,35 @@ export type RepoUser = {
   id: User['id'];
   email: User['email'];
   role: User['role'];
-  first_name: User['firstName'];
-  last_name: User['lastName'];
-  phone_number: User['phoneNumber'];
-  is_phone_verified: User['isPhoneVerified'];
-  is_email_verified: User['isEmailVerified'];
-  date_of_birth: User['dateOfBirth'];
-  profile_photo_url: User['profilePhotoUrl'];
-  user_status: User['userStatus'];
-  created_at: User['createdAt'];
-  updated_at: User['updatedAt'];
+  firstName: User['firstName'];
+  lastName: User['lastName'];
+  phoneNumber: User['phoneNumber'];
+  isPhoneVerified: User['isPhoneVerified'];
+  isEmailVerified: User['isEmailVerified'];
+  dateOfBirth: User['dateOfBirth'];
+  profilePhotoUrl: User['profilePhotoUrl'];
+  userStatus: User['userStatus'];
+  createdAt: User['createdAt'];
+  updatedAt: User['updatedAt'];
 };
 
 export interface AttendanceBase {
   id: string;
-  project_id: string;
-  user_id: string;
+  projectId: string;
+  userId: string;
   date: Date;
-  check_in: Date | null;
-  check_out: Date | null;
+  checkIn: Date | null;
+  checkOut: Date | null;
   status: string;
   location: string | null;
-  work_hours: number | null;
+  workHours: number | null;
   method: string;
-  supervisor_notes: string | null;
-  is_verified: boolean;
-  verified_by: string | null;
-  verified_at: Date | null;
-  created_at?: Date;
-  updated_at?: Date;
+  supervisorNotes: string | null;
+  isVerified: boolean;
+  verifiedBy: string | null;
+  verifiedAt: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface AttendancePersistence extends AttendanceBase {
@@ -42,8 +42,8 @@ export interface AttendancePersistence extends AttendanceBase {
 export type PrismaAttendance = AttendancePersistence;
 
 export interface AttendanceWherePersistenceInput {
-  project_id?: string;
-  user_id?: string;
+  projectId?: string;
+  userId?: string;
   date?: {
     gte?: Date;
     lte?: Date;
@@ -54,17 +54,17 @@ export interface AttendanceWherePersistenceInput {
 export type AttendanceCreatePersistenceInput = Omit<
   AttendanceBase,
   | 'id'
-  | 'created_at'
-  | 'updated_at'
-  | 'supervisor_notes'
-  | 'is_verified'
-  | 'verified_by'
-  | 'verified_at'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'supervisorNotes'
+  | 'isVerified'
+  | 'verifiedBy'
+  | 'verifiedAt'
 >;
 
 export type AttendanceUpdatePersistenceInput = Partial<
   Omit<
     AttendanceBase,
-    'id' | 'created_at' | 'updated_at' | 'project_id' | 'user_id' | 'date'
+    'id' | 'createdAt' | 'updatedAt' | 'projectId' | 'userId' | 'date'
   >
 >;

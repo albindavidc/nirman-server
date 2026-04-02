@@ -76,7 +76,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
             throw new ConflictException(
               'A user with this email already exists',
             );
-          } else if (target.includes('phone_number')) {
+          } else if (target.includes('phoneNumber')) {
             throw new ConflictException(
               'A user with this phone number already exists',
             );

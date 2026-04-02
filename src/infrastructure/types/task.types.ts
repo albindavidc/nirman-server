@@ -1,35 +1,37 @@
 export type RepoUser = {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 };
 
 export type TaskRecord = {
   id: string;
-  phase_id: string;
-  assigned_to: string | null;
+  phaseId: string;
+  assignedTo: string | null;
   name: string;
   description: string | null;
-  planned_start_date: Date | null;
-  planned_end_date: Date | null;
-  actual_start_date: Date | null;
-  actual_end_date: Date | null;
+  plannedStartDate: Date | null;
+  plannedEndDate: Date | null;
+  actualStartDate: Date | null;
+  actualEndDate: Date | null;
   status: string;
   priority: string;
   progress: number;
   color: string | null;
   notes: string | null;
-  created_at: Date;
-  updated_at: Date;
+  estimatedHours: number | null;
+  actualHours: number | null;
+  createdAt: Date;
+  updatedAt: Date;
   assignee: RepoUser | null;
 };
 
 export type TaskDependencyRecord = {
   id: string;
-  phase_id: string;
-  successor_task_id: string;
-  predecessor_task_id: string;
+  phaseId: string;
+  successorTaskId: string;
+  predecessorTaskId: string;
   type: string;
-  lag_time: number;
+  lagTime: number;
   notes: string | null;
 };

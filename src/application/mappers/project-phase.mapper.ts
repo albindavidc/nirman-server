@@ -2,6 +2,7 @@ import { ProjectPhase } from '../../domain/entities/project-phase.entity';
 import {
   Prisma,
   ProjectPhase as PrismaProjectPhase,
+  Status,
 } from '../../generated/client/client';
 import { ProjectPhaseDto } from '../dto/project/phase/project-phase.dto';
 
@@ -9,18 +10,18 @@ export class ProjectPhaseMapper {
   static toDomain(persistence: PrismaProjectPhase): ProjectPhase {
     return new ProjectPhase(
       persistence.id,
-      persistence.project_id,
+      persistence.projectId,
       persistence.name,
       persistence.description,
       persistence.progress,
-      persistence.planned_start_date,
-      persistence.planned_end_date,
-      persistence.actual_start_date,
-      persistence.actual_end_date,
+      persistence.plannedStartDate,
+      persistence.plannedEndDate,
+      persistence.actualStartDate,
+      persistence.actualEndDate,
       persistence.status,
       persistence.sequence,
-      persistence.created_at,
-      persistence.updated_at,
+      persistence.createdAt,
+      persistence.updatedAt,
     );
   }
 
@@ -31,14 +32,14 @@ export class ProjectPhaseMapper {
       name: domain.name,
       description: domain.description,
       progress: domain.progress,
-      planned_start_date: domain.plannedStartDate,
-      planned_end_date: domain.plannedEndDate,
-      actual_start_date: domain.actualStartDate,
-      actual_end_date: domain.actualEndDate,
-      status: domain.status,
+      plannedStartDate: domain.plannedStartDate,
+      plannedEndDate: domain.plannedEndDate,
+      actualStartDate: domain.actualStartDate,
+      actualEndDate: domain.actualEndDate,
+      status: this.mapStatus(domain.status),
       sequence: domain.sequence,
-      created_at: domain.createdAt,
-      updated_at: domain.updatedAt,
+      createdAt: domain.createdAt,
+      updatedAt: domain.updatedAt,
     };
     if (domain.id) {
       input.id = domain.id;
@@ -48,18 +49,39 @@ export class ProjectPhaseMapper {
 
   static toUpdateInput(domain: ProjectPhase): Prisma.ProjectPhaseUpdateInput {
     return {
-      project: { connect: { id: domain.projectId } },
       name: domain.name,
       description: domain.description,
       progress: domain.progress,
-      planned_start_date: domain.plannedStartDate,
-      planned_end_date: domain.plannedEndDate,
-      actual_start_date: domain.actualStartDate,
-      actual_end_date: domain.actualEndDate,
-      status: domain.status,
+      plannedStartDate: domain.plannedStartDate,
+      plannedEndDate: domain.plannedEndDate,
+      actualStartDate: domain.actualStartDate,
+      actualEndDate: domain.actualEndDate,
+      status: this.mapStatus(domain.status),
       sequence: domain.sequence,
-      updated_at: domain.updatedAt,
+      updatedAt: domain.updatedAt,
     };
+  }
+
+  private static mapStatus(status: any): Status {
+    if (!status) return Status.not_started;
+    const s = String(status).toLowerCase().replace(/\s+/g, '_');
+
+    switch (s) {
+      case 'todo':
+      case 'not_started':
+        return Status.not_started;
+      case 'in_progress':
+        return Status.in_progress;
+      case 'done':
+      case 'completed':
+        return Status.completed;
+      case 'delayed':
+        return Status.delayed;
+      case 'on_hold':
+        return Status.on_hold;
+      default:
+        return Status.not_started;
+    }
   }
 
   static toDto(domain: ProjectPhase): ProjectPhaseDto {

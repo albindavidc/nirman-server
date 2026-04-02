@@ -59,7 +59,7 @@ export class ProjectPhaseQueryRepository
     ) as PrismaClient;
     try {
       const phases = await client.projectPhase.findMany({
-        where: { project_id: projectId },
+        where: { projectId: projectId },
         orderBy: { sequence: 'asc' },
       });
       return phases.map(ProjectPhaseMapper.toDomain);
@@ -85,10 +85,10 @@ export class ProjectPhaseQueryRepository
           },
           approvals: {
             include: {
-              approver: { select: { first_name: true, last_name: true } },
-              requester: { select: { first_name: true, last_name: true } },
+              approver: { select: { firstName: true, lastName: true } },
+              requester: { select: { firstName: true, lastName: true } },
             },
-            orderBy: { created_at: 'desc' },
+            orderBy: { createdAt: 'desc' },
           },
           tasks: { select: { status: true } },
         },
@@ -108,24 +108,24 @@ export class ProjectPhaseQueryRepository
           (
             a: Prisma.PhaseApprovalGetPayload<{
               include: {
-                approver: { select: { first_name: true; last_name: true } };
-                requester: { select: { first_name: true; last_name: true } };
+                approver: { select: { firstName: true; lastName: true } };
+                requester: { select: { firstName: true; lastName: true } };
               };
             }>,
           ) => ({
             id: a.id,
-            phaseId: a.phase_id,
-            approvedBy: a.approved_by,
+            phaseId: a.phaseId,
+            approvedBy: a.approvedBy,
             approverName: a.approver
-              ? `${a.approver.first_name} ${a.approver.last_name}`
+              ? `${a.approver.firstName} ${a.approver.lastName}`
               : null,
-            requestedBy: a.requested_by,
-            requesterName: `${a.requester.first_name} ${a.requester.last_name}`,
-            approvalStatus: a.approval_status as string as ApprovalStatus,
+            requestedBy: a.requestedBy,
+            requesterName: `${a.requester.firstName} ${a.requester.lastName}`,
+            approvalStatus: a.approvalStatus as string as ApprovalStatus,
             comments: a.comments,
             media: (a.media as Array<{ type: string; url: string }>) ?? [],
-            approvedAt: a.approved_at,
-            createdAt: a.created_at,
+            approvedAt: a.approvedAt,
+            createdAt: a.createdAt,
           }),
         ),
         taskStats: {

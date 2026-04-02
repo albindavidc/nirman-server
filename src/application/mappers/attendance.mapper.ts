@@ -130,19 +130,19 @@ export class AttendanceMapper {
   // static fromPrismaResult(result: AttendancePersistence): AttendanceEntity {
   //   return {
   //     id: result.id,
-  //     userId: result.user_id,
-  //     projectId: result.project_id,
+  //     userId: result.userId,
+  //     projectId: result.projectId,
   //     date: result.date,
-  //     checkIn: result.check_in,
-  //     checkOut: result.check_out,
+  //     checkIn: result.checkIn,
+  //     checkOut: result.checkOut,
   //     status: result.status,
   //     location: result.location,
-  //     workHours: result.work_hours,
+  //     workHours: result.workHours,
   //     method: result.method,
-  //     supervisorNotes: result.supervisor_notes,
-  //     isVerified: result.is_verified,
-  //     verifiedBy: result.verified_by,
-  //     verifiedAt: result.verified_at,
+  //     supervisorNotes: result.supervisorNotes,
+  //     isVerified: result.isVerified,
+  //     verifiedBy: result.verifiedBy,
+  //     verifiedAt: result.verifiedAt,
   //   };
   // }
   // static fromPrismaResults(
@@ -165,14 +165,14 @@ export class AttendanceMapper {
   //     // But for type safety we cast or check.
   //   }
   //   return {
-  //     user_id: data.userId!,
-  //     project_id: data.projectId!,
+  //     userId: data.userId!,
+  //     projectId: data.projectId!,
   //     date: data.date!,
-  //     check_in: data.checkIn ?? null,
-  //     check_out: data.checkOut ?? null,
+  //     checkIn: data.checkIn ?? null,
+  //     checkOut: data.checkOut ?? null,
   //     status: data.status!,
   //     location: data.location ?? null,
-  //     work_hours: data.workHours ?? null,
+  //     workHours: data.workHours ?? null,
   //     method: data.method!,
   //   };
   // }
@@ -180,16 +180,16 @@ export class AttendanceMapper {
   //   data: Partial<AttendanceRecord>,
   // ): AttendanceUpdatePersistenceInput {
   //   const updateData: AttendanceUpdatePersistenceInput = {};
-  //   if (data.checkIn !== undefined) updateData.check_in = data.checkIn;
-  //   if (data.checkOut !== undefined) updateData.check_out = data.checkOut;
+  //   if (data.checkIn !== undefined) updateData.checkIn = data.checkIn;
+  //   if (data.checkOut !== undefined) updateData.checkOut = data.checkOut;
   //   if (data.status !== undefined) updateData.status = data.status;
   //   if (data.location !== undefined) updateData.location = data.location;
-  //   if (data.workHours !== undefined) updateData.work_hours = data.workHours;
+  //   if (data.workHours !== undefined) updateData.workHours = data.workHours;
   //   if (data.supervisorNotes !== undefined)
-  //     updateData.supervisor_notes = data.supervisorNotes;
-  //   if (data.isVerified !== undefined) updateData.is_verified = data.isVerified;
-  //   if (data.verifiedBy !== undefined) updateData.verified_by = data.verifiedBy;
-  //   if (data.verifiedAt !== undefined) updateData.verified_at = data.verifiedAt;
+  //     updateData.supervisorNotes = data.supervisorNotes;
+  //   if (data.isVerified !== undefined) updateData.isVerified = data.isVerified;
+  //   if (data.verifiedBy !== undefined) updateData.verifiedBy = data.verifiedBy;
+  //   if (data.verifiedAt !== undefined) updateData.verifiedAt = data.verifiedAt;
   //   return updateData;
   // }
 }

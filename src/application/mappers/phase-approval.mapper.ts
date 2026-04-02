@@ -8,33 +8,33 @@ import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 type PrismaPhaseApproval = {
   id: string;
-  phase_id: string;
-  approved_by: string | null;
-  requested_by: string;
-  approval_status: ApprovalStatus;
+  phaseId: string;
+  approvedBy: string | null;
+  requestedBy: string;
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: { type: string; url: string }[];
-  approved_at: Date | null;
-  requested_at: Date;
-  created_at: Date;
-  updated_at: Date;
-  approver?: { first_name: string; last_name: string };
-  requester?: { first_name: string; last_name: string };
+  approvedAt: Date | null;
+  requestedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  approver?: { firstName: string; lastName: string };
+  requester?: { firstName: string; lastName: string };
 };
 
 export class PhaseApprovalMapper {
   static toDomain(prisma: PrismaPhaseApproval): PhaseApproval {
     return new PhaseApproval(
       prisma.id,
-      prisma.phase_id,
-      prisma.requested_by,
-      prisma.approved_by,
-      prisma.approval_status,
+      prisma.phaseId,
+      prisma.requestedBy,
+      prisma.approvedBy,
+      prisma.approvalStatus,
       prisma.comments,
       prisma.media,
-      prisma.approved_at,
-      prisma.created_at,
-      prisma.updated_at,
+      prisma.approvedAt,
+      prisma.createdAt,
+      prisma.updatedAt,
     );
   }
 
@@ -46,7 +46,7 @@ export class PhaseApprovalMapper {
     comments: string | null;
     media: MediaItem[];
   }) {
-    // Determine approved_at based on status
+    // Determine approvedAt based on status
     const isDecided =
       data.approvalStatus === ApprovalStatus.APPROVED ||
       data.approvalStatus === ApprovalStatus.REJECTED;
@@ -57,32 +57,32 @@ export class PhaseApprovalMapper {
         ? { connect: { id: data.approvedBy } }
         : undefined,
       requester: { connect: { id: data.requestedBy } },
-      approval_status: data.approvalStatus,
+      approvalStatus: data.approvalStatus,
       comments: data.comments,
       media: data.media,
-      approved_at: isDecided ? new Date() : null,
+      approvedAt: isDecided ? new Date() : null,
     };
   }
 
   static toDto(prisma: PrismaPhaseApproval): PhaseApprovalResponseDto {
     return {
       id: prisma.id,
-      phaseId: prisma.phase_id,
-      approvedBy: prisma.approved_by,
+      phaseId: prisma.phaseId,
+      approvedBy: prisma.approvedBy,
       approverName: prisma.approver
-        ? `${prisma.approver.first_name} ${prisma.approver.last_name}`
+        ? `${prisma.approver.firstName} ${prisma.approver.lastName}`
         : null,
-      requestedBy: prisma.requested_by,
+      requestedBy: prisma.requestedBy,
       requesterName: prisma.requester
-        ? `${prisma.requester.first_name} ${prisma.requester.last_name}`
+        ? `${prisma.requester.firstName} ${prisma.requester.lastName}`
         : 'Unknown',
-      approvalStatus: prisma.approval_status,
+      approvalStatus: prisma.approvalStatus,
       comments: prisma.comments,
       media: prisma.media,
-      approvedAt: prisma.approved_at?.toISOString() ?? null,
-      requestedAt: prisma.requested_at?.toISOString(),
-      createdAt: prisma.created_at.toISOString(),
-      updatedAt: prisma.updated_at.toISOString(),
+      approvedAt: prisma.approvedAt?.toISOString() ?? null,
+      requestedAt: prisma.requestedAt?.toISOString(),
+      createdAt: prisma.createdAt.toISOString(),
+      updatedAt: prisma.updatedAt.toISOString(),
     };
   }
 

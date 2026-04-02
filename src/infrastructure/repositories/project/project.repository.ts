@@ -22,7 +22,7 @@ export class ProjectRepository implements IProjectWriter, IProjectReader {
     ) as PrismaClient;
     try {
       const project = await client.project.findUnique({
-        where: { id, is_deleted: false },
+        where: { id, isDeleted: false },
         include: { phases: { orderBy: { sequence: 'asc' } } },
       });
       return project ? ProjectMapper.fromPrismaResult(project) : null;
@@ -38,7 +38,7 @@ export class ProjectRepository implements IProjectWriter, IProjectReader {
     ) as PrismaClient;
     try {
       const count = await client.project.count({
-        where: { id, is_deleted: false },
+        where: { id, isDeleted: false },
       });
       return count > 0;
     } catch (error: unknown) {
@@ -86,8 +86,8 @@ export class ProjectRepository implements IProjectWriter, IProjectReader {
       await client.project.update({
         where: { id },
         data: {
-          is_deleted: true,
-          deleted_at: new Date(),
+          isDeleted: true,
+          deletedAt: new Date(),
         },
       });
     } catch (error: unknown) {

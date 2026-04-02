@@ -1,46 +1,46 @@
 import { ProjectStatus } from '../../domain/enums/project-status.enum';
 
 export interface ProjectWorkerPersistence {
-  user_id: string;
+  userId: string;
   role: string;
-  joined_at: Date;
-  is_creator: boolean;
+  joinedAt: Date;
+  isCreator: boolean;
 }
 
 export interface ProjectPhasePersistence {
   id: string;
-  project_id: string;
+  projectId: string;
   name: string;
   description: string | null;
   status: string;
   progress: number;
-  planned_start_date: Date | null;
-  planned_end_date: Date | null;
-  actual_start_date: Date | null;
-  actual_end_date: Date | null;
+  plannedStartDate: Date | null;
+  plannedEndDate: Date | null;
+  actualStartDate: Date | null;
+  actualEndDate: Date | null;
   sequence: number;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface ProjectBase {
   id: string;
   name: string;
-  manager_ids: string[];
+  managerIds: string[];
   description: string | null;
   icon: string;
   status: ProjectStatus;
   progress: number;
   budget: number | null;
   spent: number | null;
-  start_date: Date | null;
-  due_date: Date | null;
+  startDate: Date | null;
+  dueDate: Date | null;
   latitude: number | null;
   longitude: number | null;
-  created_at: Date;
-  updated_at: Date;
-  is_deleted: boolean;
-  deleted_at: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+  deletedAt: Date | null;
 }
 
 export interface ProjectPersistence extends ProjectBase {
@@ -50,8 +50,8 @@ export interface ProjectPersistence extends ProjectBase {
 
 export interface ProjectMemberFilter {
   some?: {
-    user_id?: string;
-    is_creator?: boolean;
+    userId?: string;
+    isCreator?: boolean;
     role?: string;
   };
   array_contains?: any; // Prisma expects JsonValue, but we'll use a more specific type if possible
@@ -60,7 +60,7 @@ export interface ProjectMemberFilter {
 
 export interface ProjectWherePersistenceInput {
   id?: string;
-  is_deleted?: boolean;
+  isDeleted?: boolean;
   status?: ProjectStatus;
   members?: ProjectMemberFilter;
   OR?: Array<{
@@ -71,7 +71,7 @@ export interface ProjectWherePersistenceInput {
 
 export interface ProjectCreatePersistenceInput extends Omit<
   ProjectBase,
-  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
 > {
   members?: {
     create: ProjectWorkerPersistence[];
@@ -79,7 +79,7 @@ export interface ProjectCreatePersistenceInput extends Omit<
 }
 
 export interface ProjectUpdatePersistenceInput extends Partial<
-  Omit<ProjectBase, 'id' | 'created_at' | 'updated_at'>
+  Omit<ProjectBase, 'id' | 'createdAt' | 'updatedAt'>
 > {
   members?: {
     set: ProjectWorkerPersistence[];

@@ -20,9 +20,9 @@ export class AttendanceQueryRepository implements IAttendanceQueryReader {
     return {
       project: { select: { id: true, name: true } },
       user: {
-        select: { id: true, first_name: true, last_name: true, email: true },
+        select: { id: true, firstName: true, lastName: true, email: true },
       },
-      verifier: { select: { id: true, first_name: true, last_name: true } },
+      verifier: { select: { id: true, firstName: true, lastName: true } },
     };
   }
 

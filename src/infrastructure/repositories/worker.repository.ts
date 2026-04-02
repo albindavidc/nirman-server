@@ -88,8 +88,8 @@ export class WorkerRepository implements IWorkerRepository {
 
     if (search) {
       where.OR = [
-        { first_name: { contains: search, mode: 'insensitive' } },
-        { last_name: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
       ];
     }
@@ -105,7 +105,7 @@ export class WorkerRepository implements IWorkerRepository {
           skip,
           take: limit,
           include: { professional: true },
-          orderBy: { created_at: 'desc' },
+          orderBy: { createdAt: 'desc' },
         }),
         client.user.count({
           where: prismaWhere, // ✅ clean, no cast
@@ -185,7 +185,7 @@ export class WorkerRepository implements IWorkerRepository {
     try {
       const user = await client.user.update({
         where: { id },
-        data: { user_status: status },
+        data: { userStatus: status },
         include: { professional: true },
       });
       return WorkerMapper.fromPrismaResult(user);

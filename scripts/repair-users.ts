@@ -14,7 +14,7 @@ async function main() {
     // Fetch all users (without filter first)
     const users = await prisma.user.findMany();
     console.log(
-      `Found ${users.length} users. Checking and fixing 'is_deleted'...`,
+      `Found ${users.length} users. Checking and fixing 'isDeleted'...`,
     );
 
     let updatedCount = 0;
@@ -25,11 +25,11 @@ async function main() {
       // If they were deleted, we might overwrite?
       // But login only cares about active users.
       // If findMany returned them, and we assume we want to "undelete" or "initialize" them:
-      // Actually, if a user WAS deleted, they would have is_deleted: true.
+      // Actually, if a user WAS deleted, they would have isDeleted: true.
       // If the field is MISSING, we assume false (active).
 
       // We can't easily detect if it's missing via Prisma user object because of default value filling.
-      // So we just set is_deleted: false for EVERYONE found by findMany()
+      // So we just set isDeleted: false for EVERYONE found by findMany()
       // who ostensibly should be valid.
       // BUT wait, if there are legitimately deleted users, we might undelete them?
       // If they were queried via findMany(), we got them.
@@ -42,7 +42,7 @@ async function main() {
       console.log(`Updating User ${user.id} (${user.email})...`);
       await prisma.user.update({
         where: { id: user.id },
-        data: { is_deleted: false },
+        data: { isDeleted: false },
       });
       updatedCount++;
     }

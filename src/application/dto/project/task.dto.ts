@@ -48,6 +48,14 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
+
+  @IsNumber()
+  @IsOptional()
+  estimatedHours?: number;
+
+  @IsNumber()
+  @IsOptional()
+  actualHours?: number;
 }
 
 export class UpdateTaskDto {
@@ -98,6 +106,14 @@ export class UpdateTaskDto {
   @IsString()
   @IsOptional()
   color?: string;
+
+  @IsNumber()
+  @IsOptional()
+  estimatedHours?: number;
+
+  @IsNumber()
+  @IsOptional()
+  actualHours?: number;
 }
 
 export class CreateTaskDependencyDto {
@@ -133,6 +149,8 @@ export class TaskDto {
   progress!: number;
   notes?: string | null;
   color?: string | null;
+  estimatedHours?: number | null;
+  actualHours?: number | null;
   createdAt!: Date;
   updatedAt!: Date;
 }

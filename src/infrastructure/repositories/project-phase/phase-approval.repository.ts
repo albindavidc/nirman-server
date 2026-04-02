@@ -46,17 +46,17 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
           ? { connect: { id: data.approvedBy } }
           : undefined,
         requester: { connect: { id: data.requestedBy } },
-        approval_status: data.approvalStatus as string as PrismaApprovalStatus,
+        approvalStatus: data.approvalStatus as string as PrismaApprovalStatus,
         comments: data.comments,
         media: data.media as unknown as Prisma.InputJsonValue,
-        approved_at: isDecided ? new Date() : null,
+        approvedAt: isDecided ? new Date() : null,
       };
 
       const approval = await client.phaseApproval.create({
         data: createInput,
         include: {
-          approver: { select: { first_name: true, last_name: true } },
-          requester: { select: { first_name: true, last_name: true } },
+          approver: { select: { firstName: true, lastName: true } },
+          requester: { select: { firstName: true, lastName: true } },
         },
       });
 
@@ -70,35 +70,35 @@ export class PhaseApprovalRepository implements IPhaseApprovalWriter {
 
   private toResult(approval: {
     id: string;
-    phase_id: string;
-    approved_by: string | null;
-    requested_by: string;
-    approval_status: PrismaApprovalStatus;
+    phaseId: string;
+    approvedBy: string | null;
+    requestedBy: string;
+    approvalStatus: PrismaApprovalStatus;
     comments: string | null;
     media: Prisma.JsonValue;
-    approved_at: Date | null;
-    requested_at: Date;
-    created_at: Date;
-    approver: { first_name: string; last_name: string } | null;
-    requester: { first_name: string; last_name: string };
+    approvedAt: Date | null;
+    requestedAt: Date;
+    createdAt: Date;
+    approver: { firstName: string; lastName: string } | null;
+    requester: { firstName: string; lastName: string };
   }): PhaseApprovalResult {
     return {
       id: approval.id,
-      phaseId: approval.phase_id,
-      approvedBy: approval.approved_by,
-      approverFirstName: approval.approver?.first_name ?? null,
-      approverLastName: approval.approver?.last_name ?? null,
-      requestedBy: approval.requested_by,
-      requesterFirstName: approval.requester.first_name,
-      requesterLastName: approval.requester.last_name,
-      approvalStatus: approval.approval_status as string as ApprovalStatus,
+      phaseId: approval.phaseId,
+      approvedBy: approval.approvedBy,
+      approverFirstName: approval.approver?.firstName ?? null,
+      approverLastName: approval.approver?.lastName ?? null,
+      requestedBy: approval.requestedBy,
+      requesterFirstName: approval.requester.firstName,
+      requesterLastName: approval.requester.lastName,
+      approvalStatus: approval.approvalStatus as string as ApprovalStatus,
       comments: approval.comments,
       media: Array.isArray(approval.media)
         ? (approval.media as unknown as PhaseApprovalMedia[])
         : [],
-      approvedAt: approval.approved_at,
-      requestedAt: approval.requested_at,
-      createdAt: approval.created_at,
+      approvedAt: approval.approvedAt,
+      requestedAt: approval.requestedAt,
+      createdAt: approval.createdAt,
     };
   }
 }

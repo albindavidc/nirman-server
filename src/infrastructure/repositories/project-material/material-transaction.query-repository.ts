@@ -31,7 +31,7 @@ export class MaterialTransactionQueryRepository implements IMaterialTransactionQ
     ) as PrismaClient;
     try {
       const records = await client.materialTransaction.findMany({
-        where: { material: { project_id: projectId } },
+        where: { material: { projectId: projectId } },
         orderBy: { date: 'desc' },
       });
       return records.map((r: Prisma.MaterialTransactionGetPayload<{}>) =>
@@ -52,7 +52,7 @@ export class MaterialTransactionQueryRepository implements IMaterialTransactionQ
     ) as PrismaClient;
     try {
       const records = await client.materialTransaction.findMany({
-        where: { material_id: materialId },
+        where: { materialId: materialId },
         orderBy: { date: 'desc' },
       });
       return records.map((r: Prisma.MaterialTransactionGetPayload<{}>) =>

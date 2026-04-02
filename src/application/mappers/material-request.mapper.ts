@@ -30,21 +30,21 @@ export class MaterialRequestMapper {
 
     return new MaterialRequest(
       persistence.id,
-      persistence.request_number,
-      persistence.project_id,
-      persistence.requested_by,
+      persistence.requestNumber,
+      persistence.projectId,
+      persistence.requestedBy,
       items,
       persistence.priority as MaterialRequestPriority,
       persistence.purpose,
-      persistence.delivery_location,
-      persistence.required_date,
+      persistence.deliveryLocation,
+      persistence.requiredDate,
       persistence.status as MaterialRequestStatus,
-      persistence.approved_by,
-      persistence.approved_at,
-      persistence.approval_comments,
-      persistence.rejection_reason,
-      persistence.created_at,
-      persistence.updated_at,
+      persistence.approvedBy,
+      persistence.approvedAt,
+      persistence.approvalComments,
+      persistence.rejectionReason,
+      persistence.createdAt,
+      persistence.updatedAt,
     );
   }
 
@@ -53,7 +53,7 @@ export class MaterialRequestMapper {
     domain: MaterialRequest,
   ): Prisma.MaterialRequestCreateInput {
     return {
-      request_number: domain.requestNumber,
+      requestNumber: domain.requestNumber,
       items: domain.items.map((item) => ({
         materialId: item.materialId,
         materialName: item.materialName,
@@ -62,16 +62,16 @@ export class MaterialRequestMapper {
       })),
       priority: domain.priority,
       purpose: domain.purpose ?? null,
-      delivery_location: domain.deliveryLocation ?? null,
-      required_date: domain.requiredDate,
+      deliveryLocation: domain.deliveryLocation ?? null,
+      requiredDate: domain.requiredDate,
       status: domain.status,
-      // approved_by is the scalar FK — in CreateInput use the relation nested write
+      // approvedBy is the scalar FK — in CreateInput use the relation nested write
       ...(domain.approvedBy
         ? { approver: { connect: { id: domain.approvedBy } } }
         : {}),
-      approved_at: domain.approvedAt ?? null,
-      approval_comments: domain.approvalComments ?? null,
-      rejection_reason: domain.rejectionReason ?? null,
+      approvedAt: domain.approvedAt ?? null,
+      approvalComments: domain.approvalComments ?? null,
+      rejectionReason: domain.rejectionReason ?? null,
       project: { connect: { id: domain.projectId } },
       requester: { connect: { id: domain.requestedBy } },
     };
@@ -82,7 +82,7 @@ export class MaterialRequestMapper {
     domain: MaterialRequest,
   ): Prisma.MaterialRequestUpdateInput {
     return {
-      request_number: domain.requestNumber,
+      requestNumber: domain.requestNumber,
       items: domain.items.map((item) => ({
         materialId: item.materialId,
         materialName: item.materialName,
@@ -91,13 +91,13 @@ export class MaterialRequestMapper {
       })),
       priority: domain.priority,
       purpose: domain.purpose ?? null,
-      delivery_location: domain.deliveryLocation ?? null,
-      required_date: domain.requiredDate,
+      deliveryLocation: domain.deliveryLocation ?? null,
+      requiredDate: domain.requiredDate,
       status: domain.status,
-      // Do NOT set approved_by scalar — use only the relation nested write
-      approved_at: domain.approvedAt ?? null,
-      approval_comments: domain.approvalComments ?? null,
-      rejection_reason: domain.rejectionReason ?? null,
+      // Do NOT set approvedBy scalar — use only the relation nested write
+      approvedAt: domain.approvedAt ?? null,
+      approvalComments: domain.approvalComments ?? null,
+      rejectionReason: domain.rejectionReason ?? null,
       ...(domain.approvedBy
         ? { approver: { connect: { id: domain.approvedBy } } }
         : { approver: { disconnect: true } }),

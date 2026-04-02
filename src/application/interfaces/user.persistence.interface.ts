@@ -3,58 +3,58 @@ import { UserStatus } from '../../domain/enums/user-status.enum';
 
 export interface UserProfessionalPersistence {
   id: string;
-  user_id: string;
-  professional_title: string;
-  experience_years: number;
+  userId: string;
+  professionalTitle: string;
+  experienceYears: number;
   skills: string[];
-  address_street: string;
-  address_city: string;
-  address_state: string;
-  address_zip_code: string;
-  created_at: Date;
-  updated_at: Date;
+  addressStreet: string;
+  addressCity: string;
+  addressState: string;
+  addressZipCode: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface VendorPersistence {
   id: string;
-  user_id: string;
-  company_name: string;
-  registration_number: string;
-  tax_number: string | null;
-  years_in_business: number | null;
-  address_street: string | null;
-  address_city: string | null;
-  address_state: string | null;
-  address_zip_code: string | null;
-  products_services: string[];
-  website_url: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  vendor_status: string;
-  rejection_reason: string | null;
-  is_deleted: boolean;
-  deleted_at: Date | null;
-  created_at: Date;
-  updated_at: Date;
+  userId: string;
+  companyName: string;
+  registrationNumber: string;
+  taxNumber: string | null;
+  yearsInBusiness: number | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressState: string | null;
+  addressZipCode: string | null;
+  productsServices: string[];
+  websiteUrl: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  vendorStatus: string;
+  rejectionReason: string | null;
+  isDeleted: boolean;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface UserBase {
   id: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password_hash: string;
-  phone_number: string | null;
-  is_email_verified: boolean;
-  is_phone_verified: boolean;
-  date_of_birth: Date | null;
-  profile_photo_url: string | null;
+  passwordHash: string;
+  phoneNumber: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  dateOfBirth: Date | null;
+  profilePhotoUrl: string | null;
   role: Role;
-  user_status: UserStatus;
-  created_at: Date;
-  updated_at: Date;
-  is_deleted?: boolean;
-  deleted_at?: Date | null;
+  userStatus: UserStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted?: boolean;
+  deletedAt?: Date | null;
 }
 
 export interface UserPersistence extends UserBase {
@@ -63,15 +63,15 @@ export interface UserPersistence extends UserBase {
 }
 
 export interface UserCreatePersistenceInput extends Partial<UserBase> {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password_hash: string;
+  passwordHash: string;
   role: Role;
-  user_status: UserStatus;
+  userStatus: UserStatus;
 }
 
 export type UserUpdatePersistenceInput = Omit<
   Partial<UserBase>,
-  'id' | 'created_at' | 'updated_at'
+  'id' | 'createdAt' | 'updatedAt'
 >;

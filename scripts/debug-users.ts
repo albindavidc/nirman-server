@@ -15,7 +15,7 @@ async function main() {
     console.log(`Found ${users.length} users:`);
     users.forEach((u) => {
       console.log(
-        `- ID: ${u.id}, Email: '${u.email}' (type: ${typeof u.email}), Deleted: ${u.is_deleted} (type: ${typeof u.is_deleted}), Role: ${u.role}`,
+        `- ID: ${u.id}, Email: '${u.email}' (type: ${typeof u.email}), Deleted: ${u.isDeleted} (type: ${typeof u.isDeleted}), Role: ${u.role}`,
       );
     });
 
@@ -25,17 +25,17 @@ async function main() {
     });
     console.log(`findFirst(email) result:`, emailUser ? 'Found' : 'NULL');
 
-    console.log('--- Testing findFirst with ONLY is_deleted: false ---');
+    console.log('--- Testing findFirst with ONLY isDeleted: false ---');
     const activeUser = await prisma.user.findFirst({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
     });
-    console.log(`findFirst(is_deleted) result:`, activeUser ? 'Found' : 'NULL');
+    console.log(`findFirst(isDeleted) result:`, activeUser ? 'Found' : 'NULL');
 
     console.log('--- Testing findFirst with BOTH ---');
     const specificUser = await prisma.user.findFirst({
       where: {
         email: 'wyji@mailinator.com',
-        is_deleted: false,
+        isDeleted: false,
       },
     });
     console.log(`findFirst(both) result:`, specificUser ? 'Found' : 'NULL');

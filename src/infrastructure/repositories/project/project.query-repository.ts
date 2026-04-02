@@ -20,9 +20,9 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     ) as PrismaClient;
     try {
       const projects = await client.project.findMany({
-        where: { is_deleted: false },
+        where: { isDeleted: false },
         include: { phases: { orderBy: { sequence: 'asc' } } },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
       return ProjectMapper.fromPrismaResults(projects);
     } catch (error: unknown) {
@@ -48,7 +48,7 @@ export class ProjectQueryRepository implements IProjectQueryReader {
       const skip = (page - 1) * limit;
 
       const where: ProjectWherePersistenceInput = {
-        is_deleted: false,
+        isDeleted: false,
       };
 
       if (status) {
@@ -70,7 +70,7 @@ export class ProjectQueryRepository implements IProjectQueryReader {
           skip,
           take: limit,
           include: { phases: { orderBy: { sequence: 'asc' } } },
-          orderBy: { created_at: 'desc' },
+          orderBy: { createdAt: 'desc' },
         }),
         client.project.count({
           where: prismaWhere as Prisma.ProjectWhereInput,
@@ -98,12 +98,12 @@ export class ProjectQueryRepository implements IProjectQueryReader {
       const projects = await client.project.findMany({
         where: {
           members: {
-            array_contains: [{ user_id: userId, is_creator: true }],
+            some: { userId: userId, isCreator: true },
           },
-          is_deleted: false,
+          isDeleted: false,
         },
         include: { phases: { orderBy: { sequence: 'asc' } } },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
       return ProjectMapper.fromPrismaResults(projects);
     } catch (error: unknown) {
@@ -118,7 +118,7 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     ) as PrismaClient;
     try {
       return await client.project.count({
-        where: { is_deleted: false },
+        where: { isDeleted: false },
       });
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
@@ -136,7 +136,7 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     try {
       const where: ProjectWherePersistenceInput = {
         status: status as ProjectStatus,
-        is_deleted: false,
+        isDeleted: false,
       };
       const prismaWhere = ProjectMapper.toPrismaWhereInput(where);
       return await client.project.count({
@@ -157,7 +157,7 @@ export class ProjectQueryRepository implements IProjectQueryReader {
     ) as PrismaClient;
     try {
       const budgetData = await client.project.aggregate({
-        where: { is_deleted: false },
+        where: { isDeleted: false },
         _sum: {
           budget: true,
           spent: true,

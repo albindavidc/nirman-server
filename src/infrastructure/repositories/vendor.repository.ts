@@ -12,7 +12,7 @@ export class VendorRepository implements IVendorRepository {
 
   async findAll(): Promise<Vendor[]> {
     const vendors = await this.prisma.vendor.findMany({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
       include: { user: true },
     });
     return VendorMapper.fromPrismaResults(vendors);
@@ -20,7 +20,7 @@ export class VendorRepository implements IVendorRepository {
 
   async findById(id: string): Promise<Vendor | null> {
     const vendor = await this.prisma.vendor.findFirst({
-      where: { id, is_deleted: false },
+      where: { id, isDeleted: false },
       include: { user: true },
     });
     return vendor ? VendorMapper.fromPrismaResult(vendor) : null;
@@ -28,7 +28,7 @@ export class VendorRepository implements IVendorRepository {
 
   async findByUserId(userId: string): Promise<Vendor | null> {
     const vendor = await this.prisma.vendor.findFirst({
-      where: { user_id: userId, is_deleted: false },
+      where: { userId: userId, isDeleted: false },
       include: { user: true },
     });
     return vendor ? VendorMapper.fromPrismaResult(vendor) : null;
@@ -49,18 +49,18 @@ export class VendorRepository implements IVendorRepository {
     const validUserIds = existingUserIds.map((u: { id: string }) => u.id);
 
     const where: VendorWherePersistenceInput = {
-      user_id: { in: validUserIds },
-      is_deleted: false,
+      userId: { in: validUserIds },
+      isDeleted: false,
     };
 
     if (status) {
-      where.vendor_status = status;
+      where.vendorStatus = status;
     }
 
     if (search) {
       where.OR = [
-        { company_name: { contains: search, mode: 'insensitive' } },
-        { registration_number: { contains: search, mode: 'insensitive' } },
+        { companyName: { contains: search, mode: 'insensitive' } },
+        { registrationNumber: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -74,7 +74,7 @@ export class VendorRepository implements IVendorRepository {
         skip,
         take: limit,
         include: { user: true },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       }),
       this.prisma.vendor.count({
         where: prismaWhere as unknown as NonNullable<
@@ -119,22 +119,22 @@ export class VendorRepository implements IVendorRepository {
     await this.prisma.vendor.update({
       where: { id },
       data: {
-        is_deleted: true,
-        deleted_at: new Date(),
+        isDeleted: true,
+        deletedAt: new Date(),
       },
     });
   }
 
   async exists(id: string): Promise<boolean> {
     const count = await this.prisma.vendor.count({
-      where: { id, is_deleted: false },
+      where: { id, isDeleted: false },
     });
     return count > 0;
   }
 
   async count(): Promise<number> {
     return this.prisma.vendor.count({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
     });
   }
 }

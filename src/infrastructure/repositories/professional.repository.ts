@@ -23,15 +23,15 @@ export class ProfessionalRepository implements IProfessionalRepository {
 
     if (search) {
       whereClause.OR = [
-        { professional_title: { contains: search, mode: 'insensitive' } },
+        { professionalTitle: { contains: search, mode: 'insensitive' } },
         {
           user: {
-            is: { first_name: { contains: search, mode: 'insensitive' } },
+            is: { firstName: { contains: search, mode: 'insensitive' } },
           },
         },
         {
           user: {
-            is: { last_name: { contains: search, mode: 'insensitive' } },
+            is: { lastName: { contains: search, mode: 'insensitive' } },
           },
         },
         { user: { is: { email: { contains: search, mode: 'insensitive' } } } },
@@ -39,14 +39,14 @@ export class ProfessionalRepository implements IProfessionalRepository {
     }
 
     if (excludeUserIds && excludeUserIds.length > 0) {
-      whereClause.user_id = { notIn: excludeUserIds };
+      whereClause.userId = { notIn: excludeUserIds };
     }
 
     // Also filter to only active users that are not deleted
     whereClause.user = {
       is: {
-        user_status: 'active',
-        is_deleted: false,
+        userStatus: 'active',
+        isDeleted: false,
       },
     };
 
@@ -56,11 +56,11 @@ export class ProfessionalRepository implements IProfessionalRepository {
         user: {
           select: {
             id: true,
-            first_name: true,
-            last_name: true,
+            firstName: true,
+            lastName: true,
             email: true,
-            phone_number: true,
-            profile_photo_url: true,
+            phoneNumber: true,
+            profilePhotoUrl: true,
           },
         },
       },
@@ -72,11 +72,11 @@ export class ProfessionalRepository implements IProfessionalRepository {
         user: {
           select: {
             id: true;
-            first_name: true;
-            last_name: true;
+            firstName: true;
+            lastName: true;
             email: true;
-            phone_number: true;
-            profile_photo_url: true;
+            phoneNumber: true;
+            profilePhotoUrl: true;
           };
         };
       };
@@ -84,14 +84,14 @@ export class ProfessionalRepository implements IProfessionalRepository {
 
     return (professionals as ProfessionalQueryResult[]).map((p) => ({
       id: p.user.id,
-      firstName: p.user.first_name,
-      lastName: p.user.last_name,
-      fullName: `${p.user.first_name} ${p.user.last_name}`,
+      firstName: p.user.firstName,
+      lastName: p.user.lastName,
+      fullName: `${p.user.firstName} ${p.user.lastName}`,
       email: p.user.email,
-      phone: p.user.phone_number,
-      profilePhoto: p.user.profile_photo_url,
-      title: p.professional_title,
-      experienceYears: p.experience_years,
+      phone: p.user.phoneNumber,
+      profilePhoto: p.user.profilePhotoUrl,
+      title: p.professionalTitle,
+      experienceYears: p.experienceYears,
       skills: p.skills,
     }));
   }
@@ -99,13 +99,13 @@ export class ProfessionalRepository implements IProfessionalRepository {
   async verifyProfessionals(userIds: string[]): Promise<string[]> {
     const professionals = await this.prisma.professional.findMany({
       where: {
-        user_id: { in: userIds },
+        userId: { in: userIds },
       },
       select: {
-        user_id: true,
+        userId: true,
       },
     });
 
-    return professionals.map((p: { user_id: string }) => p.user_id);
+    return professionals.map((p: { userId: string }) => p.userId);
   }
 }

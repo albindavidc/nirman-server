@@ -54,7 +54,7 @@ export class TaskRepository implements ITaskWriter {
     try {
       await client.task.update({
         where: { id },
-        data: { status: TaskStatus.DELETED },
+        data: { isDeleted: true, deletedAt: new Date() },
       });
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
@@ -82,7 +82,7 @@ export class TaskRepository implements ITaskWriter {
       const updated = await client.taskDependency.update({
         where: { id: entity.id },
         data: {
-          lag_time: entity.lagTime,
+          lagTime: entity.lagTime,
           type: entity.type,
           notes: entity.notes,
         },

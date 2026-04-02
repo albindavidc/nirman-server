@@ -1,25 +1,25 @@
 model Professional {
-  id                 String @id @default(uuid())
-  user_id            String @unique
-  professional_title String
+  id                String @id @default(uuid())
+  userId            String @unique @map("user_id")
+  professionalTitle String @map("professional_title")
 
-  experience_years Int
-  skills           String[]
+  experienceYears Int      @map("experience_years")
+  skills          String[]
 
-  address_street   String
-  address_city     String
-  address_state    String
-  address_zip_code String
+  addressStreet  String @map("address_street")
+  addressCity    String @map("address_city")
+  addressState   String @map("address_state")
+  addressZipCode String @map("address_zip_code")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  @@index([professional_title])
-  @@index([experience_years])
+  @@index([professionalTitle])
+  @@index([experienceYears])
   @@index([skills])
-  @@index([address_city])
-  @@index([address_state])
+  @@index([addressCity])
+  @@index([addressState])
   @@map("professionals")
 }

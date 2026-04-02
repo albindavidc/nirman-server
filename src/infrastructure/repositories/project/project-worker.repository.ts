@@ -11,10 +11,10 @@ import { PrismaClient, Prisma } from '../../../generated/client/client';
 
 // Local interface to strictly type the JSON elements stored in the array
 interface MemberData {
-  user_id: string;
+  userId: string;
   role: string;
-  joined_at: Date;
-  is_creator?: boolean;
+  joinedAt: Date;
+  isCreator?: boolean;
 }
 
 @Injectable()
@@ -33,6 +33,7 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) {
@@ -41,7 +42,7 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
 
       const existingMembers =
         (project.members as unknown as MemberData[]) || [];
-      const existingWorkerIds = existingMembers.map((m) => m.user_id);
+      const existingWorkerIds = existingMembers.map((m) => m.userId);
 
       const newWorkers = workers.filter(
         (m) => !existingWorkerIds.includes(m.userId),
@@ -51,39 +52,39 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
         return {
           addedCount: 0,
           workers: existingMembers.map((m) => ({
-            userId: m.user_id,
-            role: m.role,
-            joinedAt: m.joined_at,
-            isCreator: m.is_creator ?? false,
+            userId: m.userId,
+            role: m.role as string,
+            joinedAt: m.joinedAt,
+            isCreator: m.isCreator ?? false,
           })),
         };
       }
 
       const newWorkerEntries = newWorkers.map((worker) => ({
-        user_id: worker.userId,
-        role: worker.role,
-        joined_at: new Date(),
-        is_creator: false,
+        userId: worker.userId,
+        role: worker.role as any,
+        joinedAt: new Date(),
+        isCreator: false,
       }));
 
       const updatedProject = await client.project.update({
         where: { id: projectId },
         data: {
           members: {
-            push: newWorkerEntries,
+            create: newWorkerEntries,
           },
         },
+        include: { members: true },
       });
 
-      const updatedMembers =
-        (updatedProject.members as unknown as MemberData[]) || [];
+      const updatedMembers = updatedProject.members || [];
       return {
         addedCount: newWorkers.length,
         workers: updatedMembers.map((m) => ({
-          userId: m.user_id,
-          role: m.role,
-          joinedAt: m.joined_at,
-          isCreator: m.is_creator ?? false,
+          userId: m.userId,
+          role: m.role as string,
+          joinedAt: m.joinedAt,
+          isCreator: m.isCreator ?? false,
         })),
       };
     } catch (error: unknown) {
@@ -103,6 +104,7 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) {
@@ -110,27 +112,27 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
       }
 
       const members = (project.members as unknown as MemberData[]) || [];
-      const workerIndex = members.findIndex((m) => m.user_id === userId);
+      const workerIndex = members.findIndex((m) => m.userId === userId);
       if (workerIndex === -1) {
         throw new NotFoundException('User is not a worker of this project');
       }
 
-      const updatedMembers = members.filter((m) => m.user_id !== userId);
-
       const updatedProject = await client.project.update({
         where: { id: projectId },
         data: {
-          members: updatedMembers as unknown as Prisma.InputJsonValue,
+          members: {
+            deleteMany: { userId },
+          },
         },
+        include: { members: true },
       });
 
-      const finalMembers =
-        (updatedProject.members as unknown as MemberData[]) || [];
+      const finalMembers = updatedProject.members || [];
       return finalMembers.map((m) => ({
-        userId: m.user_id,
-        role: m.role,
-        joinedAt: m.joined_at,
-        isCreator: m.is_creator ?? false,
+        userId: m.userId,
+        role: m.role as string,
+        joinedAt: m.joinedAt,
+        isCreator: m.isCreator ?? false,
       }));
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
@@ -150,6 +152,7 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) {
@@ -157,21 +160,15 @@ export class ProjectWorkerRepository implements IProjectWorkerWriter {
       }
 
       const members = (project.members as unknown as MemberData[]) || [];
-      const workerIndex = members.findIndex((m) => m.user_id === userId);
+      const workerIndex = members.findIndex((m) => m.userId === userId);
       if (workerIndex === -1) {
         throw new NotFoundException('Worker not found in project');
       }
 
-      const updatedMembers = [...members];
-      updatedMembers[workerIndex] = {
-        ...updatedMembers[workerIndex],
-        role,
-      };
-
-      await client.project.update({
-        where: { id: projectId },
+      await client.projectMember.updateMany({
+        where: { projectId, userId },
         data: {
-          members: updatedMembers as unknown as Prisma.InputJsonValue,
+          role: role as any,
         },
       });
     } catch (error: unknown) {

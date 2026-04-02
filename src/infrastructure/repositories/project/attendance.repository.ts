@@ -19,9 +19,9 @@ export class AttendanceRepository implements IAttendanceWriter {
     return {
       project: { select: { id: true, name: true } },
       user: {
-        select: { id: true, first_name: true, last_name: true, email: true },
+        select: { id: true, firstName: true, lastName: true, email: true },
       },
-      verifier: { select: { id: true, first_name: true, last_name: true } },
+      verifier: { select: { id: true, firstName: true, lastName: true } },
     };
   }
 
@@ -76,7 +76,7 @@ export class AttendanceRepository implements IAttendanceWriter {
       status: data.status,
       location: data.location,
       workHours: data.workHours,
-      method: data.method,
+      method: data.method as any,
       supervisorNotes: data.supervisorNotes,
       isVerified: data.isVerified,
       verifiedAt: data.verifiedAt,
@@ -94,7 +94,7 @@ export class AttendanceRepository implements IAttendanceWriter {
       status: data.status,
       location: data.location,
       workHours: data.workHours,
-      method: data.method,
+      method: data.method as any,
       supervisorNotes: data.supervisorNotes,
       isVerified: data.isVerified,
       verifiedAt: data.verifiedAt,

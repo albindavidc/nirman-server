@@ -31,8 +31,8 @@ export class MaterialQueryRepository implements IMaterialQueryReader {
     ) as PrismaClient;
     try {
       const records = await client.material.findMany({
-        where: { project_id: projectId },
-        orderBy: { created_at: 'desc' },
+        where: { projectId: projectId },
+        orderBy: { createdAt: 'desc' },
       });
       return records.map(MaterialMapper.toDomain);
     } catch (error: unknown) {

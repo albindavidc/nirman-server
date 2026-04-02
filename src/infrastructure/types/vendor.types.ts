@@ -2,32 +2,32 @@ import { VendorStatus } from '../../domain/enums/vendor-status.enum';
 
 export interface VendorUserPersistence {
   id: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
 interface VendorBase {
   id: string;
-  user_id: string;
-  company_name: string;
-  registration_number: string;
-  tax_number: string | null;
-  years_in_business: number | null;
-  address_street: string | null;
-  address_city: string | null;
-  address_state: string | null;
-  address_zip_code: string | null;
-  products_services: string[];
-  website_url: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  vendor_status: VendorStatus;
-  rejection_reason: string | null;
-  created_at: Date;
-  updated_at: Date;
-  is_deleted: boolean;
-  deleted_at: Date | null;
+  userId: string;
+  companyName: string;
+  registrationNumber: string;
+  taxNumber: string | null;
+  yearsInBusiness: number | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressState: string | null;
+  addressZipCode: string | null;
+  productsServices: string[];
+  websiteUrl: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  vendorStatus: VendorStatus;
+  rejectionReason: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+  deletedAt: Date | null;
 }
 
 export interface VendorPersistence extends VendorBase {
@@ -35,25 +35,25 @@ export interface VendorPersistence extends VendorBase {
 }
 
 export interface VendorWherePersistenceInput {
-  user_id?: string | { in: string[] };
-  is_deleted?: boolean;
-  vendor_status?: VendorStatus;
+  userId?: string | { in: string[] };
+  isDeleted?: boolean;
+  vendorStatus?: VendorStatus;
   OR?: Array<{
-    company_name?: { contains: string; mode: 'insensitive' };
-    registration_number?: { contains: string; mode: 'insensitive' };
+    companyName?: { contains: string; mode: 'insensitive' };
+    registrationNumber?: { contains: string; mode: 'insensitive' };
   }>;
 }
 
 export interface VendorCreatePersistenceInput extends Omit<
   VendorBase,
-  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
 > {
-  user_id: string;
-  company_name: string;
-  registration_number: string;
-  vendor_status: VendorStatus;
+  userId: string;
+  companyName: string;
+  registrationNumber: string;
+  vendorStatus: VendorStatus;
 }
 
 export type VendorUpdatePersistenceInput = Partial<
-  Omit<VendorBase, 'id' | 'created_at' | 'updated_at'>
+  Omit<VendorBase, 'id' | 'createdAt' | 'updatedAt'>
 >;

@@ -52,7 +52,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   async findByPhaseId(phaseId: string): Promise<TaskEntity[]> {
     try {
       const tasks = await this.prisma.task.findMany({
-        where: { phase_id: phaseId },
+        where: { phaseId: phaseId },
         include: { assignee: true },
       });
       return tasks.map(TaskMapper.toDomain);
@@ -64,7 +64,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   async findByProjectId(projectId: string): Promise<TaskEntity[]> {
     try {
       const tasks = await this.prisma.task.findMany({
-        where: { phase: { project_id: projectId } },
+        where: { phase: { projectId: projectId } },
         include: { assignee: true },
       });
       return tasks.map(TaskMapper.toDomain);
@@ -76,7 +76,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   async findByAssigneeId(userId: string): Promise<TaskEntity[]> {
     try {
       const tasks = await this.prisma.task.findMany({
-        where: { assigned_to: userId },
+        where: { assignedTo: userId },
         include: { assignee: true },
       });
       return tasks.map(TaskMapper.toDomain);
@@ -90,7 +90,7 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   ): Promise<TaskDependencyEntity[]> {
     try {
       const deps = await this.prisma.taskDependency.findMany({
-        where: { phase_id: phaseId },
+        where: { phaseId: phaseId },
       });
       return deps.map(TaskMapper.dependencyToDomain);
     } catch (error: unknown) {
@@ -103,13 +103,13 @@ export class TaskQueryRepository implements ITaskQueryReader, ITaskReader {
   ): Promise<TaskDependencyEntity[]> {
     try {
       const phases = await this.prisma.projectPhase.findMany({
-        where: { project_id: projectId },
+        where: { projectId: projectId },
         select: { id: true },
       });
       const phaseIds = phases.map((p: { id: string }) => p.id);
 
       const deps = await this.prisma.taskDependency.findMany({
-        where: { phase_id: { in: phaseIds } },
+        where: { phaseId: { in: phaseIds } },
       });
       return deps.map(TaskMapper.dependencyToDomain);
     } catch (error: unknown) {

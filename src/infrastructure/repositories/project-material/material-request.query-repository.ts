@@ -32,8 +32,8 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
     ) as PrismaClient;
     try {
       const records = await client.materialRequest.findMany({
-        where: { project_id: projectId },
-        orderBy: { created_at: 'desc' },
+        where: { projectId: projectId },
+        orderBy: { createdAt: 'desc' },
       });
       return records.map((r: Prisma.MaterialRequestGetPayload<{}>) =>
         MaterialRequestMapper.toDomain(r),
@@ -55,11 +55,11 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
     // Fully typed Prisma where clause — no Record<string, unknown> bypass.
     const where: Prisma.MaterialRequestWhereInput = {};
 
-    if (filters.projectId) where.project_id = filters.projectId;
-    if (filters.requestedBy) where.requested_by = filters.requestedBy;
+    if (filters.projectId) where.projectId = filters.projectId;
+    if (filters.requestedBy) where.requestedBy = filters.requestedBy;
     if (filters.status) where.status = filters.status;
     if (filters.startDate && filters.endDate) {
-      where.created_at = { gte: filters.startDate, lte: filters.endDate };
+      where.createdAt = { gte: filters.startDate, lte: filters.endDate };
     }
 
     const page = filters.page ?? 1;
@@ -72,7 +72,7 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
           where,
           skip,
           take: limit,
-          orderBy: { created_at: 'desc' },
+          orderBy: { createdAt: 'desc' },
         }),
         client.materialRequest.count({ where }),
       ]);
@@ -104,10 +104,10 @@ export class MaterialRequestQueryRepository implements IMaterialRequestQueryRead
     try {
       const records = await client.materialRequest.findMany({
         where: {
-          project_id: projectId,
-          created_at: { gte: startDate, lte: endDate },
+          projectId: projectId,
+          createdAt: { gte: startDate, lte: endDate },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
       return records.map((r: Prisma.MaterialRequestGetPayload<{}>) =>
         MaterialRequestMapper.toDomain(r),

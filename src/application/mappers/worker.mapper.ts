@@ -37,23 +37,23 @@ export class WorkerMapper {
     data: CreateWorkerData,
   ): WorkerCreatePersistenceInput {
     return {
-      first_name: data.firstName,
-      last_name: data.lastName,
+      firstName: data.firstName,
+      lastName: data.lastName,
       email: data.email,
-      phone_number: data.phoneNumber,
-      password_hash: data.passwordHash,
+      phoneNumber: data.phoneNumber,
+      passwordHash: data.passwordHash,
       role: data.role as UserRole,
-      user_status: 'active',
+      userStatus: 'active',
       professional: data.professional
         ? {
             create: {
-              professional_title: data.professional.professionalTitle,
-              experience_years: data.professional.experienceYears ?? 0,
+              professionalTitle: data.professional.professionalTitle,
+              experienceYears: data.professional.experienceYears ?? 0,
               skills: data.professional.skills ?? [],
-              address_street: data.professional.addressStreet ?? '',
-              address_city: data.professional.addressCity ?? '',
-              address_state: data.professional.addressState ?? '',
-              address_zip_code: data.professional.addressZipCode ?? '',
+              addressStreet: data.professional.addressStreet ?? '',
+              addressCity: data.professional.addressCity ?? '',
+              addressState: data.professional.addressState ?? '',
+              addressZipCode: data.professional.addressZipCode ?? '',
             },
           }
         : undefined,
@@ -68,45 +68,45 @@ export class WorkerMapper {
   ): WorkerUpdatePersistenceInput {
     const updateData: WorkerUpdatePersistenceInput = {};
 
-    if (data.firstName !== undefined) updateData.first_name = data.firstName;
-    if (data.lastName !== undefined) updateData.last_name = data.lastName;
+    if (data.firstName !== undefined) updateData.firstName = data.firstName;
+    if (data.lastName !== undefined) updateData.lastName = data.lastName;
     if (data.phoneNumber !== undefined)
-      updateData.phone_number = data.phoneNumber;
+      updateData.phoneNumber = data.phoneNumber;
     if (data.role !== undefined) updateData.role = data.role as UserRole;
 
     if (data.professional) {
       updateData.professional = {
         upsert: {
           create: {
-            professional_title: data.professional.professionalTitle ?? '',
-            experience_years: data.professional.experienceYears ?? 0,
+            professionalTitle: data.professional.professionalTitle ?? '',
+            experienceYears: data.professional.experienceYears ?? 0,
             skills: data.professional.skills ?? [],
-            address_street: data.professional.addressStreet ?? '',
-            address_city: data.professional.addressCity ?? '',
-            address_state: data.professional.addressState ?? '',
-            address_zip_code: data.professional.addressZipCode ?? '',
+            addressStreet: data.professional.addressStreet ?? '',
+            addressCity: data.professional.addressCity ?? '',
+            addressState: data.professional.addressState ?? '',
+            addressZipCode: data.professional.addressZipCode ?? '',
           },
           update: {
             ...(data.professional.professionalTitle !== undefined && {
-              professional_title: data.professional.professionalTitle,
+              professionalTitle: data.professional.professionalTitle,
             }),
             ...(data.professional.experienceYears !== undefined && {
-              experience_years: data.professional.experienceYears,
+              experienceYears: data.professional.experienceYears,
             }),
             ...(data.professional.skills !== undefined && {
               skills: data.professional.skills,
             }),
             ...(data.professional.addressStreet !== undefined && {
-              address_street: data.professional.addressStreet,
+              addressStreet: data.professional.addressStreet,
             }),
             ...(data.professional.addressCity !== undefined && {
-              address_city: data.professional.addressCity,
+              addressCity: data.professional.addressCity,
             }),
             ...(data.professional.addressState !== undefined && {
-              address_state: data.professional.addressState,
+              addressState: data.professional.addressState,
             }),
             ...(data.professional.addressZipCode !== undefined && {
-              address_zip_code: data.professional.addressZipCode,
+              addressZipCode: data.professional.addressZipCode,
             }),
           },
         },
@@ -162,25 +162,25 @@ export class WorkerMapper {
   ): WorkerWithProfessional {
     return {
       id: persistence.id,
-      firstName: persistence.first_name,
-      lastName: persistence.last_name,
+      firstName: persistence.firstName,
+      lastName: persistence.lastName,
       email: persistence.email,
-      phoneNumber: persistence.phone_number,
+      phoneNumber: persistence.phoneNumber,
       role: persistence.role,
-      userStatus: persistence.user_status,
+      userStatus: persistence.userStatus,
       professional: persistence.professional
         ? {
-            professionalTitle: persistence.professional?.professional_title,
-            experienceYears: persistence.professional?.experience_years,
+            professionalTitle: persistence.professional?.professionalTitle,
+            experienceYears: persistence.professional?.experienceYears,
             skills: persistence.professional?.skills,
-            addressStreet: persistence.professional?.address_street,
-            addressCity: persistence.professional?.address_city,
-            addressState: persistence.professional?.address_state,
-            addressZipCode: persistence.professional?.address_zip_code,
+            addressStreet: persistence.professional?.addressStreet,
+            addressCity: persistence.professional?.addressCity,
+            addressState: persistence.professional?.addressState,
+            addressZipCode: persistence.professional?.addressZipCode,
           }
         : null,
-      createdAt: persistence.created_at,
-      updatedAt: persistence.updated_at,
+      createdAt: persistence.createdAt,
+      updatedAt: persistence.updatedAt,
     };
   }
 }

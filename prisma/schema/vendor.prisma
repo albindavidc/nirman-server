@@ -1,35 +1,35 @@
 model Vendor {
-  id      String @id @default(uuid())
-  user_id String @unique
+  id     String @id @default(uuid())
+  userId String @unique @map("user_id")
 
-  company_name        String
-  registration_number String  @unique
-  tax_number          String?
-  years_in_business   Int?
+  companyName        String  @map("company_name")
+  registrationNumber String  @unique @map("registration_number")
+  taxNumber          String? @map("tax_number")
+  yearsInBusiness    Int?    @map("years_in_business")
 
-  address_street   String?
-  address_city     String?
-  address_state    String?
-  address_zip_code String?
+  addressStreet  String? @map("address_street")
+  addressCity    String? @map("address_city")
+  addressState   String? @map("address_state")
+  addressZipCode String? @map("address_zip_code")
 
-  products_services String[]
-  website_url       String?
-  contact_email     String?
-  contact_phone     String?
-  vendor_status     VendorStatus @default(pending)
-  rejection_reason  String?
+  productsServices String[]     @map("products_services")
+  websiteUrl       String?      @map("website_url")
+  contactEmail     String?      @map("contact_email")
+  contactPhone     String?      @map("contact_phone")
+  vendorStatus     VendorStatus @default(pending) @map("vendor_status")
+  rejectionReason  String?      @map("rejection_reason")
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  is_deleted Boolean   @default(false)
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  user               User       @relation(fields: [user_id], references: [id])
-  supplied_materials Material[]
+  user              User       @relation(fields: [userId], references: [id])
+  suppliedMaterials Material[]
 
-  @@index([company_name])
-  @@index([address_city])
-  @@index([address_state])
-  @@index([vendor_status])
+  @@index([companyName])
+  @@index([addressCity])
+  @@index([addressState])
+  @@index([vendorStatus])
   @@map("vendors")
 }

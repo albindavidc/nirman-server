@@ -7,10 +7,10 @@ import { RepositoryUtils } from '../repository.utils';
 import { Prisma, PrismaClient } from '../../../generated/client/client';
 
 interface MemberData {
-  user_id: string;
+  userId: string;
   role: string;
-  joined_at: Date;
-  is_creator?: boolean;
+  joinedAt: Date;
+  isCreator?: boolean;
 }
 
 @Injectable()
@@ -29,6 +29,7 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) {
@@ -43,16 +44,16 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
         return [];
       }
 
-      const members = (project.members as unknown as any[]).map((m) => ({
-        user_id: m.user_id || m.userId,
+      const members = project.members.map((m: any) => ({
+        userId: m.userId,
         role: m.role,
-        joined_at: m.joined_at || m.joinedAt,
-        is_creator: m.is_creator || m.isCreator,
+        joinedAt: m.joinedAt,
+        isCreator: m.isCreator,
       })) as MemberData[];
 
       // Get user details for all workers, filtering out any undefined/null IDs
       const userIds = members
-        .map((m) => m.user_id)
+        .map((m) => m.userId)
         .filter((id): id is string => !!id);
 
       const users = await client.user.findMany({
@@ -66,23 +67,23 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
       return members.map((member) => {
         const user = users.find(
           (u: Prisma.UserGetPayload<{ include: { professional: true } }>) =>
-            u.id === member.user_id,
+            u.id === member.userId,
         );
         return {
-          userId: member.user_id,
+          userId: member.userId,
           role: member.role,
-          joinedAt: member.joined_at,
-          isCreator: member.is_creator ?? false,
+          joinedAt: member.joinedAt,
+          isCreator: member.isCreator ?? false,
           user: user
             ? {
                 id: user.id,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                fullName: `${user.first_name} ${user.last_name}`,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                fullName: `${user.firstName} ${user.lastName}`,
                 email: user.email,
-                phone: user.phone_number,
-                profilePhoto: user.profile_photo_url,
-                title: user.professional?.professional_title || '',
+                phone: user.phoneNumber,
+                profilePhoto: user.profilePhotoUrl,
+                title: user.professional?.professionalTitle || '',
               }
             : null,
         };
@@ -104,12 +105,13 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) return false;
 
       const members = (project.members as unknown as MemberData[]) || [];
-      return members.some((m) => m.user_id === userId);
+      return members.some((m) => m.userId === userId);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }
@@ -126,12 +128,13 @@ export class ProjectWorkerQueryRepository implements IProjectWorkerQueryReader {
     try {
       const project = await client.project.findUnique({
         where: { id: projectId },
+        include: { members: true },
       });
 
       if (!project) return [];
 
       const members = (project.members as unknown as MemberData[]) || [];
-      return members.map((m) => m.user_id);
+      return members.map((m) => m.userId);
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);
     }

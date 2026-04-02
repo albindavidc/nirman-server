@@ -9,12 +9,12 @@ export class MaterialTransactionMapper {
   static toDomain(persistence: PrismaMaterialTransaction): MaterialTransaction {
     return new MaterialTransaction(
       persistence.id,
-      persistence.material_id,
+      persistence.materialId,
       persistence.type,
       persistence.quantity,
       persistence.date,
-      persistence.reference_id,
-      persistence.performed_by,
+      persistence.referenceId,
+      persistence.performedBy,
       persistence.notes,
     );
   }
@@ -36,12 +36,12 @@ export class MaterialTransactionMapper {
     domain: MaterialTransaction,
   ): Prisma.MaterialTransactionUncheckedCreateInput {
     return {
-      material_id: domain.materialId,
+      materialId: domain.materialId,
       type: domain.type,
       quantity: domain.quantity,
       date: domain.date,
-      reference_id: domain.referenceId ?? null,
-      performed_by: domain.performedBy ?? null,
+      referenceId: domain.referenceId ?? null,
+      performedBy: domain.performedBy ?? null,
       notes: domain.notes ?? null,
     };
   }

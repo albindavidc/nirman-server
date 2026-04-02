@@ -1,39 +1,39 @@
 export interface ProfessionalPersistence {
   id: string;
-  user_id: string;
-  professional_title: string;
-  experience_years: number;
+  userId: string;
+  professionalTitle: string;
+  experienceYears: number;
   skills: string[];
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
   user: {
     id: string;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    phone_number: string | null;
-    profile_photo_url: string | null;
+    phoneNumber: string | null;
+    profilePhotoUrl: string | null;
   };
 }
 
 export interface ProfessionalWherePersistenceInput {
   OR?: Array<
-    | { professional_title: { contains: string; mode: 'insensitive' } }
+    | { professionalTitle: { contains: string; mode: 'insensitive' } }
     | {
         user: {
           is: {
-            first_name?: { contains: string; mode: 'insensitive' };
-            last_name?: { contains: string; mode: 'insensitive' };
+            firstName?: { contains: string; mode: 'insensitive' };
+            lastName?: { contains: string; mode: 'insensitive' };
             email?: { contains: string; mode: 'insensitive' };
           };
         };
       }
   >;
-  user_id?: { notIn: string[] } | { in: string[] };
+  userId?: { notIn: string[] } | { in: string[] };
   user?: {
     is: {
-      user_status?: string;
-      is_deleted?: boolean;
+      userStatus?: string;
+      isDeleted?: boolean;
     };
   };
 }

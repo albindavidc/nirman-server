@@ -1,91 +1,91 @@
 model Material {
   id         String @id @default(uuid())
-  project_id String
+  projectId  String @map("project_id")
 
-  material_name String
-  material_code String
-  category      String
+  materialName String @map("material_name")
+  materialCode String @map("material_code")
+  category     String
 
   description    String?
   specifications String?
 
-  current_stock Float  @default(0)
-  unit          String
-  unit_price    Float?
+  currentStock Float  @default(0) @map("current_stock")
+  unit         String
+  unitPrice    Float? @map("unit_price")
 
-  reorder_level         Float?
-  storage_location      String?
-  preferred_supplier_id String?
-  status                String  @default("in_stock") // in_stock, low_stock, out_of_stock
+  reorderLevel        Float?  @map("reorder_level")
+  storageLocation     String? @map("storage_location")
+  preferredSupplierId String? @map("preferred_supplier_id")
+  status              String  @default("in_stock") // in_stock, low_stock, out_of_stock
 
-  created_by String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  project            Project @relation(fields: [project_id], references: [id])
-  preferred_supplier Vendor? @relation(fields: [preferred_supplier_id], references: [id])
-  creator            User    @relation(fields: [created_by], references: [id])
+  project           Project @relation(fields: [projectId], references: [id])
+  preferredSupplier Vendor? @relation(fields: [preferredSupplierId], references: [id])
+  creator           User    @relation(fields: [createdBy], references: [id])
 
   transactions MaterialTransaction[]
 
-  @@unique([project_id, material_code])
-  @@index([material_name])
+  @@unique([projectId, materialCode])
+  @@index([materialName])
   @@index([category])
   @@index([status])
   @@map("materials")
 }
 
 model MaterialTransaction {
-  id          String @id @default(uuid())
-  material_id String
+  id         String @id @default(uuid())
+  materialId String @map("material_id")
 
   type     String // IN, OUT, ADJUSTMENT
   quantity Float
   date     DateTime @default(now())
 
-  reference_id String? // Invoice ID, Task ID, etc.
-  performed_by String? // User ID
-  notes        String?
+  referenceId String? // Invoice ID, Task ID, etc. @map("reference_id")
+  performedBy String? // User ID @map("performed_by")
+  notes       String?
 
-  material Material @relation(fields: [material_id], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
 
-  @@index([material_id])
+  @@index([materialId])
   @@index([date])
   @@map("material_transactions")
 }
 
 model MaterialRequest {
-  id             String @id @default(uuid())
-  request_number String @unique
-  project_id     String
-  requested_by   String
+  id            String @id @default(uuid())
+  requestNumber String @unique @map("request_number")
+  projectId     String @map("project_id")
+  requestedBy   String @map("requested_by")
 
   items Json // Array of { material_id, material_name, quantity, ... }
 
-  priority          String   @default("medium") // low, medium, high, urgent
-  purpose           String?
-  delivery_location String?
-  required_date     DateTime
+  priority         String   @default("medium") // low, medium, high, urgent
+  purpose          String?
+  deliveryLocation String?  @map("delivery_location")
+  requiredDate     DateTime @map("required_date")
 
   status String @default("pending") // pending, approved, rejected, partially_fulfilled, fulfilled, cancelled
 
-  approved_by       String?
-  approved_at       DateTime?
-  approval_comments String?
+  approvedBy       String?   @map("approved_by")
+  approvedAt       DateTime? @map("approved_at")
+  approvalComments String?   @map("approval_comments")
 
-  rejection_reason String?
+  rejectionReason String? @map("rejection_reason")
 
-  converted_to_po Boolean @default(false)
+  convertedToPo Boolean @default(false) @map("converted_to_po")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  project   Project @relation(fields: [project_id], references: [id])
-  requester User    @relation("RequestedMaterials", fields: [requested_by], references: [id])
-  approver  User?   @relation("ApprovedMaterials", fields: [approved_by], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
+  requester User    @relation("RequestedMaterials", fields: [requestedBy], references: [id])
+  approver  User?   @relation("ApprovedMaterials", fields: [approvedBy], references: [id])
 
-  @@index([project_id])
-  @@index([requested_by])
+  @@index([projectId])
+  @@index([requestedBy])
   @@index([status])
   @@map("material_requests")
 }

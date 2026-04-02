@@ -100,8 +100,14 @@ export class ProjectMapper {
     }
 
     if (persistence.members) {
-      // For Json fields in Prisma, we just pass the array/object directly.
-      (createInput as any).members = persistence.members;
+      createInput.members = {
+        create: persistence.members.map((m) => ({
+          userId: m.userId,
+          role: this.mapToPrismaRole(m.role),
+          joinedAt: m.joinedAt,
+          isCreator: m.isCreator,
+        })),
+      };
     }
 
     return createInput;
@@ -122,8 +128,8 @@ export class ProjectMapper {
       updateData.name = persistenceData.name;
     if (persistenceData.description !== undefined)
       updateData.description = persistenceData.description;
-    if (persistenceData.manager_ids !== undefined)
-      updateData.manager_ids = persistenceData.manager_ids;
+    if (persistenceData.managerIds !== undefined)
+      updateData.managerIds = persistenceData.managerIds;
     if (persistenceData.icon !== undefined)
       updateData.icon = persistenceData.icon;
     if (persistenceData.status !== undefined)
@@ -134,23 +140,49 @@ export class ProjectMapper {
       updateData.budget = persistenceData.budget;
     if (persistenceData.spent !== undefined)
       updateData.spent = persistenceData.spent;
-    if (persistenceData.start_date !== undefined)
-      updateData.start_date = persistenceData.start_date;
-    if (persistenceData.due_date !== undefined)
-      updateData.due_date = persistenceData.due_date;
+    if (persistenceData.startDate !== undefined)
+      updateData.startDate = persistenceData.startDate;
+    if (persistenceData.dueDate !== undefined)
+      updateData.dueDate = persistenceData.dueDate;
     if (persistenceData.latitude !== undefined)
       updateData.latitude = persistenceData.latitude;
     if (persistenceData.longitude !== undefined)
       updateData.longitude = persistenceData.longitude;
-    if (persistenceData.is_deleted !== undefined)
-      updateData.is_deleted = persistenceData.is_deleted;
-    if (persistenceData.deleted_at !== undefined)
-      updateData.deleted_at = persistenceData.deleted_at;
+    if (persistenceData.isDeleted !== undefined)
+      updateData.isDeleted = persistenceData.isDeleted;
+    if (persistenceData.deletedAt !== undefined)
+      updateData.deletedAt = persistenceData.deletedAt;
 
-    // Map relations if any (currently members logic in create, for update usually specific logic applies)
-    // The previous implementation filtered out phases.
+    if (persistenceData.members) {
+      updateData.members = {
+        set: persistenceData.members.map((m) => ({
+          userId: m.userId,
+          role: this.mapToPrismaRole(m.role) as any,
+          joinedAt: m.joinedAt,
+          isCreator: m.isCreator,
+        })),
+      } as any;
+    }
 
     return updateData;
+  }
+
+  private static mapToPrismaRole(role: string): string {
+    const r = role?.toLowerCase();
+    switch (r) {
+      case 'admin':
+      case 'manager':
+        return 'manager';
+      case 'supervisor':
+      case 'foreman':
+        return 'supervisor';
+      case 'worker':
+      case 'engineer':
+      case 'technician':
+        return 'engineer';
+      default:
+        return 'engineer';
+    }
   }
 
   /**
@@ -162,8 +194,8 @@ export class ProjectMapper {
     const prismaWhere: ProjectWherePersistenceInput = {};
 
     if (where.id) prismaWhere.id = where.id;
-    if (where.is_deleted !== undefined)
-      prismaWhere.is_deleted = where.is_deleted;
+    if (where.isDeleted !== undefined)
+      prismaWhere.isDeleted = where.isDeleted;
     if (where.status) prismaWhere.status = where.status;
 
     if (where.OR) {
@@ -174,11 +206,11 @@ export class ProjectMapper {
       prismaWhere.members = {
         array_contains: [
           {
-            user_id: where.members.some.user_id,
-            is_creator: where.members.some.is_creator,
+            userId: where.members.some.userId,
+            isCreator: where.members.some.isCreator,
           },
         ].filter(
-          (v) => v.user_id !== undefined || v.is_creator !== undefined,
+          (v) => v.userId !== undefined || v.isCreator !== undefined,
         ),
       };
     }
@@ -190,7 +222,7 @@ export class ProjectMapper {
     return new Project({
       id: prismaProject.id,
       name: prismaProject.name,
-      managerIds: prismaProject.manager_ids ?? [],
+      managerIds: prismaProject.managerIds ?? [],
       description:
         prismaProject.description !== null
           ? prismaProject.description
@@ -200,20 +232,20 @@ export class ProjectMapper {
       progress: prismaProject.progress,
       budget: prismaProject.budget ?? undefined,
       spent: prismaProject.spent ?? undefined,
-      startDate: prismaProject.start_date ?? undefined,
-      dueDate: prismaProject.due_date ?? undefined,
+      startDate: prismaProject.startDate ?? undefined,
+      dueDate: prismaProject.dueDate ?? undefined,
       latitude: prismaProject.latitude ?? undefined,
       longitude: prismaProject.longitude ?? undefined,
       workers:
         prismaProject.members?.map(
           (m): ProjectWorker => ({
-            userId: m.user_id,
+            userId: m.userId,
             role: m.role,
             joinedAt:
-              m.joined_at instanceof Date
-                ? m.joined_at
-                : new Date(m.joined_at),
-            isCreator: m.is_creator,
+              m.joinedAt instanceof Date
+                ? m.joinedAt
+                : new Date(m.joinedAt),
+            isCreator: m.isCreator,
           }),
         ) ?? [],
       phases:
@@ -221,22 +253,22 @@ export class ProjectMapper {
           (p) =>
             new ProjectPhase(
               p.id,
-              p.project_id,
+              p.projectId,
               p.name,
               p.description,
               p.progress,
-              p.planned_start_date,
-              p.planned_end_date,
-              p.actual_start_date,
-              p.actual_end_date,
+              p.plannedStartDate,
+              p.plannedEndDate,
+              p.actualStartDate,
+              p.actualEndDate,
               p.status,
               p.sequence,
-              p.created_at,
-              p.updated_at,
+              p.createdAt,
+              p.updatedAt,
             ),
         ) ?? [],
-      createdAt: prismaProject.created_at,
-      updatedAt: prismaProject.updated_at,
+      createdAt: prismaProject.createdAt,
+      updatedAt: prismaProject.updatedAt,
     });
   }
 
@@ -246,7 +278,7 @@ export class ProjectMapper {
     const data: Partial<ProjectPersistence> = {};
 
     if (entity.name !== undefined) data.name = entity.name;
-    if (entity.managerIds !== undefined) data.manager_ids = entity.managerIds;
+    if (entity.managerIds !== undefined) data.managerIds = entity.managerIds;
     if (entity.description !== undefined)
       data.description = entity.description ?? undefined;
     if (entity.icon !== undefined) data.icon = entity.icon;
@@ -255,14 +287,14 @@ export class ProjectMapper {
     if (entity.progress !== undefined) data.progress = entity.progress;
     if (entity.budget !== undefined) data.budget = entity.budget;
     if (entity.spent !== undefined) data.spent = entity.spent;
-    if (entity.startDate !== undefined) data.start_date = entity.startDate;
-    if (entity.dueDate !== undefined) data.due_date = entity.dueDate;
+    if (entity.startDate !== undefined) data.startDate = entity.startDate;
+    if (entity.dueDate !== undefined) data.dueDate = entity.dueDate;
     if (entity.workers !== undefined) {
       data.members = entity.workers.map((m) => ({
-        user_id: m.userId,
+        userId: m.userId,
         role: m.role,
-        joined_at: m.joinedAt,
-        is_creator: m.isCreator,
+        joinedAt: m.joinedAt,
+        isCreator: m.isCreator,
       }));
     }
 

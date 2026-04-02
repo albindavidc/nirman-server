@@ -1,4 +1,4 @@
-import { Prisma } from '../../../generated/client/client';
+import { Prisma, Status, TaskPriority as PrismaPriority } from '../../../generated/client/client';
 import {
   Task,
   TaskDependency,
@@ -14,25 +14,27 @@ export class TaskMapper {
   static toDomain(record: TaskRecord): Task {
     return new Task({
       id: record.id,
-      phaseId: record.phase_id,
-      assignedTo: record.assigned_to,
+      phaseId: record.phaseId,
+      assignedTo: record.assignedTo,
       name: record.name,
       description: record.description,
-      plannedStartDate: record.planned_start_date,
-      plannedEndDate: record.planned_end_date,
-      actualStartDate: record.actual_start_date,
-      actualEndDate: record.actual_end_date,
+      plannedStartDate: record.plannedStartDate,
+      plannedEndDate: record.plannedEndDate,
+      actualStartDate: record.actualStartDate,
+      actualEndDate: record.actualEndDate,
       status: record.status,
       priority: record.priority,
       progress: record.progress,
       notes: record.notes,
+      estimatedHours: record.estimatedHours,
+      actualHours: record.actualHours,
       color: record.color,
-      createdAt: record.created_at,
-      updatedAt: record.updated_at,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
       assignee: record.assignee
         ? {
-            firstName: record.assignee.first_name,
-            lastName: record.assignee.last_name,
+            firstName: record.assignee.firstName,
+            lastName: record.assignee.lastName,
             email: record.assignee.email,
           }
         : null,
@@ -44,17 +46,19 @@ export class TaskMapper {
       ...(entity.id ? { id: entity.id } : {}),
       name: entity.name,
       description: entity.description,
-      planned_start_date: entity.plannedStartDate,
-      planned_end_date: entity.plannedEndDate,
-      actual_start_date: entity.actualStartDate,
-      actual_end_date: entity.actualEndDate,
-      status: entity.status,
-      priority: entity.priority,
+      plannedStartDate: entity.plannedStartDate,
+      plannedEndDate: entity.plannedEndDate,
+      actualStartDate: entity.actualStartDate,
+      actualEndDate: entity.actualEndDate,
+      status: this.mapStatus(entity.status),
+      priority: this.mapPriority(entity.priority),
       progress: entity.progress,
       notes: entity.notes,
+      estimatedHours: entity.estimatedHours,
+      actualHours: entity.actualHours,
       color: entity.color,
-      created_at: entity.createdAt,
-      updated_at: entity.updatedAt,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
       phase: {
         connect: { id: entity.phaseId },
       },
@@ -70,16 +74,18 @@ export class TaskMapper {
     return {
       name: entity.name,
       description: entity.description,
-      planned_start_date: entity.plannedStartDate,
-      planned_end_date: entity.plannedEndDate,
-      actual_start_date: entity.actualStartDate,
-      actual_end_date: entity.actualEndDate,
-      status: entity.status,
-      priority: entity.priority,
+      plannedStartDate: entity.plannedStartDate,
+      plannedEndDate: entity.plannedEndDate,
+      actualStartDate: entity.actualStartDate,
+      actualEndDate: entity.actualEndDate,
+      status: this.mapStatus(entity.status),
+      priority: this.mapPriority(entity.priority),
       progress: entity.progress,
       notes: entity.notes,
+      estimatedHours: entity.estimatedHours,
+      actualHours: entity.actualHours,
       color: entity.color,
-      updated_at: entity.updatedAt,
+      updatedAt: entity.updatedAt,
       ...(entity.assignedTo !== undefined && {
         assignee: entity.assignedTo
           ? { connect: { id: entity.assignedTo } }
@@ -88,14 +94,55 @@ export class TaskMapper {
     };
   }
 
+  private static mapStatus(status: any): Status {
+    const s = String(status).toLowerCase().replace(/\s+/g, '_');
+    
+    switch (s) {
+      case 'todo':
+      case 'not_started':
+        return Status.not_started;
+      case 'in_progress':
+        return Status.in_progress;
+      case 'in_review':
+        return Status.in_progress; // Or Status.on_hold if appropriate
+      case 'done':
+      case 'completed':
+        return Status.completed;
+      case 'delayed':
+        return Status.delayed;
+      case 'on_hold':
+        return Status.on_hold;
+      default:
+        // Fallback or default
+        return Status.not_started;
+    }
+  }
+
+  private static mapPriority(priority: any): PrismaPriority {
+    const p = String(priority).toLowerCase();
+    
+    switch (p) {
+      case 'low':
+        return PrismaPriority.low;
+      case 'medium':
+        return PrismaPriority.medium;
+      case 'high':
+        return PrismaPriority.high;
+      case 'critical':
+        return PrismaPriority.critical;
+      default:
+        return PrismaPriority.medium;
+    }
+  }
+
   static dependencyToDomain(record: TaskDependencyRecord): TaskDependency {
     return new TaskDependency({
       id: record.id,
-      phaseId: record.phase_id,
-      successorTaskId: record.successor_task_id,
-      predecessorTaskId: record.predecessor_task_id,
+      phaseId: record.phaseId,
+      successorTaskId: record.successorTaskId,
+      predecessorTaskId: record.predecessorTaskId,
       type: record.type,
-      lagTime: record.lag_time,
+      lagTime: record.lagTime,
       notes: record.notes,
     });
   }
@@ -106,9 +153,9 @@ export class TaskMapper {
     return {
       ...(entity.id ? { id: entity.id } : {}),
       type: entity.type,
-      lag_time: entity.lagTime,
+      lagTime: entity.lagTime,
       notes: entity.notes,
-      phase_id: entity.phaseId,
+      phaseId: entity.phaseId,
       successor: { connect: { id: entity.successorTaskId } },
       predecessor: { connect: { id: entity.predecessorTaskId } },
     };

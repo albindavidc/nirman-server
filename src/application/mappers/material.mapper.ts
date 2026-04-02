@@ -1,8 +1,7 @@
 import {
-  MaterialModel as PrismaMaterial,
-  MaterialUncheckedCreateInput,
-  MaterialUncheckedUpdateInput,
-} from '../../generated/client/models';
+  Material as PrismaMaterial,
+  Prisma,
+} from '../../generated/client/client';
 import { Material } from '../../domain/entities/material.entity';
 import { MaterialStatus } from '../../domain/enums/material-status.enum';
 import { MaterialDto } from '../dto/material/material.dto';
@@ -13,7 +12,7 @@ import { MaterialDto } from '../dto/material/material.dto';
  * toDomain()              — PrismaMaterial → Material entity.
  * toUncheckedCreateInput() — Material entity → Prisma UncheckedCreateInput.
  *                            UncheckedCreateInput is the correct type here
- *                            because we pass scalar FKs (project_id, created_by)
+ *                            because we pass scalar FKs (projectId, createdBy)
  *                            directly rather than relation connect objects.
  * toUncheckedUpdateInput() — Material entity → Prisma UncheckedUpdateInput.
  * toDto()                 — Material entity → MaterialDto (presentation layer).
@@ -26,60 +25,60 @@ export class MaterialMapper {
   static toDomain(raw: PrismaMaterial): Material {
     return new Material(
       raw.id,
-      raw.project_id,
-      raw.material_name,
-      raw.material_code,
+      raw.projectId,
+      raw.materialName,
+      raw.materialCode,
       raw.category,
       raw.description ?? undefined,
       raw.specifications ?? undefined,
-      raw.current_stock,
+      raw.currentStock,
       raw.unit,
-      raw.unit_price ?? undefined,
-      raw.reorder_level ?? undefined,
-      raw.storage_location ?? undefined,
-      raw.preferred_supplier_id ?? undefined,
+      raw.unitPrice ?? undefined,
+      raw.reorderLevel ?? undefined,
+      raw.storageLocation ?? undefined,
+      raw.preferredSupplierId ?? undefined,
       (raw.status as MaterialStatus) ?? MaterialStatus.IN_STOCK,
-      raw.created_by,
-      raw.created_at,
-      raw.updated_at,
+      raw.createdBy,
+      raw.createdAt,
+      raw.updatedAt,
     );
   }
 
   static toUncheckedCreateInput(
     domain: Material,
-  ): MaterialUncheckedCreateInput {
+  ): Prisma.MaterialUncheckedCreateInput {
     return {
-      project_id: domain.projectId,
-      material_name: domain.name,
-      material_code: domain.code,
+      projectId: domain.projectId,
+      materialName: domain.name,
+      materialCode: domain.code,
       category: domain.category,
       description: domain.description ?? null,
       specifications: domain.specifications ?? null,
-      current_stock: domain.currentStock,
+      currentStock: domain.currentStock,
       unit: domain.unit,
-      unit_price: domain.unitPrice ?? null,
-      reorder_level: domain.reorderLevel ?? null,
-      storage_location: domain.storageLocation ?? null,
-      preferred_supplier_id: domain.preferredSupplierId ?? null,
+      unitPrice: domain.unitPrice ?? null,
+      reorderLevel: domain.reorderLevel ?? null,
+      storageLocation: domain.storageLocation ?? null,
+      preferredSupplierId: domain.preferredSupplierId ?? null,
       status: domain.status,
-      created_by: domain.createdBy,
+      createdBy: domain.createdBy,
     };
   }
 
   static toUncheckedUpdateInput(
     domain: Material,
-  ): MaterialUncheckedUpdateInput {
+  ): Prisma.MaterialUncheckedUpdateInput {
     return {
-      material_name: domain.name,
+      materialName: domain.name,
       category: domain.category,
       description: domain.description ?? null,
       specifications: domain.specifications ?? null,
-      current_stock: domain.currentStock,
+      currentStock: domain.currentStock,
       unit: domain.unit,
-      unit_price: domain.unitPrice ?? null,
-      reorder_level: domain.reorderLevel ?? null,
-      storage_location: domain.storageLocation ?? null,
-      preferred_supplier_id: domain.preferredSupplierId ?? null,
+      unitPrice: domain.unitPrice ?? null,
+      reorderLevel: domain.reorderLevel ?? null,
+      storageLocation: domain.storageLocation ?? null,
+      preferredSupplierId: domain.preferredSupplierId ?? null,
       status: domain.status,
     };
   }

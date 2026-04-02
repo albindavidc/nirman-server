@@ -2,8 +2,8 @@ import { PhaseApprovalMedia } from '../../domain/repositories/project-phase/phas
 import { ApprovalStatus } from '../../domain/enums/approval-status.enum';
 
 export type RepoUser = {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
 };
 
 /**
@@ -12,17 +12,17 @@ export type RepoUser = {
  */
 export interface PhaseApprovalWithUsers {
   id: string;
-  phase_id: string;
-  approved_by: string | null;
+  phaseId: string;
+  approvedBy: string | null;
   approver: RepoUser | null;
-  requested_by: string;
+  requestedBy: string;
   requester: RepoUser;
-  approval_status: ApprovalStatus;
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: PhaseApprovalMedia[];
-  approved_at: Date | null;
-  requested_at: Date;
-  created_at: Date;
+  approvedAt: Date | null;
+  requestedAt: Date;
+  createdAt: Date;
   phase?: {
     name: string;
   };

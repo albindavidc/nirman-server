@@ -11,10 +11,37 @@ enum ApprovalStatus {
   rejected
 }
 
+enum ProjectMemberRole {
+  manager
+  supervisor
+  engineer
+}
+
+enum Status {
+  not_started
+  in_progress
+  completed
+  delayed
+  on_hold
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum AttendanceMethod {
+  manual
+  qr_code
+  biometric
+}
+
 model Project {
   id          String        @id @default(uuid())
   name        String
-  manager_ids String[]
+  managerIds  String[]      @map("manager_ids")
   description String?
   icon        String        @default("folder")
   status      ProjectStatus @default(active)
@@ -22,147 +49,180 @@ model Project {
   budget      Float?
   spent       Float?
 
-  start_date DateTime?
-  due_date   DateTime?
+  startDate  DateTime? @map("start_date")
+  dueDate    DateTime? @map("due_date")
 
   latitude  Float?
   longitude Float?
 
-  members Json // Array of ProjectMember { user_id, role, joined_at, is_creator }
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  is_deleted Boolean   @default(false)
-  deleted_at DateTime?
-
-  phases            ProjectPhase[]
-  attendance        Attendance[]
-  materials         Material[]
-  material_requests MaterialRequest[]
+  members          ProjectMember[]
+  phases           ProjectPhase[]
+  attendance       Attendance[]
+  materials        Material[]
+  materialRequests MaterialRequest[]
 
   @@index([name])
   @@index([status])
   @@map("projects")
 }
 
+model ProjectMember {
+  id        String            @id @default(uuid())
+  projectId String            @map("project_id")
+  userId    String            @map("user_id")
+  role      ProjectMemberRole
+  isCreator Boolean           @default(false) @map("is_creator")
+  joinedAt  DateTime          @default(now()) @map("joined_at")
+
+
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
+
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
 model ProjectPhase {
-  id                 String    @id @default(uuid())
-  project_id         String
-  name               String
-  description        String?
-  progress           Int       @default(0)
-  planned_start_date DateTime?
-  planned_end_date   DateTime?
-  actual_start_date  DateTime?
-  actual_end_date    DateTime?
-  status             String    @default("Not Started")
-  sequence           Int
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
+  id               String    @id @default(uuid())
+  projectId        String    @map("project_id")
+  name             String
+  description      String?
+  progress         Int       @default(0)
+  plannedStartDate DateTime? @map("planned_start_date")
+  plannedEndDate   DateTime? @map("planned_end_date")
+  actualStartDate  DateTime? @map("actual_start_date")
+  actualEndDate    DateTime? @map("actual_end_date")
+  status           Status    @default(not_started)
+  sequence         Int
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  project   Project         @relation(fields: [project_id], references: [id])
-  approvals PhaseApproval[]
-  tasks     Task[]
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@index([project_id])
+  project     Project         @relation(fields: [projectId], references: [id])
+  approvals   PhaseApproval[]
+  tasks       Task[]
+  attendances Attendance[]
+
+  @@index([projectId])
   @@map("project_phases")
 }
 
 model PhaseApproval {
-  id              String         @id @default(uuid())
-  phase_id        String
-  approved_by     String?
-  requested_by    String
-  approval_status ApprovalStatus @default(pending)
-  comments        String?
-  media           Json // Array of MediaItem { type, url }
-  approved_at     DateTime?
-  requested_at    DateTime       @default(now())
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
+  id             String         @id @default(uuid())
+  phaseId        String         @map("phase_id")
+  approvedBy     String?        @map("approved_by")
+  requestedBy    String         @map("requested_by")
+  approvalStatus ApprovalStatus @default(pending) @map("approval_status")
+  comments       String?
+  media          Json // Array of MediaItem { type, url }
+  approvedAt     DateTime?      @map("approved_at")
+  requestedAt    DateTime       @default(now()) @map("requested_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
 
-  phase     ProjectPhase @relation(fields: [phase_id], references: [id])
-  approver  User?        @relation("ApproverRelation", fields: [approved_by], references: [id])
-  requester User         @relation("RequesterRelation", fields: [requested_by], references: [id])
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@index([phase_id])
-  @@index([approved_by])
-  @@index([requested_by])
+  phase     ProjectPhase @relation(fields: [phaseId], references: [id])
+  approver  User?        @relation("ApproverRelation", fields: [approvedBy], references: [id])
+  requester User         @relation("RequesterRelation", fields: [requestedBy], references: [id])
+
+  @@index([phaseId])
+  @@index([approvedBy])
+  @@index([requestedBy])
   @@map("phase_approvals")
 }
 
 model Attendance {
-  id        String    @id @default(uuid())
-  projectId String    @map("project_id")
-  userId    String    @map("user_id")
-  date      DateTime
-  checkIn   DateTime? @map("check_in")
-  checkOut  DateTime? @map("check_out")
-  status    String
-  location  String?
-  workHours Float?    @map("work_hours")
+  id              String           @id @default(uuid())
+  projectId       String           @map("project_id")
+  phaseId         String?          @map("phase_id")
+  userId          String           @map("user_id")
+  date            DateTime
+  checkIn         DateTime?        @map("check_in")
+  checkOut        DateTime?        @map("check_out")
+  status          String
+  location        String?
+  workHours       Float?           @map("work_hours")
+  method          AttendanceMethod @default(manual)
+  supervisorNotes String?          @map("supervisor_notes")
+  isVerified      Boolean          @default(false) @map("is_verified")
+  verifiedBy      String?          @map("verified_by")
+  verifiedAt      DateTime?        @map("verified_at")
 
-  method          String    @default("Manual") // 'QR Code', 'Manual'
-  supervisorNotes String?   @map("supervisor_notes")
-  isVerified      Boolean   @default(false) @map("is_verified")
-  verifiedBy      String?   @map("verified_by")
-  verifiedAt      DateTime? @map("verified_at")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  project  Project @relation(fields: [projectId], references: [id])
-  user     User    @relation(fields: [userId], references: [id])
-  verifier User?   @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
+  phase           ProjectPhase?    @relation(fields: [phaseId], references: [id])
+  project         Project          @relation(fields: [projectId], references: [id])
+  user            User             @relation(fields: [userId], references: [id])
+  verifier        User?            @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
 
   @@map("attendance")
 }
 
 model Task {
-  id                 String    @id @default(uuid())
-  phase_id           String
-  assigned_to        String?
-  name               String
-  description        String?
-  planned_start_date DateTime?
-  planned_end_date   DateTime?
-  actual_start_date  DateTime?
-  actual_end_date    DateTime?
-  status             String    @default("Not Started") // 'Not Started', 'In Progress', 'Completed', 'Delayed'
-  priority           String    @default("Medium") // 'Low', 'Medium', 'High', 'Critical'
-  progress           Int       @default(0)
-  color              String? // Hex color code
-  notes              String?
+  id               String       @id @default(uuid())
+  phaseId          String       @map("phase_id")
+  assignedTo       String?      @map("assigned_to")
+  name             String
+  description      String?
+  plannedStartDate DateTime?    @map("planned_start_date")
+  plannedEndDate   DateTime?    @map("planned_end_date")
+  actualStartDate  DateTime?    @map("actual_start_date")
+  actualEndDate    DateTime?    @map("actual_end_date")
+  estimatedHours   Float?       @map("estimated_hours")
+  actualHours      Float?       @map("actual_hours")
+  status           Status       @default(not_started)
+  priority         TaskPriority @default(medium)
+  progress         Int          @default(0)
+  color            String? // Hex color code
+  notes            String?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
 
-  phase    ProjectPhase @relation(fields: [phase_id], references: [id])
-  assignee User?        @relation("TaskAssignee", fields: [assigned_to], references: [id])
+  phase    ProjectPhase @relation(fields: [phaseId], references: [id])
+  assignee User?        @relation("TaskAssignee", fields: [assignedTo], references: [id])
 
   successors   TaskDependency[] @relation("TaskSuccessor")
   predecessors TaskDependency[] @relation("TaskPredecessor")
 
-  @@index([phase_id])
-  @@index([assigned_to])
+  @@index([phaseId])
+  @@index([assignedTo])
   @@map("tasks")
 }
 
 model TaskDependency {
-  id                  String @id @default(uuid())
-  phase_id            String
-  successor_task_id   String
-  predecessor_task_id String
+  id                String @id @default(uuid())
+  phaseId           String @map("phase_id")
+  successorTaskId   String @map("successor_task_id")
+  predecessorTaskId String @map("predecessor_task_id")
 
-  type     String  @default("FS") // 'FS', 'SS', 'FF', 'SF'
-  lag_time Int     @default(0) // In days
-  notes    String?
+  type    String  @default("FS") // 'FS', 'SS', 'FF', 'SF'
+  lagTime Int     @default(0) @map("lag_time") // In days
+  notes   String?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  successor   Task @relation("TaskSuccessor", fields: [successor_task_id], references: [id])
-  predecessor Task @relation("TaskPredecessor", fields: [predecessor_task_id], references: [id])
+  successor   Task @relation("TaskSuccessor", fields: [successorTaskId], references: [id])
+  predecessor Task @relation("TaskPredecessor", fields: [predecessorTaskId], references: [id])
 
-  @@index([successor_task_id])
-  @@index([predecessor_task_id])
-  @@index([phase_id])
+  @@index([successorTaskId])
+  @@index([predecessorTaskId])
+  @@index([phaseId])
   @@map("task_dependencies")
 }

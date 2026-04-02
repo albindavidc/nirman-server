@@ -34,12 +34,12 @@ export class PhaseApprovalQueryRepository
     ) as PrismaClient;
     try {
       const approval = await client.phaseApproval.findFirst({
-        where: { phase_id: phaseId },
+        where: { phaseId: phaseId },
         include: {
-          approver: { select: { first_name: true, last_name: true } },
-          requester: { select: { first_name: true, last_name: true } },
+          approver: { select: { firstName: true, lastName: true } },
+          requester: { select: { firstName: true, lastName: true } },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       if (!approval) {
@@ -62,20 +62,20 @@ export class PhaseApprovalQueryRepository
     ) as PrismaClient;
     try {
       const approvals = await client.phaseApproval.findMany({
-        where: { phase_id: phaseId },
+        where: { phaseId: phaseId },
         include: {
-          approver: { select: { first_name: true, last_name: true } },
-          requester: { select: { first_name: true, last_name: true } },
+          approver: { select: { firstName: true, lastName: true } },
+          requester: { select: { firstName: true, lastName: true } },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       return approvals.map(
         (
           a: Prisma.PhaseApprovalGetPayload<{
             include: {
-              approver: { select: { first_name: true; last_name: true } };
-              requester: { select: { first_name: true; last_name: true } };
+              approver: { select: { firstName: true; lastName: true } };
+              requester: { select: { firstName: true; lastName: true } };
             };
           }>,
         ) => this.toResult(a),
@@ -95,21 +95,21 @@ export class PhaseApprovalQueryRepository
     ) as PrismaClient;
     try {
       const approvals = await client.phaseApproval.findMany({
-        where: { phase: { project_id: projectId } },
+        where: { phase: { projectId: projectId } },
         include: {
-          approver: { select: { first_name: true, last_name: true } },
-          requester: { select: { first_name: true, last_name: true } },
+          approver: { select: { firstName: true, lastName: true } },
+          requester: { select: { firstName: true, lastName: true } },
           phase: { select: { name: true } },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       return approvals.map(
         (
           a: Prisma.PhaseApprovalGetPayload<{
             include: {
-              approver: { select: { first_name: true; last_name: true } };
-              requester: { select: { first_name: true; last_name: true } };
+              approver: { select: { firstName: true; lastName: true } };
+              requester: { select: { firstName: true; lastName: true } };
               phase: { select: { name: true } };
             };
           }>,
@@ -128,8 +128,8 @@ export class PhaseApprovalQueryRepository
     try {
       const approvals = await client.phaseApproval.findMany({
         include: {
-          approver: { select: { first_name: true, last_name: true } },
-          requester: { select: { first_name: true, last_name: true } },
+          approver: { select: { firstName: true, lastName: true } },
+          requester: { select: { firstName: true, lastName: true } },
           phase: {
             select: {
               name: true,
@@ -137,15 +137,15 @@ export class PhaseApprovalQueryRepository
             },
           },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       return approvals.map(
         (
           a: Prisma.PhaseApprovalGetPayload<{
             include: {
-              approver: { select: { first_name: true; last_name: true } };
-              requester: { select: { first_name: true; last_name: true } };
+              approver: { select: { firstName: true; lastName: true } };
+              requester: { select: { firstName: true; lastName: true } };
               phase: {
                 select: {
                   name: true;
@@ -165,43 +165,43 @@ export class PhaseApprovalQueryRepository
 
   private toResult(approval: {
     id: string;
-    phase_id: string;
-    approved_by: string | null;
-    requested_by: string;
-    approval_status: PrismaApprovalStatus;
+    phaseId: string;
+    approvedBy: string | null;
+    requestedBy: string;
+    approvalStatus: PrismaApprovalStatus;
     comments: string | null;
     media: Prisma.JsonValue;
-    approved_at: Date | null;
-    requested_at: Date;
-    created_at: Date;
-    approver: { first_name: string; last_name: string } | null;
-    requester: { first_name: string; last_name: string };
+    approvedAt: Date | null;
+    requestedAt: Date;
+    createdAt: Date;
+    approver: { firstName: string; lastName: string } | null;
+    requester: { firstName: string; lastName: string };
   }): PhaseApprovalResult {
     return {
       id: approval.id,
-      phaseId: approval.phase_id,
-      approvedBy: approval.approved_by,
-      approverFirstName: approval.approver?.first_name ?? null,
-      approverLastName: approval.approver?.last_name ?? null,
-      requestedBy: approval.requested_by,
-      requesterFirstName: approval.requester.first_name,
-      requesterLastName: approval.requester.last_name,
-      approvalStatus: approval.approval_status as string as ApprovalStatus,
+      phaseId: approval.phaseId,
+      approvedBy: approval.approvedBy,
+      approverFirstName: approval.approver?.firstName ?? null,
+      approverLastName: approval.approver?.lastName ?? null,
+      requestedBy: approval.requestedBy,
+      requesterFirstName: approval.requester.firstName,
+      requesterLastName: approval.requester.lastName,
+      approvalStatus: approval.approvalStatus as string as ApprovalStatus,
       comments: approval.comments,
       media: Array.isArray(approval.media)
         ? (approval.media as unknown as PhaseApprovalMedia[])
         : [],
-      approvedAt: approval.approved_at,
-      requestedAt: approval.requested_at,
-      createdAt: approval.created_at,
+      approvedAt: approval.approvedAt,
+      requestedAt: approval.requestedAt,
+      createdAt: approval.createdAt,
     };
   }
 
   private toResultWithPhase(
     approval: Prisma.PhaseApprovalGetPayload<{
       include: {
-        approver: { select: { first_name: true; last_name: true } };
-        requester: { select: { first_name: true; last_name: true } };
+        approver: { select: { firstName: true; lastName: true } };
+        requester: { select: { firstName: true; lastName: true } };
         phase: { select: { name: true } };
       };
     }>,
@@ -214,8 +214,8 @@ export class PhaseApprovalQueryRepository
   private toResultWithPhaseAndProject(
     approval: Prisma.PhaseApprovalGetPayload<{
       include: {
-        approver: { select: { first_name: true; last_name: true } };
-        requester: { select: { first_name: true; last_name: true } };
+        approver: { select: { firstName: true; lastName: true } };
+        requester: { select: { firstName: true; lastName: true } };
         phase: {
           select: {
             name: true;

@@ -14,27 +14,27 @@ async function main() {
     // Check Vendors
     const totalVendors = await prisma.vendor.count();
     const visibleVendors = await prisma.vendor.count({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
     });
     console.log(
-      `Vendors: Total=${totalVendors}, Visible(is_deleted:false)=${visibleVendors}`,
+      `Vendors: Total=${totalVendors}, Visible(isDeleted:false)=${visibleVendors}`,
     );
 
     if (totalVendors > 0 && visibleVendors === 0) {
-      console.log('ALERT: Vendors exist but are filtered out by is_deleted!');
+      console.log('ALERT: Vendors exist but are filtered out by isDeleted!');
     }
 
     // Check Projects
     const totalProjects = await prisma.project.count();
     const visibleProjects = await prisma.project.count({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
     });
     console.log(
-      `Projects: Total=${totalProjects}, Visible(is_deleted:false)=${visibleProjects}`,
+      `Projects: Total=${totalProjects}, Visible(isDeleted:false)=${visibleProjects}`,
     );
 
     if (totalProjects > 0 && visibleProjects === 0) {
-      console.log('ALERT: Projects exist but are filtered out by is_deleted!');
+      console.log('ALERT: Projects exist but are filtered out by isDeleted!');
     }
   } catch (e) {
     console.error('Error querying:', e);

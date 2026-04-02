@@ -1,36 +1,36 @@
 export interface MaterialPersistence {
   id: string;
-  project_id: string;
-  material_name: string;
-  material_code: string;
+  projectId: string;
+  materialName: string;
+  materialCode: string;
   category: string;
   description: string | null;
   specifications: string | null;
-  current_stock: number;
+  currentStock: number;
   unit: string;
-  unit_price: number | null;
-  reorder_level: number | null;
-  storage_location: string | null;
-  preferred_supplier_id: string | null;
+  unitPrice: number | null;
+  reorderLevel: number | null;
+  storageLocation: string | null;
+  preferredSupplierId: string | null;
   status: string;
-  created_by: string;
-  created_at: Date;
-  updated_at: Date;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type MaterialCreatePersistenceInput = Omit<
   MaterialPersistence,
-  'id' | 'created_at' | 'updated_at'
+  'id' | 'createdAt' | 'updatedAt'
 >;
 
 export type MaterialUpdatePersistenceInput = Partial<
   Omit<
     MaterialPersistence,
-    'id' | 'created_at' | 'updated_at' | 'project_id' | 'material_code'
+    'id' | 'createdAt' | 'updatedAt' | 'projectId' | 'materialCode'
   >
 >;
 
 export interface MaterialWherePersistenceInput {
-  project_id?: string;
+  projectId?: string;
   id?: string;
 }

@@ -29,6 +29,8 @@ export interface TaskProps {
   priority: TaskPriority | string;
   progress: number;
   notes?: string | null;
+  estimatedHours?: number | null;
+  actualHours?: number | null;
   color?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -53,6 +55,8 @@ export class Task extends AggregateRoot {
   private _priority: TaskPriority | string;
   private _progress: number;
   private _notes: string | null;
+  private _estimatedHours: number | null;
+  private _actualHours: number | null;
   private _color: string | null;
   private _createdAt: Date;
   private _updatedAt: Date;
@@ -73,6 +77,8 @@ export class Task extends AggregateRoot {
     this._priority = props.priority;
     this._progress = props.progress;
     this._notes = props.notes ?? null;
+    this._estimatedHours = props.estimatedHours ?? null;
+    this._actualHours = props.actualHours ?? null;
     this._color = props.color ?? null;
     this._createdAt = props.createdAt ?? new Date();
     this._updatedAt = props.updatedAt ?? new Date();
@@ -119,6 +125,12 @@ export class Task extends AggregateRoot {
   get notes(): string | null {
     return this._notes;
   }
+  get estimatedHours(): number | null {
+    return this._estimatedHours;
+  }
+  get actualHours(): number | null {
+    return this._actualHours;
+  }
   get color(): string | null {
     return this._color;
   }
@@ -145,6 +157,8 @@ export class Task extends AggregateRoot {
     priority?: TaskPriority | string;
     progress?: number;
     notes?: string | null;
+    estimatedHours?: number | null;
+    actualHours?: number | null;
     color?: string | null;
   }): void {
     if (data.name !== undefined) this._name = data.name;
@@ -158,6 +172,8 @@ export class Task extends AggregateRoot {
     if (data.priority !== undefined) this._priority = data.priority;
     if (data.progress !== undefined) this._progress = data.progress;
     if (data.notes !== undefined) this._notes = data.notes;
+    if (data.estimatedHours !== undefined) this._estimatedHours = data.estimatedHours;
+    if (data.actualHours !== undefined) this._actualHours = data.actualHours;
     if (data.color !== undefined) this._color = data.color;
     this._updatedAt = new Date();
   }

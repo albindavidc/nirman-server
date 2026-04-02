@@ -49,7 +49,7 @@ export class ProjectPhaseRepository implements IProjectPhaseWriter {
     try {
       await client.projectPhase.update({
         where: { id },
-        data: { status: ProjectPhaseStatus.DELETED },
+        data: { isDeleted: true, deletedAt: new Date() },
       });
     } catch (error: unknown) {
       RepositoryUtils.handleError(error);

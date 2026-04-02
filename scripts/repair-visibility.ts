@@ -15,10 +15,10 @@ async function main() {
     const vendors = await prisma.vendor.findMany();
     console.log(`Found ${vendors.length} vendors. Repairing...`);
     for (const v of vendors) {
-      process.stdout.write(`Reparing Vendor ${v.company_name}... `);
+      process.stdout.write(`Reparing Vendor ${v.companyName}... `);
       await prisma.vendor.update({
         where: { id: v.id },
-        data: { is_deleted: false },
+        data: { isDeleted: false },
       });
       console.log('Done.');
     }
@@ -30,7 +30,7 @@ async function main() {
       process.stdout.write(`Reparing Project ${p.name}... `);
       await prisma.project.update({
         where: { id: p.id },
-        data: { is_deleted: false },
+        data: { isDeleted: false },
       });
       console.log('Done.');
     }

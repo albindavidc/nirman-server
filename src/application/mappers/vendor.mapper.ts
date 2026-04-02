@@ -107,22 +107,22 @@ export class VendorMapper {
     }
 
     const createInput: VendorCreatePersistenceInput = {
-      user_id: data.userId,
-      company_name: data.companyName!,
-      registration_number: data.registrationNumber!,
-      tax_number: data.taxNumber ?? null,
-      years_in_business: data.yearsInBusiness ?? null,
-      address_street: data.addressStreet ?? null,
-      address_city: data.addressCity ?? null,
-      address_state: data.addressState ?? null,
-      address_zip_code: data.addressZipCode ?? null,
-      products_services: data.productsService ?? [],
-      website_url: data.websiteUrl ?? null,
-      contact_email: data.contactEmail ?? null,
-      contact_phone: data.contactPhone ?? null,
-      vendor_status: data.vendorStatus ?? DomainVendorStatus.PENDING,
-      rejection_reason: data.rejectionReason ?? null,
-      is_deleted: false,
+      userId: data.userId,
+      companyName: data.companyName!,
+      registrationNumber: data.registrationNumber!,
+      taxNumber: data.taxNumber ?? null,
+      yearsInBusiness: data.yearsInBusiness ?? null,
+      addressStreet: data.addressStreet ?? null,
+      addressCity: data.addressCity ?? null,
+      addressState: data.addressState ?? null,
+      addressZipCode: data.addressZipCode ?? null,
+      productsServices: data.productsService ?? [],
+      websiteUrl: data.websiteUrl ?? null,
+      contactEmail: data.contactEmail ?? null,
+      contactPhone: data.contactPhone ?? null,
+      vendorStatus: data.vendorStatus ?? DomainVendorStatus.PENDING,
+      rejectionReason: data.rejectionReason ?? null,
+      isDeleted: false,
     };
 
     return createInput;
@@ -137,31 +137,31 @@ export class VendorMapper {
     const updateData: VendorUpdatePersistenceInput = {};
 
     if (data.companyName !== undefined)
-      updateData.company_name = data.companyName;
+      updateData.companyName = data.companyName;
     if (data.registrationNumber !== undefined)
-      updateData.registration_number = data.registrationNumber;
-    if (data.taxNumber !== undefined) updateData.tax_number = data.taxNumber;
+      updateData.registrationNumber = data.registrationNumber;
+    if (data.taxNumber !== undefined) updateData.taxNumber = data.taxNumber;
     if (data.yearsInBusiness !== undefined)
-      updateData.years_in_business = data.yearsInBusiness;
+      updateData.yearsInBusiness = data.yearsInBusiness;
     if (data.addressStreet !== undefined)
-      updateData.address_street = data.addressStreet;
+      updateData.addressStreet = data.addressStreet;
     if (data.addressCity !== undefined)
-      updateData.address_city = data.addressCity;
+      updateData.addressCity = data.addressCity;
     if (data.addressState !== undefined)
-      updateData.address_state = data.addressState;
+      updateData.addressState = data.addressState;
     if (data.addressZipCode !== undefined)
-      updateData.address_zip_code = data.addressZipCode;
+      updateData.addressZipCode = data.addressZipCode;
     if (data.productsService !== undefined)
-      updateData.products_services = data.productsService;
-    if (data.websiteUrl !== undefined) updateData.website_url = data.websiteUrl;
+      updateData.productsServices = data.productsService;
+    if (data.websiteUrl !== undefined) updateData.websiteUrl = data.websiteUrl;
     if (data.contactEmail !== undefined)
-      updateData.contact_email = data.contactEmail;
+      updateData.contactEmail = data.contactEmail;
     if (data.contactPhone !== undefined)
-      updateData.contact_phone = data.contactPhone;
+      updateData.contactPhone = data.contactPhone;
     if (data.vendorStatus !== undefined)
-      updateData.vendor_status = data.vendorStatus;
+      updateData.vendorStatus = data.vendorStatus;
     if (data.rejectionReason !== undefined)
-      updateData.rejection_reason = data.rejectionReason;
+      updateData.rejectionReason = data.rejectionReason;
 
     return updateData;
   }
@@ -174,16 +174,16 @@ export class VendorMapper {
   ): VendorWherePersistenceInput {
     const prismaWhere: VendorWherePersistenceInput = {};
 
-    if (where.user_id) {
-      if (typeof where.user_id === 'object' && 'in' in where.user_id) {
-        prismaWhere.user_id = { in: where.user_id.in };
+    if (where.userId) {
+      if (typeof where.userId === 'object' && 'in' in where.userId) {
+        prismaWhere.userId = { in: where.userId.in };
       } else {
-        prismaWhere.user_id = where.user_id;
+        prismaWhere.userId = where.userId;
       }
     }
-    if (where.is_deleted !== undefined)
-      prismaWhere.is_deleted = where.is_deleted;
-    if (where.vendor_status) prismaWhere.vendor_status = where.vendor_status;
+    if (where.isDeleted !== undefined)
+      prismaWhere.isDeleted = where.isDeleted;
+    if (where.vendorStatus) prismaWhere.vendorStatus = where.vendorStatus;
 
     if (where.OR) {
       prismaWhere.OR = where.OR.map((cond) => ({ ...cond }));
@@ -195,28 +195,28 @@ export class VendorMapper {
   static persistenceToEntity(persistence: VendorPersistence): Vendor {
     return new Vendor({
       id: persistence.id,
-      userId: persistence.user_id,
-      companyName: persistence.company_name,
-      registrationNumber: persistence.registration_number,
-      taxNumber: persistence.tax_number ?? undefined,
-      yearsInBusiness: persistence.years_in_business ?? 0,
-      addressStreet: persistence.address_street ?? '',
-      addressCity: persistence.address_city ?? '',
-      addressState: persistence.address_state ?? '',
-      addressZipCode: persistence.address_zip_code ?? '',
-      productsService: persistence.products_services ?? [],
-      websiteUrl: persistence.website_url ?? '',
-      contactEmail: persistence.contact_email ?? '',
-      contactPhone: persistence.contact_phone ?? '',
-      vendorStatus: persistence.vendor_status,
-      rejectionReason: persistence.rejection_reason ?? undefined,
-      createdAt: persistence.created_at,
-      updatedAt: persistence.updated_at,
+      userId: persistence.userId,
+      companyName: persistence.companyName,
+      registrationNumber: persistence.registrationNumber,
+      taxNumber: persistence.taxNumber ?? undefined,
+      yearsInBusiness: persistence.yearsInBusiness ?? 0,
+      addressStreet: persistence.addressStreet ?? '',
+      addressCity: persistence.addressCity ?? '',
+      addressState: persistence.addressState ?? '',
+      addressZipCode: persistence.addressZipCode ?? '',
+      productsService: persistence.productsServices ?? [],
+      websiteUrl: persistence.websiteUrl ?? '',
+      contactEmail: persistence.contactEmail ?? '',
+      contactPhone: persistence.contactPhone ?? '',
+      vendorStatus: persistence.vendorStatus,
+      rejectionReason: persistence.rejectionReason ?? undefined,
+      createdAt: persistence.createdAt,
+      updatedAt: persistence.updatedAt,
       user: persistence.user
         ? {
             id: persistence.user.id,
-            firstName: persistence.user.first_name,
-            lastName: persistence.user.last_name,
+            firstName: persistence.user.firstName,
+            lastName: persistence.user.lastName,
             email: persistence.user.email,
           }
         : undefined,

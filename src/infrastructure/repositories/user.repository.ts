@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
     if (cached) return UserMapper.fromPersistenceResult(cached);
 
     const user = await this.prisma.user.findFirst({
-      where: { id, is_deleted: false },
+      where: { id, isDeleted: false },
       include: { vendor: true, professional: true },
     });
 
@@ -32,7 +32,7 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
-      where: { email, is_deleted: false },
+      where: { email, isDeleted: false },
       include: { vendor: true, professional: true },
     });
     return user ? UserMapper.fromPersistenceResult(user) : null;
@@ -40,7 +40,7 @@ export class UserRepository implements IUserRepository {
 
   async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
-      where: { phone_number: phoneNumber, is_deleted: false },
+      where: { phoneNumber: phoneNumber, isDeleted: false },
       include: { vendor: true, professional: true },
     });
     return user ? UserMapper.fromPersistenceResult(user) : null;
@@ -48,7 +48,7 @@ export class UserRepository implements IUserRepository {
 
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
       include: { vendor: true, professional: true },
     });
     return UserMapper.fromPersistenceResults(users);
@@ -56,14 +56,14 @@ export class UserRepository implements IUserRepository {
 
   async exists(id: string): Promise<boolean> {
     const count = await this.prisma.user.count({
-      where: { id, is_deleted: false },
+      where: { id, isDeleted: false },
     });
     return count > 0;
   }
 
   async count(): Promise<number> {
     return this.prisma.user.count({
-      where: { is_deleted: false },
+      where: { isDeleted: false },
     });
   }
 
@@ -107,7 +107,7 @@ export class UserRepository implements IUserRepository {
   async updatePassword(email: string, passwordHash: string): Promise<void> {
     await this.prisma.user.update({
       where: { email: email.toLowerCase() },
-      data: { password_hash: passwordHash },
+      data: { passwordHash: passwordHash },
     });
   }
 
@@ -116,8 +116,8 @@ export class UserRepository implements IUserRepository {
     await this.prisma.user.update({
       where: { id },
       data: {
-        is_deleted: true,
-        deleted_at: new Date(),
+        isDeleted: true,
+        deletedAt: new Date(),
       },
     });
   }
