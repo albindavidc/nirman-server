@@ -2,14 +2,14 @@ import {
   WorkerWithProfessional,
   CreateWorkerData,
   UpdateWorkerData,
-} from '../../domain/repositories/worker-repository.interface';
+} from '../../../domain/repositories/worker-repository.interface';
 import {
   WorkerPersistence,
   WorkerWherePersistenceInput,
   WorkerCreatePersistenceInput,
   WorkerUpdatePersistenceInput,
-} from '../../infrastructure/types/worker.types';
-import { Role, Role as UserRole } from '../../domain/enums/role.enum';
+} from '../../../infrastructure/types/worker.types';
+import { Role, Role as UserRole } from '../../../domain/enums/role.enum';
 
 export class WorkerMapper {
   /**

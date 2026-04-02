@@ -7,7 +7,7 @@ import {
   UpdateWorkerData,
 } from '../../domain/repositories/worker-repository.interface';
 import { WorkerWherePersistenceInput } from '../types/worker.types';
-import { WorkerMapper } from '../../application/mappers/worker.mapper';
+import { WorkerMapper } from '../../application/mappers/worker/worker.mapper';
 import { Role as UserRole } from '../../domain/enums/role.enum';
 import { UserStatus } from '../../domain/enums/user-status.enum'; // ✅ typed enum replaces raw string
 import { ITransactionContext } from '../../domain/interfaces/transaction-context.interface';

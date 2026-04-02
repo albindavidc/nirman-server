@@ -1,6 +1,19 @@
 import { AggregateRoot } from '@nestjs/cqrs';
-import { WorkerGroupMemberEntity as WorkerGroupMember } from './worker-group-member.entity';
 import { TradeType } from '../enums/trade-type.enum';
+
+export interface WorkerGroupMember {
+  id: string;
+  groupId: string;
+  workerId: string;
+  memberName: string;
+  memberPhotoUrl: string | null;
+  joinedAt: Date;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+  deletedAt?: Date;
+}
 
 export interface WorkerGroupProps {
   id: string;
@@ -10,6 +23,7 @@ export interface WorkerGroupProps {
   projectId: string;
   createdById: string;
   isActive: boolean;
+  memberCount: number;
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
@@ -25,6 +39,7 @@ export class WorkerGroupEntity extends AggregateRoot {
   private _projectId: string;
   private _createdById: string;
   private _isActive: boolean;
+  private _memberCount: number;
   private _createdAt: Date;
   private _updatedAt: Date;
   private _isDeleted: boolean;
@@ -40,6 +55,7 @@ export class WorkerGroupEntity extends AggregateRoot {
     this._projectId = props.projectId;
     this._createdById = props.createdById;
     this._isActive = props.isActive;
+    this._memberCount = props.memberCount;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._isDeleted = props.isDeleted;
@@ -75,6 +91,10 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._isActive;
   }
 
+  get memberCount(): number {
+    return this._memberCount;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -105,11 +125,13 @@ export class WorkerGroupEntity extends AggregateRoot {
   addMember(member: WorkerGroupMember) {
     this._members.push(member);
     this._updatedAt = new Date();
+    this._memberCount++;
   }
 
   removeMember(memberId: string) {
     this._members = this._members.filter((m) => m.id !== memberId);
     this._updatedAt = new Date();
+    this._memberCount--;
   }
 
   deactivate(): void {

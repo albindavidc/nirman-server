@@ -12,6 +12,8 @@ enum TradeType {
     OTHER
 }
 
+
+
 model WorkerGroup {
     id          String    @id @default(uuid())
     name        String
@@ -25,8 +27,8 @@ model WorkerGroup {
     isDeleted   Boolean   @default(false) @map("is_deleted")
     deletedAt   DateTime? @map("deleted_at")
 
-    project Project @relation(fields: [projectId], references: [id])
-    user    User    @relation(fields: [createdById], references: [id])
+    project Project             @relation(fields: [projectId], references: [id])
+    user    User                @relation(fields: [createdById], references: [id])
     members WorkerGroupMember[]
 
     @@index([projectId])
@@ -36,18 +38,18 @@ model WorkerGroup {
 }
 
 model WorkerGroupMember {
-    id            String   @id @default(uuid())
-    workerGroupId String   @map("worker_group_id")
-    workerId      String   @map("worker_id")
-    joinedAt      DateTime @default(now()) @map("joined_at")
-    isActive Boolean @default(true) @map("is_active")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    isDeleted Boolean @default(false) @map("is_deleted")
-    deletedAt DateTime? @map("deleted_at")
+    id            String    @id @default(uuid())
+    workerGroupId String    @map("worker_group_id")
+    workerId      String    @map("worker_id")
+    joinedAt      DateTime  @default(now()) @map("joined_at")
+    isActive      Boolean   @default(true) @map("is_active")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @updatedAt @map("updated_at")
+    isDeleted     Boolean   @default(false) @map("is_deleted")
+    deletedAt     DateTime? @map("deleted_at")
 
-    workerGroup WorkerGroup @relation(fields: [workerGroupId], references: [id])
-    worker Professional @relation(fields: [workerId], references: [id])
+    workerGroup WorkerGroup  @relation(fields: [workerGroupId], references: [id])
+    worker      Professional @relation(fields: [workerId], references: [id])
 
     @@index([workerGroupId])
     @@index([workerId])
