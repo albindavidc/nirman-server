@@ -49,8 +49,8 @@ model Project {
   budget      Float?
   spent       Float?
 
-  startDate  DateTime? @map("start_date")
-  dueDate    DateTime? @map("due_date")
+  startDate DateTime? @map("start_date")
+  dueDate   DateTime? @map("due_date")
 
   latitude  Float?
   longitude Float?
@@ -65,6 +65,7 @@ model Project {
   attendance       Attendance[]
   materials        Material[]
   materialRequests MaterialRequest[]
+  workerGroups     WorkerGroup[]
 
   @@index([name])
   @@index([status])
@@ -78,7 +79,6 @@ model ProjectMember {
   role      ProjectMemberRole
   isCreator Boolean           @default(false) @map("is_creator")
   joinedAt  DateTime          @default(now()) @map("joined_at")
-
 
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
@@ -163,10 +163,10 @@ model Attendance {
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
 
-  phase           ProjectPhase?    @relation(fields: [phaseId], references: [id])
-  project         Project          @relation(fields: [projectId], references: [id])
-  user            User             @relation(fields: [userId], references: [id])
-  verifier        User?            @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
+  phase    ProjectPhase? @relation(fields: [phaseId], references: [id])
+  project  Project       @relation(fields: [projectId], references: [id])
+  user     User          @relation(fields: [userId], references: [id])
+  verifier User?         @relation("AttendanceVerifier", fields: [verifiedBy], references: [id])
 
   @@map("attendance")
 }
@@ -189,8 +189,8 @@ model Task {
   color            String? // Hex color code
   notes            String?
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
 

@@ -36,6 +36,7 @@ model User {
 
   // Project Relations
   projectMembers ProjectMember[]
+  workerGroups   WorkerGroup[]
 
   @@index([role])
   @@map("users")
