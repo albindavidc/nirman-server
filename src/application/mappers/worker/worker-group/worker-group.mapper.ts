@@ -47,7 +47,7 @@ export class WorkerGroupMapper {
     };
   }
 
-  static toResponse(entity: WorkerGroupEntity): WorkerGroupResponseDto {
+  static toResponse(entity: WorkerGroupProps): WorkerGroupResponseDto {
     const dto = new WorkerGroupResponseDto();
     dto.id = entity.id;
     dto.name = entity.name;
@@ -63,7 +63,7 @@ export class WorkerGroupMapper {
   }
 
   static toResponseWithMembers(
-    entity: WorkerGroupEntity,
+    entity: WorkerGroupProps,
   ): WorkerGroupWithMembersResponseDto {
     const dto = new WorkerGroupWithMembersResponseDto();
     dto.id = entity.id;

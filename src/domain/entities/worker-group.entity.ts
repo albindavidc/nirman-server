@@ -115,6 +115,10 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._members;
   }
 
+  static create(props: WorkerGroupProps): WorkerGroupEntity {
+    return new WorkerGroupEntity(props);
+  }
+
   updateDetails(name?: string, description?: string, trade?: TradeType) {
     if (name) this._name = name;
     if (description) this._description = description;
