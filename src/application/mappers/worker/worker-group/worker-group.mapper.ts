@@ -11,7 +11,9 @@ import {
 
 export class WorkerGroupMapper {
   static toDomain(record: WorkerGroupProps): WorkerGroupEntity {
-    const members = record.members.map((m) => WorkerGroupMapper.toMemberProps(m));
+    const workers = record.workers.map((m) =>
+      WorkerGroupMapper.toMemberProps(m),
+    );
     return new WorkerGroupEntity({
       id: record.id,
       name: record.name,
@@ -20,12 +22,12 @@ export class WorkerGroupMapper {
       projectId: record.projectId,
       createdById: record.createdById,
       isActive: record.isActive,
-      memberCount: record.memberCount,
+      workerCount: record.workerCount,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       isDeleted: record.isDeleted,
       deletedAt: record.deletedAt,
-      members,
+      workers,
     });
   }
 
@@ -38,12 +40,12 @@ export class WorkerGroupMapper {
       projectId: entity.projectId,
       createdById: entity.createdById,
       isActive: entity.isActive,
-      memberCount: entity.memberCount,
+      workerCount: entity.workerCount,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       isDeleted: entity.isDeleted,
       deletedAt: entity.deletedAt,
-      members: entity.members,
+      workers: entity.workers,
     };
   }
 
@@ -56,7 +58,7 @@ export class WorkerGroupMapper {
     dto.projectId = entity.projectId;
     dto.createdById = entity.createdById;
     dto.isActive = entity.isActive;
-    dto.memberCount = entity.memberCount;
+    dto.workerCount = entity.workerCount;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
     return dto;
@@ -73,21 +75,20 @@ export class WorkerGroupMapper {
     dto.projectId = entity.projectId;
     dto.createdById = entity.createdById;
     dto.isActive = entity.isActive;
-    dto.memberCount = entity.memberCount;
+    dto.workerCount = entity.workerCount;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
-    dto.members = entity.members.map((member) => ({
+    dto.workers = entity.workers.map((member) => ({
       id: member.id,
       groupId: member.groupId,
       workerId: member.workerId,
-      memberName: member.memberName,
-      memberPhotoUrl: member.memberPhotoUrl,
-      joinedAt: member.joinedAt,
+      workerName: member.workerName,
+      workerPhotoUrl: member.workerPhotoUrl,
+      joinedAt: member.createdAt,
       isActive: member.isActive,
     }));
     return dto;
   }
-
 
   /**
    * Helper methods
@@ -98,9 +99,8 @@ export class WorkerGroupMapper {
       id: raw.id,
       groupId: raw.groupId,
       workerId: raw.workerId,
-      memberName: raw.memberName,
-      memberPhotoUrl: raw.memberPhotoUrl,
-      joinedAt: raw.joinedAt,
+      workerName: raw.workerName,
+      workerPhotoUrl: raw.workerPhotoUrl,
       isActive: raw.isActive,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,

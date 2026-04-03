@@ -2,8 +2,8 @@ export class WorkerGroupMemberResponseDto {
   id!: string;
   groupId!: string;
   workerId!: string;
-  memberName!: string;
-  memberPhotoUrl!: string | null;
+  workerName!: string;
+  workerPhotoUrl!: string | null;
   joinedAt!: Date;
   isActive!: boolean;
 }
@@ -17,11 +17,11 @@ export class WorkerGroupResponseDto {
   createdById!: string;
 
   isActive!: boolean;
-  memberCount!: number;
+  workerCount!: number;
   createdAt!: Date;
   updatedAt!: Date;
 }
 
 export class WorkerGroupWithMembersResponseDto extends WorkerGroupResponseDto {
-  members!: WorkerGroupMemberResponseDto[];
+  workers!: WorkerGroupMemberResponseDto[];
 }

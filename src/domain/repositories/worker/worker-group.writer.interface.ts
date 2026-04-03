@@ -8,7 +8,7 @@ export type CreateWorkerGroupData = Pick<
   WorkerGroupProps,
   'name' | 'description' | 'trade' | 'projectId' | 'createdById' | 'isActive'
 > & {
-  members?: { workerId: string }[];
+  workers?: { workerId: string }[];
 };
 
 export type UpdateWorkerGroupData = Partial<

@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import {
-  IWorkerRepository,
-  WorkerWithProfessional,
-  CreateWorkerData,
-  UpdateWorkerData,
-} from '../../domain/repositories/worker-repository.interface';
-import { WorkerWherePersistenceInput } from '../types/worker.types';
-import { WorkerMapper } from '../../application/mappers/worker/worker.mapper';
-import { Role as UserRole } from '../../domain/enums/role.enum';
-import { UserStatus } from '../../domain/enums/user-status.enum'; // ✅ typed enum replaces raw string
-import { ITransactionContext } from '../../domain/interfaces/transaction-context.interface';
-import { RepositoryUtils } from './repository.utils';
+import { ITransactionContext } from '../../../domain/interfaces/transaction-context.interface';
+import { CreateWorkerData, IWorkerRepository, UpdateWorkerData, WorkerWithProfessional } from '../../../domain/repositories/worker-repository.interface';
+import { PrismaService } from '../../prisma/prisma.service';
+import { RepositoryUtils } from '../repository.utils';
+import { Prisma, PrismaClient } from '../../../generated/client';
+import { WorkerMapper } from '../../../application/mappers/worker/worker.mapper';
+import { WorkerWherePersistenceInput } from '../../types/worker.types';
+import { Role as UserRole } from '../../../domain/enums/role.enum';
+import { UserStatus } from '../../../domain/enums/user-status.enum';
 
-import { Prisma, PrismaClient } from '../../generated/client/client';
 
 @Injectable()
 export class WorkerRepository implements IWorkerRepository {

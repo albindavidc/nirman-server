@@ -29,7 +29,7 @@ model WorkerGroup {
 
     project Project             @relation(fields: [projectId], references: [id])
     user    User                @relation(fields: [createdById], references: [id])
-    members WorkerGroupMember[]
+    workers WorkerGroupMember[]
 
     @@index([projectId])
     @@index([createdById])
@@ -51,6 +51,7 @@ model WorkerGroupMember {
     workerGroup WorkerGroup  @relation(fields: [workerGroupId], references: [id])
     worker      Professional @relation(fields: [workerId], references: [id])
 
+    @@unique([workerGroupId, workerId])
     @@index([workerGroupId])
     @@index([workerId])
     @@index([isActive])

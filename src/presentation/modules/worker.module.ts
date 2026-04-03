@@ -8,7 +8,7 @@ import {
   BlockWorkerHandler,
   UnblockWorkerHandler,
 } from '../../application/handlers/commands/worker/block-worker.handler';
-import { WorkerRepository } from '../../infrastructure/repositories/worker.repository';
+import { WorkerRepository } from '../../infrastructure/repositories/worker/worker.repository';
 import { WORKER_REPOSITORY } from '../../domain/repositories/worker-repository.interface';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';

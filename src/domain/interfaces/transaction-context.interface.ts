@@ -1,4 +1,6 @@
 // Nominal typing brand to prevent accidental substitution of plain objects
+import { Prisma } from '../../generated/client';
+
 export interface ITransactionContext {
-  readonly _brand: 'TransactionContext';
+  tx: Prisma.TransactionClient;
 }

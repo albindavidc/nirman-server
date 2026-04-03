@@ -1,6 +1,5 @@
 import { Prisma } from '../../generated/client/client';
 import { ITransactionContext } from '../../domain/interfaces/transaction-context.interface';
-import { PrismaTransactionContext } from '../prisma/prisma-transaction.context';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   NotFoundException,
@@ -14,7 +13,7 @@ export class RepositoryUtils {
     prisma: PrismaService,
     tx?: ITransactionContext,
   ): PrismaService | Prisma.TransactionClient {
-    return tx ? (tx as PrismaTransactionContext).client : prisma;
+    return tx ? tx.tx : prisma;
   }
 
   static handleError(error: unknown): never {

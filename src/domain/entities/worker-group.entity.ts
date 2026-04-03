@@ -5,9 +5,8 @@ export interface WorkerGroupMember {
   id: string;
   groupId: string;
   workerId: string;
-  memberName: string;
-  memberPhotoUrl: string | null;
-  joinedAt: Date;
+  workerName: string;
+  workerPhotoUrl: string | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -23,12 +22,12 @@ export interface WorkerGroupProps {
   projectId: string;
   createdById: string;
   isActive: boolean;
-  memberCount: number;
+  workerCount: number;
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
   deletedAt?: Date;
-  members: WorkerGroupMember[];
+  workers: WorkerGroupMember[];
 }
 
 export class WorkerGroupEntity extends AggregateRoot {
@@ -39,12 +38,12 @@ export class WorkerGroupEntity extends AggregateRoot {
   private _projectId: string;
   private _createdById: string;
   private _isActive: boolean;
-  private _memberCount: number;
+  private _workerCount: number;
   private _createdAt: Date;
   private _updatedAt: Date;
   private _isDeleted: boolean;
   private _deletedAt?: Date;
-  private _members: WorkerGroupMember[];
+  private _workers: WorkerGroupMember[];
 
   constructor(props: WorkerGroupProps) {
     super();
@@ -55,12 +54,12 @@ export class WorkerGroupEntity extends AggregateRoot {
     this._projectId = props.projectId;
     this._createdById = props.createdById;
     this._isActive = props.isActive;
-    this._memberCount = props.memberCount;
+    this._workerCount = props.workerCount;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._isDeleted = props.isDeleted;
     this._deletedAt = props.deletedAt;
-    this._members = props.members;
+    this._workers = props.workers;
   }
 
   get id(): string {
@@ -75,7 +74,7 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._description;
   }
 
-  get trade(): string {
+  get trade(): TradeType {
     return this._trade;
   }
 
@@ -91,8 +90,8 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._isActive;
   }
 
-  get memberCount(): number {
-    return this._memberCount;
+  get workerCount(): number {
+    return this._workerCount;
   }
 
   get createdAt(): Date {
@@ -111,8 +110,8 @@ export class WorkerGroupEntity extends AggregateRoot {
     return this._deletedAt;
   }
 
-  get members(): WorkerGroupMember[] {
-    return this._members;
+  get workers(): WorkerGroupMember[] {
+    return this._workers;
   }
 
   static create(props: WorkerGroupProps): WorkerGroupEntity {
@@ -126,16 +125,16 @@ export class WorkerGroupEntity extends AggregateRoot {
     this._updatedAt = new Date();
   }
 
-  addMember(member: WorkerGroupMember) {
-    this._members.push(member);
+  addWorker(worker: WorkerGroupMember) {
+    this._workers.push(worker);
     this._updatedAt = new Date();
-    this._memberCount++;
+    this._workerCount++;
   }
 
-  removeMember(memberId: string) {
-    this._members = this._members.filter((m) => m.id !== memberId);
+  removeWorker(workerId: string) {
+    this._workers = this._workers.filter((m) => m.id !== workerId);
     this._updatedAt = new Date();
-    this._memberCount--;
+    this._workerCount--;
   }
 
   deactivate(): void {

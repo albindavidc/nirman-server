@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node", // ← MUST be node16 or bundler for Prisma v7
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2022", // ← bump to ES2022 (Prisma v7 requirement)
+    "target": "ES2022",
+    "baseUrl": ".",
+    "paths": {
+      "@prisma/client": ["./src/generated/client"]
+    },
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,
