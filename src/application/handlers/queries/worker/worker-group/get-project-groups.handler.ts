@@ -7,7 +7,6 @@ import {
 } from '../../../../../domain/repositories/worker';
 import { WorkerGroupResponseDto } from '../../../../dto/worker/worker-group/worker-group-response.dto';
 import { WorkerGroupMapper } from '../../../../mappers/worker/worker-group/worker-group.mapper';
-import { WorkerGroupEntity } from '../../../../../domain/entities/worker-group.entity';
 
 @QueryHandler(GetProjectGroupQuery)
 export class GetProjectGroupHandler implements IQueryHandler<GetProjectGroupQuery> {
@@ -20,7 +19,6 @@ export class GetProjectGroupHandler implements IQueryHandler<GetProjectGroupQuer
     query: GetProjectGroupQuery,
   ): Promise<WorkerGroupResponseDto[]> {
     const groups = await this.repo.findAllByProject({
-      projectId: query.projectId,
       trade: query.trade,
       isActive: query.isActive,
       search: query.search,

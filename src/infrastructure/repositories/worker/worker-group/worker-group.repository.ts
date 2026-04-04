@@ -29,7 +29,6 @@ export class WorkerGroupRepository implements IWorkerGroupRepository {
       name: record.name,
       description: record.description ?? '',
       trade: record.trade as TradeType,
-      projectId: record.projectId,
       createdById: record.createdById,
       isActive: record.isActive,
       workerCount: record.workerCount ?? 0,
@@ -68,36 +67,8 @@ export class WorkerGroupRepository implements IWorkerGroupRepository {
     );
   }
 
-  async findByProjectId(
-    projectId: string,
-    context?: ITransactionContext,
-  ): Promise<WorkerGroupEntity[]> {
-    const client = this.resolveClient(context);
-    const records = await client.workerGroup.findMany({
-      where: { projectId, isDeleted: false },
-      include: {
-        _count: {
-          select: {
-            workers: { where: { isActive: true, isDeleted: false } },
-          },
-        },
-      },
-    });
-    if (!records) return [];
-    return records.map((record) =>
-      WorkerGroupMapper.toDomain(
-        this.toProps({
-          ...record,
-          trade: record.trade as unknown as TradeType,
-          workerCount: record._count.workers,
-        } as WorkerGroupWithCountPersistence),
-      ),
-    );
-  }
-
   async existsByName(
     name: string,
-    projectId: string,
     excludeId?: string,
     context?: ITransactionContext,
   ): Promise<boolean> {
@@ -105,7 +76,6 @@ export class WorkerGroupRepository implements IWorkerGroupRepository {
     const count = await client.workerGroup.count({
       where: {
         name,
-        projectId,
         isDeleted: false,
         ...(excludeId && { id: { not: excludeId } }),
       },
@@ -142,7 +112,6 @@ export class WorkerGroupRepository implements IWorkerGroupRepository {
         name: data.name,
         description: data.description,
         trade: data.trade,
-        projectId: data.projectId,
         createdById: data.createdById,
       },
       include: {
@@ -211,10 +180,19 @@ export class WorkerGroupRepository implements IWorkerGroupRepository {
     ctx?: ITransactionContext,
   ): Promise<void> {
     const client = this.resolveClient(ctx);
-    await client.workerGroupMember.create({
-      data: {
+    await client.workerGroupMember.upsert({
+      where: {
+        workerGroupId_workerId: {
+          workerGroupId: groupId,
+          workerId,
+        },
+      },
+      create: {
         workerGroupId: groupId,
         workerId,
+        isActive: true,
+      },
+      update: {
         isActive: true,
       },
     });

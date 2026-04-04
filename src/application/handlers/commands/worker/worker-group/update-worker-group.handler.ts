@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateWorkerGroupCommand } from '../../../../commands/worker/worker-group/update-worker-group.command';
-import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import {
   IWorkerGroupRepository,
   WORKER_GROUP_REPOSITORY,
@@ -24,16 +24,10 @@ export class UpdateWorkerGroupHandler implements ICommandHandler<UpdateWorkerGro
       throw new NotFoundException('Worker group not found');
     }
 
-    if (group.projectId !== command.projectId) {
-      throw new ForbiddenException(
-        'You do not have permission to update this worker group',
-      );
-    }
-
     if (command.name && command.name !== group.name) {
       const nameExists = await this.repo.existsByName(
         command.name,
-        command.projectId,
+        command.id,
       );
       if (nameExists) {
         throw new Error('Worker group name already exists');

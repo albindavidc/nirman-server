@@ -16,6 +16,19 @@ export const AUTH_ROUTES = {
 };
 
 
+export const WORKER_GROUP_ROUTES = {
+  ROOT: `${API_PREFIX}/${API_VERSION}/worker-groups`,
+  GET_WORKER_GROUPS: '',
+  GET_WORKER_GROUP_BY_ID: ':id',
+  CREATE_WORKER_GROUP: '',
+  UPDATE_WORKER_GROUP: ':id',
+  DELETE_WORKER_GROUP: ':id',
+  ADD_WORKER_TO_GROUP: ':id/workers',
+  REMOVE_WORKER_FROM_GROUP: ':id/workers/:workerId',
+  GET_WORKERS_IN_GROUP: ':id/workers',
+};
+
+
 export const WORKER_ROUTES = {
   ROOT: `${API_PREFIX}/${API_VERSION}/workers`,
   GET_WORKERS: '',

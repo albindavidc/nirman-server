@@ -5,7 +5,6 @@ export interface WorkerGroupPersistence {
   name: string;
   description: string | null;
   trade: TradeType;
-  projectId: string;
   createdById: string;
   isActive: boolean;
   createdAt: Date;
@@ -63,6 +62,6 @@ export type WorkerGroupCreatePersistenceInput = Omit<
 export type WorkerGroupUpdatePersistenceInput = Partial<
   Omit<
     WorkerGroupPersistence,
-    'id' | 'createdAt' | 'updatedAt' | 'projectId' | 'createdById'
+    'id' | 'createdAt' | 'updatedAt' | 'createdById'
   >
 >;

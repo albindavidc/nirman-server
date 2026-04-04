@@ -19,12 +19,11 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
   async findAllByProject(
     filter: GetProjectGroupFilter,
   ): Promise<WorkerGroupProps[]> {
-    const record = await this.prisma.workerGroup.findMany({
+    const records = await this.prisma.workerGroup.findMany({
       where: {
-        projectId: filter.projectId,
         isDeleted: false,
-        ...(filter.trade && { trade: filter.trade }),
-        ...(filter.isActive && { isActive: filter.isActive }),
+        ...(filter.trade && { trade: filter.trade as any }),
+        ...(filter.isActive !== undefined && { isActive: filter.isActive }),
         ...(filter.search && {
           name: {
             contains: filter.search,
@@ -49,11 +48,19 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
       ],
     });
 
-    return record.map((record) =>
+    return records.map((record: any) =>
       this.toProps({
-        ...record,
+        id: record.id,
+        name: record.name,
+        description: record.description ?? '',
         trade: record.trade as TradeType,
-        workerCount: record._count.workers,
+        createdById: record.createdById,
+        isActive: !!record.isActive,
+        workerCount: record._count?.workers ?? 0,
+        createdAt: record.createdAt,
+        updatedAt: record.updatedAt,
+        isDeleted: record.isDeleted,
+        deletedAt: record.deletedAt ?? undefined,
       } as WorkerGroupWithCountPersistence),
     );
   }
@@ -61,16 +68,15 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
   private toProps(record: WorkerGroupWithCountPersistence): WorkerGroupProps {
     return {
       id: record.id,
-      name: record.name,
+      name: record.name || 'Untitled Group',
       description: record.description ?? '',
       trade: record.trade as TradeType,
-      projectId: record.projectId,
       createdById: record.createdById,
       isActive: record.isActive,
       workerCount: record.workerCount ?? 0,
       workers: [],
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
+      createdAt: record.createdAt || new Date(),
+      updatedAt: record.updatedAt || new Date(),
       isDeleted: record.isDeleted,
       deletedAt: record.deletedAt ?? undefined,
     };
@@ -106,17 +112,16 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
     if (!record) return null;
 
     return WorkerGroupMapper.toDomain(
-      this.toMemberProps(record as WorkerGroupWithMembersRaw),
+      this.toMemberProps(record as any as WorkerGroupWithMembersRaw),
     );
   }
 
   async countByProject(filter: GetProjectGroupFilter): Promise<number> {
     return this.prisma.workerGroup.count({
       where: {
-        projectId: filter.projectId,
         isDeleted: false,
-        ...(filter.trade && { trade: filter.trade }),
-        ...(filter.isActive && { isActive: filter.isActive }),
+        ...(filter.trade && { trade: filter.trade as any }),
+        ...(filter.isActive !== undefined && { isActive: filter.isActive }),
         ...(filter.search && {
           name: {
             contains: filter.search,
@@ -128,10 +133,11 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
   }
 
   private toMemberProps(record: WorkerGroupWithMembersRaw): WorkerGroupProps {
-    const worker = record.workers.map((m) => ({
+    const workers = record.workers.map((m) => ({
       id: m.id,
       groupId: m.workerGroupId,
       workerId: m.workerId,
+      userId: m.worker.user.id, // Store the User ID for easier mapping
       workerName: `${m.worker.user.firstName} ${m.worker.user.lastName}`,
       workerPhotoUrl: m.worker.user.profilePhotoUrl,
       isActive: m.isActive,
@@ -141,7 +147,7 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
       deletedAt: m.deletedAt ?? undefined,
     }));
 
-    const workerCount = record._count?.workers ?? worker.length;
+    const workerCount = record._count?.workers ?? workers.length;
 
     return {
       ...this.toProps({
@@ -149,7 +155,7 @@ export class WorkerGroupQueryRepository implements IWorkerGroupQueryReader {
         workerCount,
       } as WorkerGroupWithCountPersistence),
       workerCount,
-      workers: worker,
+      workers,
     };
   }
 }

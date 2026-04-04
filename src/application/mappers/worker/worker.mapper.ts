@@ -170,6 +170,7 @@ export class WorkerMapper {
       userStatus: persistence.userStatus,
       professional: persistence.professional
         ? {
+            id: persistence.professional?.id,
             professionalTitle: persistence.professional?.professionalTitle,
             experienceYears: persistence.professional?.experienceYears,
             skills: persistence.professional?.skills,

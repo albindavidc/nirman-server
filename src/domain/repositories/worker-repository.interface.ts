@@ -13,6 +13,7 @@ export interface WorkerWithProfessional {
   role: UserRole;
   userStatus: UserStatus;
   professional: {
+    id: string; // The professional record ID (from the Professional table)
     professionalTitle?: string;
     experienceYears?: number;
     skills?: string[];

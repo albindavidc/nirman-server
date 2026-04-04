@@ -2,6 +2,7 @@ export class WorkerGroupMemberResponseDto {
   id!: string;
   groupId!: string;
   workerId!: string;
+  userId!: string; // The User ID for linking
   workerName!: string;
   workerPhotoUrl!: string | null;
   joinedAt!: Date;
@@ -13,7 +14,6 @@ export class WorkerGroupResponseDto {
   name!: string;
   description!: string;
   trade!: string;
-  projectId!: string;
   createdById!: string;
 
   isActive!: boolean;

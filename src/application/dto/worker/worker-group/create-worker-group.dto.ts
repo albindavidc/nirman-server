@@ -1,9 +1,9 @@
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
-  IsUUID,
-  MaxLength,
 } from 'class-validator';
 import { TradeType } from '../../../../domain/enums/trade-type.enum';
 
@@ -16,9 +16,11 @@ export class CreateWorkerGroupDto {
   @IsNotEmpty()
   description!: string;
 
-  @IsUUID()
-  projectId!: string;
-
   @IsEnum(TradeType)
   trade!: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  workerIds?: string[];
 }

@@ -19,7 +19,6 @@ export class WorkerGroupMapper {
       name: record.name,
       description: record.description,
       trade: record.trade as TradeType,
-      projectId: record.projectId,
       createdById: record.createdById,
       isActive: record.isActive,
       workerCount: record.workerCount,
@@ -37,7 +36,6 @@ export class WorkerGroupMapper {
       name: entity.name,
       description: entity.description,
       trade: entity.trade as TradeType,
-      projectId: entity.projectId,
       createdById: entity.createdById,
       isActive: entity.isActive,
       workerCount: entity.workerCount,
@@ -52,15 +50,14 @@ export class WorkerGroupMapper {
   static toResponse(entity: WorkerGroupProps): WorkerGroupResponseDto {
     const dto = new WorkerGroupResponseDto();
     dto.id = entity.id;
-    dto.name = entity.name;
-    dto.description = entity.description;
-    dto.trade = entity.trade as TradeType;
-    dto.projectId = entity.projectId;
+    dto.name = entity.name || 'Untitled Group';
+    dto.description = entity.description || '';
+    dto.trade = (entity.trade as string) || '';
     dto.createdById = entity.createdById;
-    dto.isActive = entity.isActive;
-    dto.workerCount = entity.workerCount;
-    dto.createdAt = entity.createdAt;
-    dto.updatedAt = entity.updatedAt;
+    dto.isActive = !!entity.isActive;
+    dto.workerCount = entity.workerCount ?? 0;
+    dto.createdAt = entity.createdAt || new Date();
+    dto.updatedAt = entity.updatedAt || new Date();
     return dto;
   }
 
@@ -72,7 +69,6 @@ export class WorkerGroupMapper {
     dto.name = entity.name;
     dto.description = entity.description;
     dto.trade = entity.trade as TradeType;
-    dto.projectId = entity.projectId;
     dto.createdById = entity.createdById;
     dto.isActive = entity.isActive;
     dto.workerCount = entity.workerCount;
@@ -82,6 +78,7 @@ export class WorkerGroupMapper {
       id: member.id,
       groupId: member.groupId,
       workerId: member.workerId,
+      userId: member.userId,
       workerName: member.workerName,
       workerPhotoUrl: member.workerPhotoUrl,
       joinedAt: member.createdAt,
@@ -99,6 +96,7 @@ export class WorkerGroupMapper {
       id: raw.id,
       groupId: raw.groupId,
       workerId: raw.workerId,
+      userId: raw.userId,
       workerName: raw.workerName,
       workerPhotoUrl: raw.workerPhotoUrl,
       isActive: raw.isActive,

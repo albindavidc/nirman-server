@@ -1,42 +1,55 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RemoveMemberCommand } from '../../../../commands/worker/worker-group/remove-member.command';
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import {
   IWorkerGroupRepository,
   WORKER_GROUP_REPOSITORY,
 } from '../../../../../domain/repositories/worker';
+import {
+  IWorkerRepository,
+  WORKER_REPOSITORY,
+} from '../../../../../domain/repositories/worker-repository.interface';
+import { WorkerGroupEntity } from '../../../../../domain/entities/worker-group.entity';
 
 @CommandHandler(RemoveMemberCommand)
 export class RemoveMemberHandler implements ICommandHandler<RemoveMemberCommand> {
   constructor(
     @Inject(WORKER_GROUP_REPOSITORY)
     private readonly repo: IWorkerGroupRepository,
+    @Inject(WORKER_REPOSITORY)
+    private readonly workerRepo: IWorkerRepository,
   ) {}
 
-  async execute(command: RemoveMemberCommand): Promise<void> {
+  async execute(command: RemoveMemberCommand): Promise<WorkerGroupEntity> {
     const group = await this.repo.findById(command.groupId);
     if (!group) {
-      throw new Error('Worker group not found');
+      throw new NotFoundException('Worker group not found');
     }
 
-    if (group.projectId !== command.projectId) {
-      throw new Error(
-        'You do not have permission to remove members from this worker group',
-      );
+    // Resolve professional ID from user ID
+    const worker = await this.workerRepo.findById(command.workerId);
+    if (!worker || !worker.professional?.id) {
+      throw new NotFoundException('Worker professional profile not found');
     }
 
-    const isWorker = await this.repo.isMemberInGroup(
+    const professionalId = worker.professional.id;
+
+    const alreadyMember = await this.repo.isMemberInGroup(
+      professionalId,
       command.groupId,
-      command.workerId,
     );
-    if (!isWorker) {
+
+    if (!alreadyMember) {
       throw new Error('Worker is not a member of this group');
     }
 
-    const member = await this.repo.removeMember(
-      command.groupId,
-      command.workerId,
-    );
-    return member;
+    await this.repo.removeMember(command.groupId, professionalId);
+
+    // Return the updated group
+    const updatedGroup = await this.repo.findById(command.groupId);
+    if (!updatedGroup) {
+      throw new NotFoundException('Failed to fetch updated worker group');
+    }
+    return updatedGroup;
   }
 }

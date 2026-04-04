@@ -5,7 +5,7 @@ export class CreateWorkerGroupCommand {
     public readonly name: string,
     public readonly description: string,
     public readonly trade: TradeType,
-    public readonly projectId: string,
     public readonly createdById: string,
+    public readonly workerIds: string[] = [],
   ) {}
 }

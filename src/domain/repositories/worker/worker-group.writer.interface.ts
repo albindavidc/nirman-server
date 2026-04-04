@@ -6,7 +6,7 @@ import { ITransactionContext } from '../../interfaces/transaction-context.interf
 
 export type CreateWorkerGroupData = Pick<
   WorkerGroupProps,
-  'name' | 'description' | 'trade' | 'projectId' | 'createdById' | 'isActive'
+  'name' | 'description' | 'trade' | 'createdById' | 'isActive'
 > & {
   workers?: { workerId: string }[];
 };

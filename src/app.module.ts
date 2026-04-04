@@ -26,6 +26,7 @@ import { ProjectModule } from './presentation/modules/project.module';
 import { MaterialModule } from './presentation/modules/material.module';
 import { AttendanceModule } from './presentation/modules/attendance.module';
 import { TaskModule } from './presentation/modules/task.module';
+import { WorkerGroupModule } from './presentation/modules/worker-group.module';
 import { ExportProjectAttendanceExcelQueryTs } from './application/queries/project/export-project-attendance-excel.query.ts';
 
 @Module({
@@ -44,6 +45,7 @@ import { ExportProjectAttendanceExcelQueryTs } from './application/queries/proje
     MaterialModule,
     AttendanceModule,
     TaskModule,
+    WorkerGroupModule,
   ],
   controllers: [AppController],
   providers: [

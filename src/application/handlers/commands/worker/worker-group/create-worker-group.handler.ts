@@ -5,8 +5,11 @@ import {
   IWorkerGroupRepository,
   WORKER_GROUP_REPOSITORY,
 } from '../../../../../domain/repositories/worker';
+import {
+  IWorkerRepository,
+  WORKER_REPOSITORY,
+} from '../../../../../domain/repositories/worker-repository.interface';
 import { WorkerGroupResponseDto } from '../../../../dto/worker/worker-group/worker-group-response.dto';
-import { WorkerGroupEntity } from '../../../../../domain/entities/worker-group.entity';
 import { WorkerGroupMapper } from '../../../../mappers/worker/worker-group/worker-group.mapper';
 
 @CommandHandler(CreateWorkerGroupCommand)
@@ -14,6 +17,8 @@ export class CreateWorkerGroupHandler implements ICommandHandler<CreateWorkerGro
   constructor(
     @Inject(WORKER_GROUP_REPOSITORY)
     private readonly repo: IWorkerGroupRepository,
+    @Inject(WORKER_REPOSITORY)
+    private readonly workerRepo: IWorkerRepository,
   ) {}
 
   async execute(
@@ -21,7 +26,6 @@ export class CreateWorkerGroupHandler implements ICommandHandler<CreateWorkerGro
   ): Promise<WorkerGroupResponseDto> {
     const nameExists = await this.repo.existsByName(
       command.name,
-      command.projectId,
     );
     if (nameExists) {
       throw new Error('Worker group name already exists');
@@ -31,10 +35,27 @@ export class CreateWorkerGroupHandler implements ICommandHandler<CreateWorkerGro
       name: command.name,
       description: command.description,
       trade: command.trade,
-      projectId: command.projectId,
       createdById: command.createdById,
       isActive: true,
     });
+
+    // Add members if provided
+    if (command.workerIds?.length > 0) {
+      // Resolve professional IDs from user IDs
+      const workers = await Promise.all(
+        command.workerIds.map((userId) => this.workerRepo.findById(userId)),
+      );
+
+      const addMemberPromises = workers
+        .filter((w) => w && w.professional?.id)
+        .map((worker) =>
+          this.repo.addMember(entity.id, worker!.professional!.id),
+        );
+
+      if (addMemberPromises.length > 0) {
+        await Promise.all(addMemberPromises);
+      }
+    }
 
     return WorkerGroupMapper.toResponse(entity);
   }

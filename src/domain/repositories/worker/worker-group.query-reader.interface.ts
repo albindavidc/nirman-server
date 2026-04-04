@@ -1,10 +1,10 @@
 import { WorkerGroupProps } from '../../entities/worker-group.entity';
 
-export type GetProjectGroupFilter = Partial<
-  Pick<WorkerGroupProps, 'projectId' | 'trade' | 'isActive'> & {
-    search?: string;
-  }
->;
+export type GetProjectGroupFilter = {
+  trade?: string;
+  isActive?: boolean;
+  search?: string;
+};
 
 export interface IWorkerGroupQueryReader {
   findAllByProject(filter: GetProjectGroupFilter): Promise<WorkerGroupProps[]>;

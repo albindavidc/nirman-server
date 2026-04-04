@@ -5,6 +5,7 @@ export interface WorkerGroupMember {
   id: string;
   groupId: string;
   workerId: string;
+  userId: string; // Added to enable consistent ID matching in UI
   workerName: string;
   workerPhotoUrl: string | null;
   isActive: boolean;
@@ -19,7 +20,6 @@ export interface WorkerGroupProps {
   name: string;
   description: string;
   trade: TradeType;
-  projectId: string;
   createdById: string;
   isActive: boolean;
   workerCount: number;
@@ -35,7 +35,6 @@ export class WorkerGroupEntity extends AggregateRoot {
   private _name: string;
   private _description: string;
   private _trade: TradeType;
-  private _projectId: string;
   private _createdById: string;
   private _isActive: boolean;
   private _workerCount: number;
@@ -51,7 +50,6 @@ export class WorkerGroupEntity extends AggregateRoot {
     this._name = props.name;
     this._description = props.description;
     this._trade = props.trade;
-    this._projectId = props.projectId;
     this._createdById = props.createdById;
     this._isActive = props.isActive;
     this._workerCount = props.workerCount;
@@ -76,10 +74,6 @@ export class WorkerGroupEntity extends AggregateRoot {
 
   get trade(): TradeType {
     return this._trade;
-  }
-
-  get projectId(): string {
-    return this._projectId;
   }
 
   get createdById(): string {
