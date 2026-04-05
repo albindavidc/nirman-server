@@ -12,4 +12,5 @@ export interface ProjectPhaseDto {
   sequence: number;
   createdAt: Date;
   updatedAt: Date;
+  workerGroups?: any[];
 }

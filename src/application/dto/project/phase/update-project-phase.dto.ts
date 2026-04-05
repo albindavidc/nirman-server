@@ -51,4 +51,8 @@ export class UpdateProjectPhaseDto {
   @IsOptional()
   @IsNumber()
   sequence?: number;
+
+  @IsOptional()
+  @IsString({ each: true })
+  workerGroupIds?: string[];
 }

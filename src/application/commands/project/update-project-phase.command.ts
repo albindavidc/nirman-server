@@ -14,6 +14,7 @@ export class UpdateProjectPhaseCommand extends Command<ProjectPhaseDto> {
       actualStartDate?: string;
       actualEndDate?: string;
       sequence?: number;
+      workerGroupIds?: string[];
     },
   ) {
     super();

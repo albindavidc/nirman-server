@@ -22,6 +22,7 @@ export class ProjectPhaseMapper {
       persistence.sequence,
       persistence.createdAt,
       persistence.updatedAt,
+      (persistence as any).workerGroups || [],
     );
   }
 
@@ -40,6 +41,13 @@ export class ProjectPhaseMapper {
       sequence: domain.sequence,
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
+      workerGroups: domain.workerGroupIds?.length
+        ? {
+            create: domain.workerGroupIds.map((id) => ({
+              workerGroup: { connect: { id } },
+            })),
+          }
+        : undefined,
     };
     if (domain.id) {
       input.id = domain.id;
@@ -59,6 +67,14 @@ export class ProjectPhaseMapper {
       status: this.mapStatus(domain.status),
       sequence: domain.sequence,
       updatedAt: domain.updatedAt,
+      workerGroups: domain.workerGroupIds
+        ? {
+            deleteMany: {},
+            create: domain.workerGroupIds.map((id) => ({
+              workerGroup: { connect: { id } },
+            })),
+          }
+        : undefined,
     };
   }
 
@@ -99,6 +115,11 @@ export class ProjectPhaseMapper {
       sequence: domain.sequence,
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
+      workerGroups: domain.workerGroups?.map((pwg: any) => ({
+        id: pwg.workerGroup?.id || pwg.workerGroupId,
+        name: pwg.workerGroup?.name,
+        trade: pwg.workerGroup?.trade,
+      })),
     };
   }
 }

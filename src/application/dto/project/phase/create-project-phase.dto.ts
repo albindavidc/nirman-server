@@ -33,4 +33,8 @@ export class CreateProjectPhaseDto {
   @IsNumber()
   @Type(() => Number)
   sequence!: number;
+
+  @IsOptional()
+  @IsString({ each: true })
+  workerGroupIds?: string[];
 }

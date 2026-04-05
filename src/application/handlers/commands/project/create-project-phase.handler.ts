@@ -38,6 +38,8 @@ export class CreateProjectPhaseHandler implements ICommandHandler<CreateProjectP
       dto.sequence,
       new Date(),
       new Date(),
+      [], // initial workerGroups
+      dto.workerGroupIds || [],
     );
 
     const saved = await this.projectPhaseWriter.save(phase);

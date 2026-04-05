@@ -27,6 +27,7 @@ export class ProjectPhaseQueryRepository
     try {
       const phase = await client.projectPhase.findUnique({
         where: { id },
+        include: { workerGroups: { include: { workerGroup: true } } },
       });
       return phase ? ProjectPhaseMapper.toDomain(phase) : null;
     } catch (error: unknown) {
@@ -60,6 +61,7 @@ export class ProjectPhaseQueryRepository
     try {
       const phases = await client.projectPhase.findMany({
         where: { projectId: projectId },
+        include: { workerGroups: { include: { workerGroup: true } } },
         orderBy: { sequence: 'asc' },
       });
       return phases.map(ProjectPhaseMapper.toDomain);
@@ -91,6 +93,7 @@ export class ProjectPhaseQueryRepository
             orderBy: { createdAt: 'desc' },
           },
           tasks: { select: { status: true } },
+          workerGroups: { include: { workerGroup: true } },
         },
       });
 

@@ -61,6 +61,10 @@ export class UpdateProjectPhaseHandler implements ICommandHandler<UpdateProjectP
       phase.updateActualDates(actualStart, actualEnd);
     }
 
+    if (data.workerGroupIds) {
+      phase.setWorkerGroupIds(data.workerGroupIds);
+    }
+
     const updatedPhase = await this.projectPhaseWriter.save(phase);
 
     return ProjectPhaseMapper.toDto(updatedPhase);

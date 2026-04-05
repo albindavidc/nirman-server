@@ -111,6 +111,7 @@ model ProjectPhase {
   approvals   PhaseApproval[]
   tasks       Task[]
   attendances Attendance[]
+  workerGroups ProjectWorkerGroup[]
 
   @@index([projectId])
   @@map("project_phases")
@@ -224,4 +225,20 @@ model TaskDependency {
   @@index([predecessorTaskId])
   @@index([phaseId])
   @@map("task_dependencies")
+}
+
+model ProjectWorkerGroup {
+  id            String   @id @default(uuid())
+  phaseId       String   @map("phase_id")
+  workerGroupId String   @map("worker_group_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  phase       ProjectPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  workerGroup WorkerGroup  @relation(fields: [workerGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([phaseId, workerGroupId])
+  @@index([phaseId])
+  @@index([workerGroupId])
+  @@map("project_worker_groups")
 }

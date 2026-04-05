@@ -15,6 +15,7 @@ export type ProjectPhaseRecord = {
   sequence: number;
   createdAt: Date;
   updatedAt: Date;
+  workerGroups?: any[];
 };
 
 export type RepoUser = {

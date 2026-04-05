@@ -26,6 +26,7 @@ model WorkerGroup {
 
     user    User                @relation(fields: [createdById], references: [id])
     workers WorkerGroupMember[]
+    projects ProjectWorkerGroup[]
 
     @@index([createdById])
     @@index([isActive])

@@ -15,6 +15,8 @@ export class ProjectPhase extends AggregateRoot {
     private _sequence: number,
     private readonly _createdAt: Date,
     private _updatedAt: Date,
+    private _workerGroups: any[] = [],
+    private _workerGroupIds: string[] = [],
   ) {
     super();
   }
@@ -70,6 +72,14 @@ export class ProjectPhase extends AggregateRoot {
   get updatedAt(): Date {
     return this._updatedAt;
   }
+  
+  get workerGroups(): any[] {
+    return this._workerGroups;
+  }
+
+  get workerGroupIds(): string[] {
+    return this._workerGroupIds;
+  }
 
   updateDetails(
     name: string,
@@ -101,6 +111,20 @@ export class ProjectPhase extends AggregateRoot {
   updateActualDates(startDate: Date | null, endDate: Date | null): void {
     this._actualStartDate = startDate;
     this._actualEndDate = endDate;
+    this._updatedAt = new Date();
+  }
+
+  updateWorkerGroups(workerGroups: any[]): void {
+    this._workerGroups = workerGroups;
+    // When worker groups are updated from DB, we also sync the IDs
+    this._workerGroupIds = workerGroups.map(
+      (wg: any) => wg.workerGroupId || wg.id,
+    );
+    this._updatedAt = new Date();
+  }
+
+  setWorkerGroupIds(ids: string[]): void {
+    this._workerGroupIds = ids;
     this._updatedAt = new Date();
   }
 }
